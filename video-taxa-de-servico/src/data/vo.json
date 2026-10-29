@@ -1,0 +1,1129 @@
+{
+  "s1": {
+    "text": "Você adorou o atendimento e quer agradecer. Parece que basta deixar uma nota na mesa pro garçom.",
+    "seconds": 5.973,
+    "words": [
+      {
+        "text": "Você",
+        "start": 0,
+        "end": 0.197
+      },
+      {
+        "text": "adorou",
+        "start": 0.197,
+        "end": 0.637
+      },
+      {
+        "text": "o",
+        "start": 0.637,
+        "end": 0.737
+      },
+      {
+        "text": "atendimento",
+        "start": 0.737,
+        "end": 1.317
+      },
+      {
+        "text": "e",
+        "start": 1.317,
+        "end": 1.457
+      },
+      {
+        "text": "quer",
+        "start": 1.457,
+        "end": 1.637
+      },
+      {
+        "text": "agradecer.",
+        "start": 1.637,
+        "end": 2.317
+      },
+      {
+        "text": "Parece",
+        "start": 2.897,
+        "end": 3.177
+      },
+      {
+        "text": "que",
+        "start": 3.177,
+        "end": 3.437
+      },
+      {
+        "text": "basta",
+        "start": 3.437,
+        "end": 3.677
+      },
+      {
+        "text": "deixar",
+        "start": 3.677,
+        "end": 4.117
+      },
+      {
+        "text": "uma",
+        "start": 4.117,
+        "end": 4.277
+      },
+      {
+        "text": "nota",
+        "start": 4.277,
+        "end": 4.597
+      },
+      {
+        "text": "na",
+        "start": 4.597,
+        "end": 4.757
+      },
+      {
+        "text": "mesa",
+        "start": 4.757,
+        "end": 4.977
+      },
+      {
+        "text": "pro",
+        "start": 4.977,
+        "end": 5.177
+      },
+      {
+        "text": "garçom.",
+        "start": 5.177,
+        "end": 5.697
+      }
+    ]
+  },
+  "s2": {
+    "text": "Só que o garçom não fez seu prato. Na cozinha, mais gente trabalhou, e não viu nada.",
+    "seconds": 5.528,
+    "words": [
+      {
+        "text": "Só",
+        "start": 0.0,
+        "end": 0.14
+      },
+      {
+        "text": "que",
+        "start": 0.14,
+        "end": 0.3
+      },
+      {
+        "text": "o",
+        "start": 0.3,
+        "end": 0.38
+      },
+      {
+        "text": "garçom",
+        "start": 0.38,
+        "end": 0.74
+      },
+      {
+        "text": "não",
+        "start": 0.74,
+        "end": 0.84
+      },
+      {
+        "text": "fez",
+        "start": 0.84,
+        "end": 1.06
+      },
+      {
+        "text": "seu",
+        "start": 1.06,
+        "end": 1.26
+      },
+      {
+        "text": "prato.",
+        "start": 1.26,
+        "end": 1.76
+      },
+      {
+        "text": "Na",
+        "start": 2.16,
+        "end": 2.38
+      },
+      {
+        "text": "cozinha,",
+        "start": 2.38,
+        "end": 2.96
+      },
+      {
+        "text": "mais",
+        "start": 3.2,
+        "end": 3.38
+      },
+      {
+        "text": "gente",
+        "start": 3.38,
+        "end": 3.62
+      },
+      {
+        "text": "trabalhou,",
+        "start": 3.62,
+        "end": 4.3
+      },
+      {
+        "text": "e",
+        "start": 4.5,
+        "end": 4.54
+      },
+      {
+        "text": "não",
+        "start": 4.54,
+        "end": 4.7
+      },
+      {
+        "text": "viu",
+        "start": 4.7,
+        "end": 4.9
+      },
+      {
+        "text": "nada.",
+        "start": 4.9,
+        "end": 5.2
+      }
+    ]
+  },
+  "s3": {
+    "text": "Por isso, muitos restaurantes põem um valor extra na conta, que vai pra um pote só. É a taxa de serviço.",
+    "seconds": 6.754,
+    "words": [
+      {
+        "text": "Por",
+        "start": 0,
+        "end": 0.109
+      },
+      {
+        "text": "isso,",
+        "start": 0.109,
+        "end": 0.429
+      },
+      {
+        "text": "muitos",
+        "start": 0.669,
+        "end": 0.949
+      },
+      {
+        "text": "restaurantes",
+        "start": 0.949,
+        "end": 1.809
+      },
+      {
+        "text": "põem",
+        "start": 1.809,
+        "end": 2.109
+      },
+      {
+        "text": "um",
+        "start": 2.109,
+        "end": 2.169
+      },
+      {
+        "text": "valor",
+        "start": 2.169,
+        "end": 2.489
+      },
+      {
+        "text": "extra",
+        "start": 2.489,
+        "end": 2.729
+      },
+      {
+        "text": "na",
+        "start": 2.729,
+        "end": 2.869
+      },
+      {
+        "text": "conta,",
+        "start": 2.869,
+        "end": 3.309
+      },
+      {
+        "text": "que",
+        "start": 3.569,
+        "end": 3.649
+      },
+      {
+        "text": "vai",
+        "start": 3.649,
+        "end": 3.789
+      },
+      {
+        "text": "pra",
+        "start": 3.789,
+        "end": 3.889
+      },
+      {
+        "text": "um",
+        "start": 3.889,
+        "end": 4.009
+      },
+      {
+        "text": "pote",
+        "start": 4.009,
+        "end": 4.289
+      },
+      {
+        "text": "só.",
+        "start": 4.289,
+        "end": 4.649
+      },
+      {
+        "text": "É",
+        "start": 5.269,
+        "end": 5.409
+      },
+      {
+        "text": "a",
+        "start": 5.409,
+        "end": 5.509
+      },
+      {
+        "text": "taxa",
+        "start": 5.509,
+        "end": 5.829
+      },
+      {
+        "text": "de",
+        "start": 5.829,
+        "end": 5.969
+      },
+      {
+        "text": "serviço.",
+        "start": 5.969,
+        "end": 6.609
+      }
+    ]
+  },
+  "s4": {
+    "text": "Por que dez por cento? Não é número da lei, é costume. A casa pode cobrar outro, desde que avise.",
+    "seconds": 7.021,
+    "words": [
+      {
+        "text": "Por",
+        "start": 0,
+        "end": 0.131
+      },
+      {
+        "text": "que",
+        "start": 0.131,
+        "end": 0.231
+      },
+      {
+        "text": "dez",
+        "start": 0.231,
+        "end": 0.411
+      },
+      {
+        "text": "por",
+        "start": 0.411,
+        "end": 0.551
+      },
+      {
+        "text": "cento?",
+        "start": 0.551,
+        "end": 1.171
+      },
+      {
+        "text": "Não",
+        "start": 1.611,
+        "end": 1.791
+      },
+      {
+        "text": "é",
+        "start": 1.791,
+        "end": 1.891
+      },
+      {
+        "text": "número",
+        "start": 1.891,
+        "end": 2.171
+      },
+      {
+        "text": "da",
+        "start": 2.171,
+        "end": 2.351
+      },
+      {
+        "text": "lei,",
+        "start": 2.351,
+        "end": 2.631
+      },
+      {
+        "text": "é",
+        "start": 2.891,
+        "end": 3.011
+      },
+      {
+        "text": "costume.",
+        "start": 3.011,
+        "end": 3.451
+      },
+      {
+        "text": "A",
+        "start": 4.271,
+        "end": 4.411
+      },
+      {
+        "text": "casa",
+        "start": 4.411,
+        "end": 4.671
+      },
+      {
+        "text": "pode",
+        "start": 4.671,
+        "end": 4.991
+      },
+      {
+        "text": "cobrar",
+        "start": 4.991,
+        "end": 5.391
+      },
+      {
+        "text": "outro,",
+        "start": 5.391,
+        "end": 5.731
+      },
+      {
+        "text": "desde",
+        "start": 5.991,
+        "end": 6.231
+      },
+      {
+        "text": "que",
+        "start": 6.231,
+        "end": 6.411
+      },
+      {
+        "text": "avise.",
+        "start": 6.411,
+        "end": 6.791
+      }
+    ]
+  },
+  "s5": {
+    "text": "Mas esse dinheiro entra no caixa, junto com o da comida. O dono pode ficar com ele?",
+    "seconds": 5.457,
+    "words": [
+      {
+        "text": "Mas",
+        "start": 0,
+        "end": 0.149
+      },
+      {
+        "text": "esse",
+        "start": 0.149,
+        "end": 0.309
+      },
+      {
+        "text": "dinheiro",
+        "start": 0.309,
+        "end": 0.709
+      },
+      {
+        "text": "entra",
+        "start": 0.709,
+        "end": 1.029
+      },
+      {
+        "text": "no",
+        "start": 1.029,
+        "end": 1.209
+      },
+      {
+        "text": "caixa,",
+        "start": 1.209,
+        "end": 1.729
+      },
+      {
+        "text": "junto",
+        "start": 1.929,
+        "end": 2.109
+      },
+      {
+        "text": "com",
+        "start": 2.109,
+        "end": 2.389
+      },
+      {
+        "text": "o",
+        "start": 2.389,
+        "end": 2.489
+      },
+      {
+        "text": "da",
+        "start": 2.489,
+        "end": 2.589
+      },
+      {
+        "text": "comida.",
+        "start": 2.589,
+        "end": 2.989
+      },
+      {
+        "text": "O",
+        "start": 3.629,
+        "end": 3.849
+      },
+      {
+        "text": "dono",
+        "start": 3.849,
+        "end": 4.109
+      },
+      {
+        "text": "pode",
+        "start": 4.109,
+        "end": 4.329
+      },
+      {
+        "text": "ficar",
+        "start": 4.329,
+        "end": 4.629
+      },
+      {
+        "text": "com",
+        "start": 4.629,
+        "end": 4.889
+      },
+      {
+        "text": "ele?",
+        "start": 4.889,
+        "end": 5.149
+      }
+    ]
+  },
+  "s6": {
+    "text": "Não. Pela lei, a gorjeta é dos funcionários. Por isso, a taxa aparece separada na conta.",
+    "seconds": 6.928,
+    "words": [
+      {
+        "text": "Não.",
+        "start": 0,
+        "end": 0.191
+      },
+      {
+        "text": "Pela",
+        "start": 0.751,
+        "end": 1.051
+      },
+      {
+        "text": "lei,",
+        "start": 1.051,
+        "end": 1.331
+      },
+      {
+        "text": "a",
+        "start": 1.571,
+        "end": 1.631
+      },
+      {
+        "text": "gorjeta",
+        "start": 1.631,
+        "end": 2.131
+      },
+      {
+        "text": "é",
+        "start": 2.131,
+        "end": 2.151
+      },
+      {
+        "text": "dos",
+        "start": 2.151,
+        "end": 2.291
+      },
+      {
+        "text": "funcionários.",
+        "start": 2.291,
+        "end": 3.171
+      },
+      {
+        "text": "Por",
+        "start": 3.811,
+        "end": 4.071
+      },
+      {
+        "text": "isso,",
+        "start": 4.071,
+        "end": 4.371
+      },
+      {
+        "text": "a",
+        "start": 4.611,
+        "end": 4.711
+      },
+      {
+        "text": "taxa",
+        "start": 4.711,
+        "end": 4.991
+      },
+      {
+        "text": "aparece",
+        "start": 4.991,
+        "end": 5.351
+      },
+      {
+        "text": "separada",
+        "start": 5.351,
+        "end": 6.091
+      },
+      {
+        "text": "na",
+        "start": 6.091,
+        "end": 6.211
+      },
+      {
+        "text": "conta.",
+        "start": 6.211,
+        "end": 6.691
+      }
+    ]
+  },
+  "s7": {
+    "text": "Só que dividir não é simples. Garçom, cozinheiro, ajudante... quem leva quanto?",
+    "seconds": 5.123,
+    "words": [
+      {
+        "text": "Só",
+        "start": 0.0,
+        "end": 0.1
+      },
+      {
+        "text": "que",
+        "start": 0.1,
+        "end": 0.24
+      },
+      {
+        "text": "dividir",
+        "start": 0.24,
+        "end": 0.66
+      },
+      {
+        "text": "não",
+        "start": 0.66,
+        "end": 0.74
+      },
+      {
+        "text": "é",
+        "start": 0.74,
+        "end": 0.88
+      },
+      {
+        "text": "simples.",
+        "start": 0.88,
+        "end": 1.32
+      },
+      {
+        "text": "Garçom,",
+        "start": 1.96,
+        "end": 2.54
+      },
+      {
+        "text": "cozinheiro,",
+        "start": 2.74,
+        "end": 3.32
+      },
+      {
+        "text": "ajudante...",
+        "start": 3.54,
+        "end": 4.06
+      },
+      {
+        "text": "quem",
+        "start": 4.06,
+        "end": 4.12
+      },
+      {
+        "text": "leva",
+        "start": 4.12,
+        "end": 4.4
+      },
+      {
+        "text": "quanto?",
+        "start": 4.4,
+        "end": 4.7
+      }
+    ]
+  },
+  "s8": {
+    "text": "As regras são combinadas com os trabalhadores, em acordo com o sindicato. Essa divisão se chama rateio.",
+    "seconds": 6.803,
+    "words": [
+      {
+        "text": "As",
+        "start": 0,
+        "end": 0.118
+      },
+      {
+        "text": "regras",
+        "start": 0.118,
+        "end": 0.518
+      },
+      {
+        "text": "são",
+        "start": 0.518,
+        "end": 0.718
+      },
+      {
+        "text": "combinadas",
+        "start": 0.718,
+        "end": 1.378
+      },
+      {
+        "text": "com",
+        "start": 1.378,
+        "end": 1.618
+      },
+      {
+        "text": "os",
+        "start": 1.618,
+        "end": 1.798
+      },
+      {
+        "text": "trabalhadores,",
+        "start": 1.798,
+        "end": 2.518
+      },
+      {
+        "text": "em",
+        "start": 2.798,
+        "end": 2.898
+      },
+      {
+        "text": "acordo",
+        "start": 2.898,
+        "end": 3.158
+      },
+      {
+        "text": "com",
+        "start": 3.158,
+        "end": 3.458
+      },
+      {
+        "text": "o",
+        "start": 3.458,
+        "end": 3.518
+      },
+      {
+        "text": "sindicato.",
+        "start": 3.518,
+        "end": 4.298
+      },
+      {
+        "text": "Essa",
+        "start": 4.878,
+        "end": 5.098
+      },
+      {
+        "text": "divisão",
+        "start": 5.098,
+        "end": 5.578
+      },
+      {
+        "text": "se",
+        "start": 5.578,
+        "end": 5.718
+      },
+      {
+        "text": "chama",
+        "start": 5.718,
+        "end": 5.998
+      },
+      {
+        "text": "rateio.",
+        "start": 5.998,
+        "end": 6.678
+      }
+    ]
+  },
+  "s9": {
+    "text": "E tem mais: a gorjeta entra na remuneração, então gera encargos, como INSS e FGTS.",
+    "seconds": 6.548,
+    "words": [
+      {
+        "text": "E",
+        "start": 0,
+        "end": 0.102
+      },
+      {
+        "text": "tem",
+        "start": 0.102,
+        "end": 0.242
+      },
+      {
+        "text": "mais:",
+        "start": 0.242,
+        "end": 0.562
+      },
+      {
+        "text": "a",
+        "start": 0.922,
+        "end": 1.082
+      },
+      {
+        "text": "gorjeta",
+        "start": 1.082,
+        "end": 1.482
+      },
+      {
+        "text": "entra",
+        "start": 1.482,
+        "end": 1.642
+      },
+      {
+        "text": "na",
+        "start": 1.642,
+        "end": 1.822
+      },
+      {
+        "text": "remuneração,",
+        "start": 1.822,
+        "end": 2.562
+      },
+      {
+        "text": "então",
+        "start": 2.842,
+        "end": 3.082
+      },
+      {
+        "text": "gera",
+        "start": 3.082,
+        "end": 3.342
+      },
+      {
+        "text": "encargos,",
+        "start": 3.342,
+        "end": 4.062
+      },
+      {
+        "text": "como",
+        "start": 4.322,
+        "end": 4.542
+      },
+      {
+        "text": "INSS",
+        "start": 4.542,
+        "end": 5.002
+      },
+      {
+        "text": "e",
+        "start": 5.002,
+        "end": 5.442
+      },
+      {
+        "text": "FGTS.",
+        "start": 5.442,
+        "end": 6.002
+      }
+    ]
+  },
+  "s10": {
+    "text": "Por isso, o acordo pode prever que uma parte fique retida pra pagar esses encargos. O resto vai pra equipe.",
+    "seconds": 6.713,
+    "words": [
+      {
+        "text": "Por",
+        "start": 0,
+        "end": 0.109
+      },
+      {
+        "text": "isso,",
+        "start": 0.109,
+        "end": 0.389
+      },
+      {
+        "text": "o",
+        "start": 0.669,
+        "end": 0.769
+      },
+      {
+        "text": "acordo",
+        "start": 0.769,
+        "end": 1.049
+      },
+      {
+        "text": "pode",
+        "start": 1.049,
+        "end": 1.349
+      },
+      {
+        "text": "prever",
+        "start": 1.349,
+        "end": 1.709
+      },
+      {
+        "text": "que",
+        "start": 1.709,
+        "end": 1.849
+      },
+      {
+        "text": "uma",
+        "start": 1.849,
+        "end": 1.969
+      },
+      {
+        "text": "parte",
+        "start": 1.969,
+        "end": 2.229
+      },
+      {
+        "text": "fique",
+        "start": 2.229,
+        "end": 2.549
+      },
+      {
+        "text": "retida",
+        "start": 2.549,
+        "end": 3.009
+      },
+      {
+        "text": "pra",
+        "start": 3.009,
+        "end": 3.169
+      },
+      {
+        "text": "pagar",
+        "start": 3.169,
+        "end": 3.469
+      },
+      {
+        "text": "esses",
+        "start": 3.469,
+        "end": 3.729
+      },
+      {
+        "text": "encargos.",
+        "start": 3.729,
+        "end": 4.429
+      },
+      {
+        "text": "O",
+        "start": 5.149,
+        "end": 5.289
+      },
+      {
+        "text": "resto",
+        "start": 5.289,
+        "end": 5.529
+      },
+      {
+        "text": "vai",
+        "start": 5.529,
+        "end": 5.829
+      },
+      {
+        "text": "pra",
+        "start": 5.829,
+        "end": 5.989
+      },
+      {
+        "text": "equipe.",
+        "start": 5.989,
+        "end": 6.529
+      }
+    ]
+  },
+  "s11": {
+    "text": "E você, cliente, é obrigado a pagar? Não: a taxa é opcional, e você pode pedir pra tirar.",
+    "seconds": 6.813,
+    "words": [
+      {
+        "text": "E",
+        "start": 0,
+        "end": 0.1
+      },
+      {
+        "text": "você,",
+        "start": 0.1,
+        "end": 0.46
+      },
+      {
+        "text": "cliente,",
+        "start": 0.72,
+        "end": 1.46
+      },
+      {
+        "text": "é",
+        "start": 1.64,
+        "end": 1.7
+      },
+      {
+        "text": "obrigado",
+        "start": 1.7,
+        "end": 2.06
+      },
+      {
+        "text": "a",
+        "start": 2.06,
+        "end": 2.24
+      },
+      {
+        "text": "pagar?",
+        "start": 2.24,
+        "end": 2.42
+      },
+      {
+        "text": "Não:",
+        "start": 3.2,
+        "end": 3.56
+      },
+      {
+        "text": "a",
+        "start": 3.94,
+        "end": 4.02
+      },
+      {
+        "text": "taxa",
+        "start": 4.02,
+        "end": 4.3
+      },
+      {
+        "text": "é",
+        "start": 4.3,
+        "end": 4.38
+      },
+      {
+        "text": "opcional,",
+        "start": 4.38,
+        "end": 4.76
+      },
+      {
+        "text": "e",
+        "start": 5.18,
+        "end": 5.24
+      },
+      {
+        "text": "você",
+        "start": 5.24,
+        "end": 5.44
+      },
+      {
+        "text": "pode",
+        "start": 5.44,
+        "end": 5.64
+      },
+      {
+        "text": "pedir",
+        "start": 5.64,
+        "end": 5.94
+      },
+      {
+        "text": "pra",
+        "start": 5.94,
+        "end": 6.14
+      },
+      {
+        "text": "tirar.",
+        "start": 6.14,
+        "end": 6.54
+      }
+    ]
+  },
+  "s12": {
+    "text": "Mas, quando paga, ela chega no salão e na cozinha. Pronto: agora você sabe pra onde vão os dez por cento!",
+    "seconds": 7.353,
+    "words": [
+      {
+        "text": "Mas,",
+        "start": 0,
+        "end": 0.225
+      },
+      {
+        "text": "quando",
+        "start": 0.426,
+        "end": 0.526
+      },
+      {
+        "text": "paga,",
+        "start": 0.526,
+        "end": 1.126
+      },
+      {
+        "text": "ela",
+        "start": 1.366,
+        "end": 1.486
+      },
+      {
+        "text": "chega",
+        "start": 1.486,
+        "end": 1.746
+      },
+      {
+        "text": "no",
+        "start": 1.746,
+        "end": 1.906
+      },
+      {
+        "text": "salão",
+        "start": 1.906,
+        "end": 2.406
+      },
+      {
+        "text": "e",
+        "start": 2.406,
+        "end": 2.606
+      },
+      {
+        "text": "na",
+        "start": 2.606,
+        "end": 2.746
+      },
+      {
+        "text": "cozinha.",
+        "start": 2.746,
+        "end": 3.306
+      },
+      {
+        "text": "Pronto:",
+        "start": 3.826,
+        "end": 4.266
+      },
+      {
+        "text": "agora",
+        "start": 4.506,
+        "end": 4.706
+      },
+      {
+        "text": "você",
+        "start": 4.706,
+        "end": 5.066
+      },
+      {
+        "text": "sabe",
+        "start": 5.066,
+        "end": 5.406
+      },
+      {
+        "text": "pra",
+        "start": 5.406,
+        "end": 5.626
+      },
+      {
+        "text": "onde",
+        "start": 5.626,
+        "end": 5.826
+      },
+      {
+        "text": "vão",
+        "start": 5.826,
+        "end": 6.046
+      },
+      {
+        "text": "os",
+        "start": 6.046,
+        "end": 6.206
+      },
+      {
+        "text": "dez",
+        "start": 6.206,
+        "end": 6.386
+      },
+      {
+        "text": "por",
+        "start": 6.386,
+        "end": 6.606
+      },
+      {
+        "text": "cento!",
+        "start": 6.606,
+        "end": 7.226
+      }
+    ]
+  }
+}
