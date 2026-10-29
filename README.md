@@ -102,6 +102,45 @@ Veja todos os campos em `.env.example`. Os principais:
 3. Leia o QR Code com o celular (WhatsApp → Aparelhos conectados), ou use **Gerar código** se estiver no próprio celular.
 4. Mande uma mensagem de outro número e veja a IA responder.
 
+## 🎬 Produção automática de vídeos para o TikTok
+
+Um comando escolhe o assunto, escreve o roteiro, narra, edita e espera a sua aprovação para postar no TikTok.
+
+- **Nicho:** curiosidades de animais e da natureza, nos 4 formatos que mais viralizaram na pesquisa (veja `docs/modelagem-viral.md`).
+- **Roteiro:** IA da NVIDIA (usa a mesma `NVIDIA_API_KEY`), ou um roteiro pronto da pasta `roteiros/`.
+- **Narração:** edge-tts, vozes grátis em português.
+- **Edição:** ffmpeg, vídeo vertical 1080x1920 com legendas grandes sincronizadas, selo "VOCÊ SABIA?" e barra de progresso. O fundo vem do Pexels (vídeos grátis) se você tiver a chave, ou é um degradê animado.
+- **Aprovação:** o vídeo nunca é postado sem você dizer "s".
+
+### Instalar (Termux ou PC)
+```bash
+pkg install -y python ffmpeg ttf-dejavu     # Termux  (no PC: instale Python 3 e ffmpeg)
+pip install edge-tts
+```
+
+### Usar
+```bash
+npm run acao                                              # 🎬 ação! faz um vídeo novo
+npm run acao -- --roteiro roteiros/01-lagarta-lonomia.json  # usa um roteiro pronto
+npm run acao -- --sim                                     # aprova sozinho e já posta
+npm run postar                                            # posta o último vídeo que ficou esperando
+```
+No fim, ele mostra o caminho do vídeo (no Termux, abre o vídeo sozinho) e pergunta:
+`Aprovar e postar no TikTok? [s] postar  [n] descartar  [Enter] decidir depois`.
+Tudo fica salvo em `data/videos/<data-hora>/` (vídeo, roteiro e status).
+
+### Conectar o TikTok (uma vez só)
+1. Em https://developers.tiktok.com, crie um app e adicione os produtos **Login Kit** e **Content Posting API**, com as permissões `video.upload` e `video.publish`.
+2. Cadastre um **Redirect URI** (pode ser qualquer página sua com https, ex.: `https://seu-dominio.com.br/tiktok/retorno`).
+3. Preencha `TIKTOK_CLIENT_KEY`, `TIKTOK_CLIENT_SECRET` e `TIKTOK_REDIRECT_URI` no `.env`.
+4. Rode `npm run tiktok:login`, abra o link, autorize e cole o endereço para onde o navegador te levou.
+
+**Modos de postagem (`TIKTOK_MODO`):**
+- `rascunho` (padrão, recomendado): o vídeo vai para a caixa de entrada do seu app do TikTok, e você publica com um toque. Dá para colocar um som em alta antes.
+- `publicar`: vai direto para o perfil. **Enquanto o TikTok não aprovar (auditar) o seu app, ele só deixa postar como privado** (`SELF_ONLY`). Depois da auditoria, troque `TIKTOK_PRIVACIDADE` para `PUBLIC_TO_EVERYONE`.
+
+Os vídeos são marcados como feitos com IA (`is_aigc`), como o TikTok exige. Confira os fatos de cada roteiro antes de aprovar.
+
 ## Páginas
 - `/` — site de vendas com os planos
 - `/entrar` — login e cadastro
@@ -124,4 +163,7 @@ src/
   ai.js            IA da NVIDIA
   db.js            banco de dados (SQLite, arquivo em data/)
 public/            páginas do site
+src/videos/        produção de vídeos (acao, roteiro, narração, edição, TikTok)
+roteiros/          roteiros prontos (modelados de vídeos virais)
+docs/              pesquisa de vídeos virais do nicho
 ```
