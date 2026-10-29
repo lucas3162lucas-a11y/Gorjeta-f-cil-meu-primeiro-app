@@ -170,7 +170,11 @@ app.post('/api/config', auth, (req, res) => {
 app.post('/api/whatsapp/conectar', auth, async (req, res) => {
   if (!sub.isActive(req.user)) return res.status(402).json({ error: 'Assine um plano para conectar o WhatsApp' });
   try {
-    res.json(await wa.start(req.user.id));
+    const phone = String(req.body?.phone || '').replace(/\D/g, '');
+    if (phone && (phone.length < 12 || phone.length > 13)) {
+      return res.status(400).json({ error: 'Número com DDI + DDD, ex.: 5511999999999' });
+    }
+    res.json(await wa.start(req.user.id, phone || undefined));
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

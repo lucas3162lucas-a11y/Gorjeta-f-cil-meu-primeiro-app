@@ -47,7 +47,18 @@
         <p><b>No celular:</b> WhatsApp → Configurações → Aparelhos conectados → Conectar aparelho, e leia o código:</p>
         <img id="qr" alt="QR Code do WhatsApp">
       </div>
-      <button class="btn" id="wa-connect">Conectar WhatsApp</button>
+      <div class="qr hidden" id="code-box">
+        <p><b>No celular:</b> WhatsApp → Aparelhos conectados → Conectar aparelho → <b>Conectar com número de telefone</b>, e digite o código:</p>
+        <div id="pair-code" style="font-size:36px;font-weight:800;letter-spacing:6px;margin:12px 0"></div>
+      </div>
+      <div id="wa-options">
+        <button class="btn" id="wa-connect">Conectar com QR Code</button>
+        <p class="hint" style="margin:16px 0 4px">Está no celular e não tem como ler o QR Code? Conecte com um código:</p>
+        <div class="row" style="align-items:end">
+          <div><label for="wa-phone">Número do WhatsApp (com DDI e DDD)</label><input id="wa-phone" inputmode="numeric" placeholder="5511999999999"></div>
+          <div><button class="btn outline" id="wa-code" style="width:100%">Gerar código</button></div>
+        </div>
+      </div>
       <button class="btn danger hidden" id="wa-disconnect">Desconectar</button>
     </section>
 

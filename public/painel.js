@@ -78,7 +78,7 @@ async function load() {
 
 function renderWhatsapp(st) {
   const labels = {
-    connected: ['Conectado', 'ok'], qr: ['Aguardando leitura do QR Code', 'wait'], connecting: ['Conectando...', 'wait'],
+    connected: ['Conectado', 'ok'], qr: ['Aguardando leitura do QR Code', 'wait'], pairing: ['Aguardando o código', 'wait'], connecting: ['Conectando...', 'wait'],
     stopped: ['Pausado', 'off'], closed: ['Reconectando...', 'wait'], disconnected: ['Desconectado', 'off'],
   };
   const [label, cls] = labels[st.state] || ['—', 'off'];
@@ -87,12 +87,17 @@ function renderWhatsapp(st) {
   $('wa-number').textContent = st.number ? `(+${st.number})` : '';
   $('qr-box').classList.toggle('hidden', st.state !== 'qr' || !st.qr);
   if (st.qr) $('qr').src = st.qr;
-  $('wa-connect').classList.toggle('hidden', ['connected', 'qr', 'connecting'].includes(st.state));
+  const code = st.pairingCode && st.pairingCode !== 'gerando' ? st.pairingCode : null;
+  $('code-box').classList.toggle('hidden', st.state !== 'pairing');
+  $('pair-code').textContent = code ? `${code.slice(0, 4)}-${code.slice(4)}` : 'Gerando...';
+  $('wa-options').classList.toggle('hidden', ['connected', 'connecting', 'pairing'].includes(st.state));
+  $('wa-connect').classList.toggle('hidden', st.state === 'qr');
   $('wa-connect').disabled = !me.active;
+  $('wa-code').disabled = !me.active;
   $('wa-disconnect').classList.toggle('hidden', !['connected', 'stopped'].includes(st.state));
 
   clearTimeout(pollTimer);
-  if (['qr', 'connecting', 'closed'].includes(st.state)) {
+  if (['qr', 'connecting', 'closed', 'pairing'].includes(st.state)) {
     pollTimer = setTimeout(async () => renderWhatsapp(await api('/api/whatsapp/status')), 3000);
   }
 }
@@ -115,6 +120,18 @@ $('wa-connect').onclick = async () => {
     alert(e.message);
     $('wa-connect').disabled = false;
   }
+};
+
+$('wa-code').onclick = async () => {
+  const phone = $('wa-phone').value.replace(/\D/g, '');
+  if (phone.length < 12) return alert('Digite o número com DDI 55 + DDD, ex.: 5511999999999');
+  $('wa-code').disabled = true;
+  try {
+    renderWhatsapp(await api('/api/whatsapp/conectar', { phone }));
+  } catch (e) {
+    alert(e.message);
+  }
+  $('wa-code').disabled = false;
 };
 
 $('wa-disconnect').onclick = async () => {

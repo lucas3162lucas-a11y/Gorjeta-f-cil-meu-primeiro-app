@@ -70,6 +70,23 @@ npm start
 
 Para deixar rodando sempre numa VPS: `npm i -g pm2 && pm2 start npm --name zapvendas -- start && pm2 save`.
 
+#### Rodar no celular Android (Termux) — bom para testar
+
+Instale o Termux pelo **F-Droid** ou pelo GitHub do Termux (a versão da Play Store é antiga). Baixe o `zapvendas-ia.zip` para a pasta Downloads e rode:
+
+```bash
+pkg update -y && pkg upgrade -y
+pkg install -y nodejs git unzip nano
+termux-setup-storage          # aceite a permissão de arquivos
+cd ~ && unzip ~/storage/downloads/zapvendas-ia.zip -d zapvendas && cd zapvendas
+cp .env.example .env && nano .env   # preencha e salve: Ctrl+O, Enter, Ctrl+X
+npm install
+termux-wake-lock              # impede o Android de desligar o Termux
+npm start
+```
+
+Abra `http://localhost:3000` no navegador do celular. Para conectar o WhatsApp do próprio celular, use **"Gerar código"** no painel (em vez do QR Code) e digite o código em WhatsApp → Aparelhos conectados → Conectar aparelho → **Conectar com número de telefone**.
+
 ### 4. Configure o `.env`
 Veja todos os campos em `.env.example`. Os principais:
 - `PUBLIC_URL` — endereço do seu site (com https)
@@ -82,7 +99,7 @@ Veja todos os campos em `.env.example`. Os principais:
 ### 5. Teste
 1. Acesse o site, crie uma conta e assine um plano (ou, em `/admin`, clique em **Liberar** na sua própria conta).
 2. No painel, preencha as informações do negócio e clique em **Conectar WhatsApp**.
-3. Leia o QR Code com o celular (WhatsApp → Aparelhos conectados).
+3. Leia o QR Code com o celular (WhatsApp → Aparelhos conectados), ou use **Gerar código** se estiver no próprio celular.
 4. Mande uma mensagem de outro número e veja a IA responder.
 
 ## Páginas

@@ -35,13 +35,18 @@ function getSettings(userId) {
 function status(userId) {
   const bot = bots.get(userId);
   if (!bot) return { state: fs.existsSync(sessionPath(userId)) ? 'stopped' : 'disconnected' };
-  return { state: bot.state, qr: bot.qr || null, number: bot.number || null };
+  return { state: bot.state, qr: bot.qr || null, pairingCode: bot.pairingCode || null, number: bot.number || null };
 }
 
-async function start(userId) {
+// phone: se informado, conecta por código de 8 dígitos (sem QR Code) — ideal no celular.
+async function start(userId, phone) {
   if (!sub.isActive(sub.getUser(userId))) throw new Error('Assinatura inativa');
   const existing = bots.get(userId);
-  if (existing && existing.state !== 'closed') return status(userId);
+  if (existing && existing.state !== 'closed') {
+    if (!phone || existing.state === 'connected') return status(userId);
+    await stop(userId); // troca de QR Code para código de pareamento
+    return start(userId, phone);
+  }
 
   fs.mkdirSync(sessionPath(userId), { recursive: true });
   const { state: auth, saveCreds } = await useMultiFileAuthState(sessionPath(userId));
@@ -49,20 +54,35 @@ async function start(userId) {
 
   const sock = makeWASocket({ auth, logger, version, printQRInTerminal: false, browser: ['ZapVendas IA', 'Chrome', '1.0'] });
   const bot = existing || { sentIds: new Set(), queues: new Map(), offHoursSent: new Map() };
-  Object.assign(bot, { sock, state: 'connecting', qr: null });
+  Object.assign(bot, { sock, state: 'connecting', qr: null, pairingCode: null });
+  if (phone) bot.pairPhone = phone;
   bots.set(userId, bot);
 
   sock.ev.on('creds.update', saveCreds);
 
   sock.ev.on('connection.update', async ({ connection, lastDisconnect, qr }) => {
     if (bots.get(userId)?.sock !== sock) return;
-    if (qr) {
+    if (qr && bot.pairPhone) {
+      if (!bot.pairingCode) {
+        bot.state = 'pairing';
+        bot.pairingCode = 'gerando';
+        try {
+          bot.pairingCode = await sock.requestPairingCode(bot.pairPhone);
+        } catch (e) {
+          console.error('[wa] código de pareamento:', e.message);
+          bot.pairingCode = null;
+          bot.pairPhone = null;
+        }
+      }
+    } else if (qr) {
       bot.state = 'qr';
       bot.qr = await QRCode.toDataURL(qr);
     }
     if (connection === 'open') {
       bot.state = 'connected';
       bot.qr = null;
+      bot.pairingCode = null;
+      bot.pairPhone = null;
       bot.number = (sock.user?.id || '').split(':')[0].split('@')[0];
       console.log(`[wa] usuário ${userId} conectado (${bot.number})`);
     }
