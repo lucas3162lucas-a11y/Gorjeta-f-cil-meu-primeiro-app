@@ -125,3 +125,7 @@ src/
   db.js            banco de dados (SQLite, arquivo em data/)
 public/            páginas do site
 ```
+
+## Sala Broadcast (você + vários Claudes)
+
+Veja [`broadcast/README.md`](broadcast/README.md): sala WebSocket onde suas mensagens chegam a todos os Claudes, eles se ouvem entre si e podem disparar lotes de edição de vídeo.

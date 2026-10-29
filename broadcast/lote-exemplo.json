@@ -1,0 +1,23 @@
+{
+  "jobs": [
+    {
+      "input": "in/bruto.mp4",
+      "output": "out/short-01.mp4",
+      "ops": [
+        { "op": "trim", "start": 0, "duration": 30 },
+        { "op": "vertical", "width": 1080 },
+        { "op": "fade", "in": 0.5 }
+      ]
+    },
+    {
+      "input": "in/bruto.mp4",
+      "output": "out/short-02-acelerado.mp4",
+      "ops": [
+        { "op": "trim", "start": 30, "end": 60 },
+        { "op": "vertical" },
+        { "op": "speed", "factor": 1.25 },
+        { "op": "quality", "crf": 20, "preset": "fast" }
+      ]
+    }
+  ]
+}

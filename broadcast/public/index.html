@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sala Broadcast</title>
+<style>
+  :root { --bg:#0f1115; --panel:#181b22; --text:#e7e9ee; --muted:#8a91a0; --human:#4f8cff; --claude:#d97757; --worker:#3fb37f; --line:#262a33; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.45 system-ui, sans-serif; background:var(--bg); color:var(--text); display:flex; flex-direction:column; height:100dvh; }
+  header { padding:10px 16px; border-bottom:1px solid var(--line); display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:16px; margin:0; }
+  #status { font-size:13px; color:var(--muted); }
+  #peers { font-size:13px; color:var(--muted); margin-left:auto; }
+  main { flex:1; overflow-y:auto; padding:12px 16px; }
+  .msg { margin:0 0 10px; padding:8px 12px; background:var(--panel); border-left:3px solid var(--muted); border-radius:6px; white-space:pre-wrap; word-break:break-word; }
+  .msg.human { border-color:var(--human); } .msg.claude { border-color:var(--claude); } .msg.worker { border-color:var(--worker); }
+  .msg.system { background:none; border:none; padding:2px 12px; color:var(--muted); font-size:13px; }
+  .meta { font-size:12px; color:var(--muted); margin-bottom:2px; }
+  .meta b { color:var(--text); }
+  .tag { font-size:11px; padding:1px 6px; border-radius:4px; background:var(--line); margin-left:6px; }
+  pre { margin:6px 0 0; font-size:12px; color:var(--muted); overflow-x:auto; }
+  form { display:flex; gap:8px; padding:10px 16px; border-top:1px solid var(--line); }
+  input, textarea, button { font:inherit; color:var(--text); background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:8px 10px; }
+  #name { width:120px; }
+  textarea { flex:1; resize:none; height:42px; }
+  button { cursor:pointer; background:var(--human); border-color:var(--human); color:#fff; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Sala Broadcast</h1>
+  <span id="status">conectando…</span>
+  <span id="peers"></span>
+</header>
+<main id="log"></main>
+<form id="form">
+  <input id="name" placeholder="seu nome" value="lucas">
+  <textarea id="text" placeholder="Mensagem para todos (Enter envia, Shift+Enter quebra linha)"></textarea>
+  <button>Enviar</button>
+</form>
+<script>
+const log = document.getElementById('log');
+const statusEl = document.getElementById('status');
+const peersEl = document.getElementById('peers');
+const nameEl = document.getElementById('name');
+const textEl = document.getElementById('text');
+const params = new URLSearchParams(location.search);
+try { nameEl.value = localStorage.getItem('sala-nome') || nameEl.value; } catch {}
+let ws, lastId = 0;
+const online = new Set();
+
+function render(m) {
+  if (!m.id || m.id <= lastId) return;
+  lastId = m.id;
+  const div = document.createElement('div');
+  div.className = 'msg ' + (m.role || '');
+  if (m.type === 'system') {
+    div.textContent = m.text;
+    const g = /^(.+?) \(.+\) entrou na sala$/.exec(m.text), s = /^(.+?) saiu da sala$/.exec(m.text);
+    if (g) online.add(g[1]); if (s) online.delete(s[1]);
+    peersEl.textContent = online.size ? 'online: ' + [...online].join(', ') : '';
+  } else {
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    const who = document.createElement('b'); who.textContent = m.from;
+    meta.append(who, ` · ${m.role} · ${new Date(m.ts).toLocaleTimeString()} · #${m.id}`);
+    if (m.to) meta.append(` → @${m.to}`);
+    if (m.type !== 'chat') { const t = document.createElement('span'); t.className = 'tag'; t.textContent = m.type; meta.append(t); }
+    div.append(meta, document.createTextNode(m.text));
+    if (m.payload) { const pre = document.createElement('pre'); pre.textContent = JSON.stringify(m.payload, null, 2); div.append(pre); }
+  }
+  const atBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 60;
+  log.append(div);
+  if (atBottom) log.scrollTop = log.scrollHeight;
+}
+
+function connect() {
+  const u = new URL('/ws', location.href);
+  u.protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  u.searchParams.set('name', nameEl.value.trim() || 'lucas');
+  u.searchParams.set('role', 'human');
+  u.searchParams.set('since', lastId);
+  if (params.get('token')) u.searchParams.set('token', params.get('token'));
+  ws = new WebSocket(u);
+  ws.onopen = () => { statusEl.textContent = 'conectado como ' + (nameEl.value.trim() || 'lucas'); };
+  ws.onmessage = (e) => {
+    const m = JSON.parse(e.data);
+    if (m.type === 'welcome') { online.clear(); m.peers.forEach(p => online.add(p.name)); m.history.forEach(render); peersEl.textContent = 'online: ' + [...online].join(', '); }
+    else if (m.type === 'error') alert(m.error);
+    else render(m);
+  };
+  ws.onclose = () => { statusEl.textContent = 'desconectado — tentando de novo…'; setTimeout(connect, 2000); };
+}
+
+document.getElementById('form').onsubmit = (e) => {
+  e.preventDefault();
+  const text = textEl.value.trim();
+  if (!text || ws.readyState !== 1) return;
+  ws.send(JSON.stringify({ text }));
+  textEl.value = '';
+};
+textEl.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); e.target.form.requestSubmit(); } };
+nameEl.onchange = () => { try { localStorage.setItem('sala-nome', nameEl.value.trim()); } catch {} ws.close(); };
+connect();
+</script>
+</body>
+</html>

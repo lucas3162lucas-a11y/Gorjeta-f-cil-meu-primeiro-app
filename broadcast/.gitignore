@@ -1,0 +1,6 @@
+node_modules/
+data/
+media/in/*
+media/out/*
+!media/in/.gitkeep
+!media/out/.gitkeep
