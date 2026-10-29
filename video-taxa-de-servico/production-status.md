@@ -1,33 +1,31 @@
 # Status de produção: "Pra onde vão os 10% da sua conta?"
 
-**Fase atual:** Fase 1 concluída. **AGUARDANDO APROVAÇÃO.** A implementação e a renderização ainda não
-começaram.
+**Fase atual:** CONCLUÍDO (Fase 2). O MP4 final foi renderizado e medido.
 
 | Item | Valor |
 | --- | --- |
-| Versão do roteiro | v1 (29/10/2026) |
-| Skill | `remotion-problem-resolve-video`, enviada pelo usuário em .zip |
-| Tema | Taxa de serviço (10%) em restaurantes no Brasil, escolhido pelo usuário ("Pode fazer" em resposta às sugestões) |
-| Formato | 90 s, 1080 × 1920, 30 fps, 2700 frames, pt-BR |
-| TTS planejado | edge-tts (gratuito), `pt-BR-AntonioNeural`, +5%. Voz paga só com autorização |
-| Roteiro | `video-taxa-de-servico/roteiro.md` |
-| Scene plan | `video-taxa-de-servico/scene-plan.ts` (12 cenas) |
+| Roteiro aprovado | v1, "aprovado, pode gerar" (29/10/2026) |
+| Vídeo final | `out/taxa-de-servico.mp4` (fora do git; regerar com o README) |
+| Formato medido | H.264 1080 × 1920, 30 fps, 2700 frames, 90,00 s; áudio AAC 48 kHz estéreo |
+| Loudness medido | −14,0 LUFS integrado, pico −1,4 dBFS (após `scripts/loudnorm.py`) |
+| Voz | Piper `pt_BR-faber-medium` (gratuito, offline); 77,0 s de fala, ~164 palavras/min |
+| Render | `npx remotion render TaxaDeServico ... --gl=swangle --concurrency=4 --crf=17` (CPU, sem GPU) |
 
-## Verificações já feitas na Fase 1
+## Verificações feitas
 
-- `scene-plan.ts` compilou com `tsc --strict` junto com `utils/animation.ts` e `utils/timing.ts` do
-  template, configurados como no cabeçalho do arquivo (o pacote `remotion` foi substituído por um stub).
-- A verificação de integridade passou: 12 cenas contíguas, começando no frame 0 e somando 2700 frames.
-  Todos os badges ficam dentro das suas cenas.
-- Nenhum áudio, imagem ou vídeo foi gerado. Todos os `audioCues` estão como `planned`.
+- `tsc --noEmit` e `eslint src` sem erros.
+- Integridade da timeline: 12 cenas contíguas somando 2700 frames.
+- Três rodadas de stills e folhas de contato revisadas, com correções de enquadramento, oclusão do
+  meio-muro, legendas e posição das etiquetas.
+- `ffprobe` no MP4 final e frames extraídos do próprio MP4 conferidos.
+- Áudio medido por segundo (`audiocheck.py`) e normalizado. O agente **não ouve** o áudio: a qualidade
+  da voz e da mixagem não foi avaliada de ouvido.
 
-## Pendências
+## Pendências recomendadas
 
-- [ ] Aprovação do usuário para a v1, ou pedido de ajustes.
-- [ ] Recomendado: revisão jurídica das cenas 6, 8 e 10 (situação atual dos §§ do art. 457 da CLT após
-      a Lei 13.467/2017 e a caducidade da MP 808/2017).
-- [ ] Fase 2: criar o projeto Remotion, gerar a narração, montar o diorama, renderizar e verificar.
+- Revisão jurídica das cenas 6, 8 e 10 antes de publicar (ver `roteiro.md`, seção 5).
+- Ouvir o vídeo inteiro e conferir a pronúncia da voz sintetizada (ex.: "INSS", "FGTS").
 
 ## Registro de aprovação
 
-_(vazio: nenhuma aprovação recebida até agora)_
+- v1 aprovada pelo usuário na mensagem "aprovado, pode gerar".
