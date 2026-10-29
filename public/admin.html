@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin — ZapVendas IA</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a class="logo" href="/">ZapVendas <span>IA</span> · Admin</a>
+      <a class="btn small ghost" href="/painel">Meu painel</a>
+    </div>
+  </header>
+
+  <main class="wrap" style="padding-top:24px">
+    <section class="card">
+      <h2>Resumo</h2>
+      <div class="stats">
+        <div class="stat"><div class="l">Clientes ativos</div><div class="v" id="active">—</div></div>
+        <div class="stat"><div class="l">Faturamento mensal (MRR)</div><div class="v" id="mrr">—</div></div>
+        <div class="stat"><div class="l">Cadastros</div><div class="v" id="total">—</div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Clientes</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Nome</th><th>E-mail</th><th>Plano</th><th>Situação</th><th>Pago até</th><th>Uso</th><th>WhatsApp</th><th>Ações</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p class="hint">"Liberar" adiciona 30 dias manualmente (ex.: cliente pagou por Pix direto para você).</p>
+    </section>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    const post = (url, body) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+
+    async function load() {
+      const res = await fetch('/api/admin/clientes');
+      if (res.status === 401) return (location.href = '/entrar');
+      if (!res.ok) return (document.querySelector('main').innerHTML = '<div class="alert bad">Acesso apenas para o administrador.</div>');
+      const data = await res.json();
+      $('active').textContent = data.activeCount;
+      $('mrr').textContent = `R$ ${data.mrr.toFixed(2).replace('.', ',')}`;
+      $('total').textContent = data.users.length;
+      $('rows').innerHTML = data.users.map((u) => `
+        <tr>
+          <td>${esc(u.name)}</td>
+          <td>${esc(u.email)}</td>
+          <td>${esc(u.plan || '—')}</td>
+          <td><span class="status ${u.active ? 'ok' : 'off'}">${u.active ? 'Ativo' : 'Inativo'}</span> <span class="hint">${esc(u.status)}</span></td>
+          <td>${u.paid_until ? new Date(u.paid_until).toLocaleDateString('pt-BR') : '—'}</td>
+          <td>${u.usage}</td>
+          <td>${esc(u.whatsapp)}</td>
+          <td style="white-space:nowrap">
+            <select data-plan="${u.id}">
+              <option value="simple">Simple</option>
+              <option value="plus" ${u.plan === 'plus' ? 'selected' : ''}>Plus</option>
+              <option value="pro" ${u.plan === 'pro' ? 'selected' : ''}>Pro</option>
+            </select>
+            <button class="btn small" data-free="${u.id}">Liberar</button>
+            <button class="btn small danger" data-block="${u.id}">Bloquear</button>
+          </td>
+        </tr>`).join('');
+    }
+
+    $('rows').onclick = async (e) => {
+      const free = e.target.dataset.free;
+      const block = e.target.dataset.block;
+      if (free) {
+        const plan = document.querySelector(`[data-plan="${free}"]`).value;
+        if (!confirm(`Liberar 30 dias do plano ${plan}?`)) return;
+        await post('/api/admin/liberar', { userId: Number(free), plan });
+      } else if (block) {
+        if (!confirm('Bloquear este cliente agora?')) return;
+        await post('/api/admin/bloquear', { userId: Number(block) });
+      } else return;
+      load();
+    };
+
+    load();
+  </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ZapVendas IA — Atendente de IA para seu WhatsApp</title>
+  <meta name="description" content="Uma inteligência artificial que atende e vende no seu WhatsApp 24 horas por dia.">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a class="logo app-name" href="/">ZapVendas <span>IA</span></a>
+      <a class="btn small outline" href="/entrar">Entrar</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>Sua loja vendendo no <em>WhatsApp</em> 24 horas, com Inteligência Artificial</h1>
+      <p>A IA responde seus clientes na hora, tira dúvidas, passa preços e leva até a compra — enquanto você cuida do resto.</p>
+      <a class="btn" href="#planos">Ver planos</a>
+    </section>
+
+    <div class="steps">
+      <div class="step"><span class="n">1</span><b>Escolha o plano</b>Assinatura mensal, sem fidelidade. Cancele quando quiser.</div>
+      <div class="step"><span class="n">2</span><b>Conte sobre seu negócio</b>Produtos, preços, horários e dúvidas frequentes.</div>
+      <div class="step"><span class="n">3</span><b>Leia o QR Code</b>Conecte seu WhatsApp em 1 minuto, igual ao WhatsApp Web.</div>
+      <div class="step"><span class="n">4</span><b>Pronto!</b>A IA começa a atender e vender por você.</div>
+    </div>
+
+    <h2 class="center" id="planos">Escolha seu plano</h2>
+    <p class="center">Pagamento mensal • Sem plano anual • Sem fidelidade</p>
+    <div class="plans" id="plans"></div>
+  </main>
+
+  <footer>© <span id="year"></span> <span class="app-name-text">ZapVendas IA</span> — Atendimento com IA para WhatsApp</footer>
+
+  <script>
+    const fmt = (v) => v.toFixed(2).replace('.', ',');
+    document.getElementById('year').textContent = new Date().getFullYear();
+    fetch('/api/planos').then((r) => r.json()).then(({ appName, plans }) => {
+      document.querySelectorAll('.app-name-text').forEach((el) => (el.textContent = appName));
+      document.getElementById('plans').innerHTML = plans.map((p) => `
+        <div class="plan ${p.recommended ? 'recommended' : ''}">
+          ${p.recommended ? '<span class="badge">⭐ RECOMENDADO</span>' : ''}
+          <h3>${p.name}</h3>
+          <div class="price">R$ ${fmt(p.price)} <small>/mês</small></div>
+          <div class="note">Cobrança mensal</div>
+          <ul>${p.features.map((f) => `<li>${f}</li>`).join('')}</ul>
+          <a class="btn ${p.recommended ? '' : 'outline'}" href="/entrar?plano=${p.id}&cadastro=1">Assinar ${p.name}</a>
+        </div>`).join('');
+    });
+  </script>
+</body>
+</html>

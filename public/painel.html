@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel — ZapVendas IA</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a class="logo" href="/">ZapVendas <span>IA</span></a>
+      <div>
+        <a class="btn small ghost hidden" id="admin-link" href="/admin">Admin</a>
+        <button class="btn small ghost" id="logout">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap" style="padding-top:24px">
+    <h1 style="margin-top:0">Olá, <span id="user-name"></span> 👋</h1>
+    <div id="alert"></div>
+
+    <!-- Assinatura -->
+    <section class="card">
+      <h2>Sua assinatura</h2>
+      <div class="stats">
+        <div class="stat"><div class="l">Plano</div><div class="v" id="plan-name">—</div></div>
+        <div class="stat"><div class="l">Situação</div><div class="v" id="sub-status">—</div></div>
+        <div class="stat"><div class="l">Pago até</div><div class="v" id="paid-until">—</div></div>
+        <div class="stat">
+          <div class="l">Respostas da IA este mês</div>
+          <div class="v" id="usage">—</div>
+          <div class="bar"><div id="usage-bar" style="width:0"></div></div>
+        </div>
+      </div>
+      <h3 style="margin:24px 0 8px">Assinar / trocar de plano</h3>
+      <div class="hint" style="margin-bottom:12px">Pagamento mensal. Se o pagamento não for feito, o robô para de responder automaticamente.</div>
+      <div class="row" id="plan-buttons"></div>
+    </section>
+
+    <!-- WhatsApp -->
+    <section class="card" id="wa-card">
+      <h2>Conectar WhatsApp</h2>
+      <p>Situação: <span class="status" id="wa-status">—</span> <span id="wa-number"></span></p>
+      <div class="qr hidden" id="qr-box">
+        <p><b>No celular:</b> WhatsApp → Configurações → Aparelhos conectados → Conectar aparelho, e leia o código:</p>
+        <img id="qr" alt="QR Code do WhatsApp">
+      </div>
+      <button class="btn" id="wa-connect">Conectar WhatsApp</button>
+      <button class="btn danger hidden" id="wa-disconnect">Desconectar</button>
+    </section>
+
+    <!-- Configuração da IA -->
+    <section class="card">
+      <h2>Treine sua IA</h2>
+      <form id="config">
+        <label class="check"><input type="checkbox" id="bot_enabled"> IA ligada (respondendo clientes)</label>
+        <div class="row">
+          <div><label for="business_name">Nome do negócio</label><input id="business_name" maxlength="120"></div>
+          <div><label for="tone">Jeito de falar</label><input id="tone" maxlength="100" placeholder="simpático e direto"></div>
+        </div>
+        <label for="about">Sobre o negócio (o que vende, endereço, entrega, formas de pagamento, dúvidas frequentes)</label>
+        <textarea id="about" rows="7" placeholder="Ex.: Somos a Doces da Ana, fazemos bolos e docinhos sob encomenda em São Paulo. Entregamos na zona sul com taxa de R$ 10. Aceitamos Pix e cartão. Encomendas com 2 dias de antecedência..."></textarea>
+
+        <div data-feature="catalog">
+          <label for="catalog">Produtos e preços <span class="locked-tag hidden">Plus e Pro</span></label>
+          <textarea id="catalog" rows="7" placeholder="Bolo de chocolate (1kg) — R$ 70&#10;Cento de brigadeiro — R$ 120&#10;..."></textarea>
+        </div>
+
+        <div data-feature="businessHours">
+          <label class="check"><input type="checkbox" id="hours_enabled"> Usar horário de atendimento <span class="locked-tag hidden">Plus e Pro</span></label>
+          <div class="row">
+            <div><label for="hours_start">Abre</label><input id="hours_start" type="time"></div>
+            <div><label for="hours_end">Fecha</label><input id="hours_end" type="time"></div>
+            <div><label for="hours_days">Dias</label>
+              <select id="hours_days">
+                <option value="1,2,3,4,5">Segunda a sexta</option>
+                <option value="1,2,3,4,5,6">Segunda a sábado</option>
+                <option value="0,1,2,3,4,5,6">Todos os dias</option>
+              </select>
+            </div>
+          </div>
+          <label for="off_hours_message">Mensagem fora do horário</label>
+          <input id="off_hours_message" maxlength="500">
+        </div>
+
+        <div data-feature="handoffKeyword">
+          <label for="owner_phone">Seu WhatsApp para avisos de "quero falar com atendente" <span class="locked-tag hidden">Pro</span></label>
+          <input id="owner_phone" placeholder="5511999999999">
+          <div class="hint">Com DDI e DDD, só números.</div>
+        </div>
+
+        <div class="error" id="config-msg"></div>
+        <button class="btn">Salvar</button>
+      </form>
+    </section>
+
+    <!-- Conversas (Pro) -->
+    <section class="card hidden" id="history-card">
+      <h2>Conversas recentes</h2>
+      <div id="history"></div>
+    </section>
+  </main>
+
+  <script src="/painel.js"></script>
+</body>
+</html>
