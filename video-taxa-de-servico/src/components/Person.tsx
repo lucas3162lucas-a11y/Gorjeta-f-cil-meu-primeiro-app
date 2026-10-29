@@ -24,6 +24,8 @@ export type PersonProps = {
   glow?: number;
   glowColor?: string;
   scale?: number;
+  /** sorriso (usado na foto de perfil) */
+  smile?: boolean;
 };
 
 const Limb: React.FC<{ pivot: Vec3; angle: number; spread?: number; len: number; r: number; color: string; hand?: string }> = ({ pivot, angle, spread = 0, len, r, color, hand }) => (
@@ -59,6 +61,7 @@ export const Person: React.FC<PersonProps> = ({
   glow = 0,
   glowColor = PALETTE.gold,
   scale = 1,
+  smile = false,
 }) => {
   if (scale <= 0.001) return null;
   const hip = seated ? 0.5 : 0.78;
@@ -118,6 +121,12 @@ export const Person: React.FC<PersonProps> = ({
             <meshStandardMaterial color="#1b1b1b" />
           </mesh>
         ))}
+        {smile ? (
+          <mesh position={[0.15, -0.04, 0]} rotation={[0, Math.PI / 2, Math.PI]}>
+            <torusGeometry args={[0.055, 0.014, 6, 12, Math.PI]} />
+            <meshStandardMaterial color="#5a1f1f" />
+          </mesh>
+        ) : null}
         {hat === "chef" ? (
           <mesh position={[0, 0.22, 0]} castShadow>
             <cylinderGeometry args={[0.16, 0.13, 0.22, 8]} />
