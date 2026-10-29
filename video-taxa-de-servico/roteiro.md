@@ -2,7 +2,8 @@
 
 > **Versão:** v1 (Fase 1), criada em 29/10/2026. **Origem:** roteiro escrito pelo agente a partir do tema
 > escolhido pelo usuário ("como funciona a taxa de serviço de 10% num restaurante").
-> **Situação:** AGUARDANDO APROVAÇÃO. A implementação e a renderização ainda não começaram.
+> **Situação:** APROVADO pelo usuário ("aprovado, pode gerar") em 29/10/2026. Fase 2 executada; os
+> ajustes técnicos estão na seção 7. O texto da narração e a ordem das cenas não mudaram.
 >
 > **Convenção de tempo:** os timestamps estão em MM:SS:FF a 30 fps, com FF de 00 a 29. Os frames usam
 > intervalo semiaberto [início, fim): o último frame de uma cena é o primeiro da cena seguinte. Todos os
@@ -152,3 +153,24 @@ exatamente os tipos `VideoConfig` e `ScenePlan` do template, então na Fase 2 vi
 - [x] `scene-plan.ts` com as mesmas 12 cenas, as mesmas falas e os mesmos tempos da tabela.
 - [x] Nenhum asset dado como existente: todos os `audioCues` estão como `planned`.
 - [ ] **Ainda não feito:** nenhum render, build, TTS, audição ou validação visual. Isso fica para a Fase 2.
+
+## 7. Ajustes técnicos da Fase 2 (sem mudança de conteúdo)
+
+- **Voz:** o edge-tts não funciona neste ambiente (a rede bloqueia WebSocket). Em seu lugar usei o
+  **Piper** (`pt_BR-faber-medium`), que é gratuito, roda offline e tem licença aberta. O Piper não
+  devolve o tempo de cada palavra, então os tempos vieram de um alinhamento com faster-whisper: as
+  211 palavras do roteiro foram casadas com o áudio. A fala medida soma 77,0 s (~164 palavras/min).
+- **Cortes realinhados à voz:** as pausas entre as falas são de 0,9 s. Duração de cada cena (s):
+  7,07 · 6,43 · 7,67 · 7,90 · 6,37 · 7,83 · 6,03 · 7,70 · 7,43 · 7,60 · 7,73 · 10,23, somando
+  exatamente 90 s (2700 frames).
+- **Cenário:** o meio-muro da cozinha ficou com 1 m de altura (balcão de passagem), para não tapar a
+  câmera. O pote e o caixa trocaram de lado no balcão. A conta flutua à esquerda do balcão. A placa de
+  aviso foi para a parede da esquerda. O holerite fica ao lado do garçom, com as etiquetas INSS e FGTS
+  embaixo. O cofre de encargos fica entre o balcão e o disco do rateio.
+- **Câmera:** os planos do balcão (cenas 3 a 6) ficaram mais altos (18–26°) e o garçom sai de quadro
+  nessas cenas (trilha `waiter.walk`), voltando na cena 7. A vista de cima das cenas 7, 8 e 10 passou
+  a olhar ao longo do eixo salão → cozinha (azimute −90°), para caber o garçom, a cozinheira e o
+  ajudante no quadro vertical.
+- **Conta:** some nas cenas 7 e 8 (vista de cima) e volta na cena 11, quando vai até a mesa do cliente
+  (trilha `bill.atTable`). Na conta, o total é calculado a partir do percentual e do interruptor.
+- **Fonte:** Montserrat (OFL), servida localmente de `public/fonts/`.
