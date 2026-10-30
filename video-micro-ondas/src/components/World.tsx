@@ -138,7 +138,8 @@ const Molecules: React.FC<{ pop: number; shake: number; heat: number; out: numbe
       {Array.from({ length: 9 }).map((_, i) => {
         const gx = ((i % 3) - 1) * 0.16;
         const gy = (Math.floor(i / 3) - 1) * 0.13;
-        const rot = shake * 0.9 * Math.sin(frame * 1.35 + i * 1.1);
+        // balanço visível e lento (~1,5 Hz): o real é bilhões de vezes por segundo, mas tremer rápido na tela cansa
+        const rot = shake * 0.75 * Math.sin(frame * 0.32 + i * 1.1);
         return (
           <group key={i} position={[gx, gy, 0.02 * (i % 2)]} rotation={[0, 0, rot]}>
             <mesh>
