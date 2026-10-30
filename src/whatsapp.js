@@ -8,6 +8,7 @@ const {
   useMultiFileAuthState,
   DisconnectReason,
   fetchLatestBaileysVersion,
+  Browsers,
 } = require('@whiskeysockets/baileys');
 
 const db = require('./db');
@@ -49,10 +50,17 @@ async function start(userId, phone) {
   }
 
   fs.mkdirSync(sessionPath(userId), { recursive: true });
-  const { state: auth, saveCreds } = await useMultiFileAuthState(sessionPath(userId));
+  let { state: auth, saveCreds } = await useMultiFileAuthState(sessionPath(userId));
+  // Tentativa anterior de pareamento que não terminou deixa dados velhos: começa do zero.
+  if (phone && !auth.creds.registered) {
+    fs.rmSync(sessionPath(userId), { recursive: true, force: true });
+    fs.mkdirSync(sessionPath(userId), { recursive: true });
+    ({ state: auth, saveCreds } = await useMultiFileAuthState(sessionPath(userId)));
+  }
   const { version } = await fetchLatestBaileysVersion().catch(() => ({ version: undefined }));
 
-  const sock = makeWASocket({ auth, logger, version, printQRInTerminal: false, browser: ['ZapVendas IA', 'Chrome', '1.0'] });
+  // O WhatsApp só aceita conexão por código com um navegador "conhecido" (Chrome no Mac).
+  const sock = makeWASocket({ auth, logger, version, printQRInTerminal: false, browser: Browsers.macOS('Chrome') });
   const bot = existing || { sentIds: new Set(), queues: new Map(), offHoursSent: new Map() };
   Object.assign(bot, { sock, state: 'connecting', qr: null, pairingCode: null });
   if (phone) {
