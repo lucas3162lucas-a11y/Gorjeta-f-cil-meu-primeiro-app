@@ -58,7 +58,7 @@ Para mudar preços, limites ou o que cada plano tem: edite `src/plans.js`.
 O sistema identifica quem pagou pelo código `callback` que vai no link de checkout (ou, se não vier, pelo e-mail). Por isso, oriente o cliente a pagar pelo botão do painel e com o mesmo e-mail da conta.
 
 ### 3. Servidor
-Precisa de um servidor ligado 24h com disco permanente (o WhatsApp de cada cliente fica salvo na pasta `data/`). Opções: VPS (Hostinger, Contabo, DigitalOcean, Oracle Cloud grátis), Railway ou Render com volume persistente. Precisa de **Node.js 22.5 ou mais novo** e **HTTPS** (o webhook da Cakto exige).
+Precisa de um servidor ligado 24h com disco permanente (o WhatsApp de cada cliente fica salvo na pasta `data/`). Opções: VPS (Hostinger, Contabo, DigitalOcean, Oracle Cloud grátis), Railway ou Render com volume persistente. Precisa de **Node.js 22.12 ou mais novo** e **HTTPS** (o webhook da Cakto exige).
 
 ```bash
 git clone <este repositório>

@@ -16,13 +16,13 @@
   },
   "homepage": "https://github.com/lucas3162lucas-a11y/Gorjeta-f-cil-meu-primeiro-app#readme",
   "dependencies": {
-    "@whiskeysockets/baileys": "^6.7.24",
+    "@whiskeysockets/baileys": "7.0.0-rc14",
     "express": "^5.3.0",
     "pino": "^10.4.0",
     "qrcode": "^1.5.4"
   },
   "engines": {
-    "node": ">=22.5"
+    "node": ">=22.12"
   },
   "private": true
 }
