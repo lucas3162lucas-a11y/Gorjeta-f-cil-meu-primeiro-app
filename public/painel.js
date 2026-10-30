@@ -158,6 +158,145 @@ $('config').onsubmit = async (e) => {
   }
 };
 
+// ---------- Achadinhos automáticos ----------
+let dealsConfig;
+
+function setGroupOptions(groups, selected) {
+  const opts = groups.map((g) => `<option value="${esc(g.jid)}">${esc(g.name)}${g.size ? ` (${g.size})` : ''}</option>`);
+  if (selected?.jid && !groups.some((g) => g.jid === selected.jid)) {
+    opts.unshift(`<option value="${esc(selected.jid)}">${esc(selected.name || selected.jid)}</option>`);
+  }
+  $('d_group').innerHTML = '<option value="">— escolha o grupo —</option>' + opts.join('');
+  $('d_group').value = selected?.jid || '';
+}
+
+async function loadDeals() {
+  const data = await api('/api/achadinhos');
+  dealsConfig = data.config;
+  const c = data.config;
+  $('d_enabled').checked = !!c.enabled;
+  $('d_interval').value = c.interval_min;
+  $('d_interval').min = data.minInterval;
+  $('d_start').value = c.hours_start;
+  $('d_end').value = c.hours_end;
+  $('d_repeat').checked = !!c.repeat_queue;
+  if (c.group_jid) setGroupOptions([], { jid: c.group_jid, name: c.group_name });
+
+  const pending = data.deals.filter((d) => d.status === 'pending').length;
+  $('d_next').textContent = `(${pending} na fila${c.last_sent_at ? ` · último envio ${new Date(c.last_sent_at).toLocaleString('pt-BR')}` : ''})`;
+  const labels = { pending: ['Na fila', 'wait'], sent: ['Enviado', 'ok'], error: ['Erro', 'off'] };
+  $('deals-list').innerHTML = data.deals.length ? data.deals.map((d) => {
+    const [label, cls] = labels[d.status] || ['—', 'off'];
+    return `<div class="deal" data-id="${d.id}">
+      <div class="deal-head"><b>${esc(d.title)}${d.price ? ` — ${esc(d.price)}` : ''}</b>
+        <span class="status ${cls}">${label}${d.sent_count ? ` · ${d.sent_count}x` : ''}</span></div>
+      <div class="link">${esc(d.link)}</div>
+      ${d.error ? `<div class="error" style="min-height:0">${esc(d.error)}</div>` : ''}
+      <textarea class="hidden" maxlength="4000"></textarea>
+      <div class="actions">
+        <button class="btn small outline" data-act="preview">Ver texto</button>
+        <button class="btn small outline hidden" data-act="regen">Gerar outro texto</button>
+        <button class="btn small outline hidden" data-act="save">Salvar texto</button>
+        <button class="btn small" data-act="send">Enviar agora</button>
+        <button class="btn small ghost" data-act="remove">Remover</button>
+      </div>
+    </div>`;
+  }).join('') : '<p class="hint">Nenhum produto ainda. Adicione o primeiro acima 👆</p>';
+}
+
+$('d_load_groups').onclick = async () => {
+  $('d_load_groups').disabled = true;
+  try {
+    const groups = await api('/api/achadinhos/grupos');
+    setGroupOptions(groups, dealsConfig?.group_jid ? { jid: dealsConfig.group_jid, name: dealsConfig.group_name } : null);
+    if (!groups.length) alert('Esse número não está em nenhum grupo.');
+  } catch (e) {
+    alert(e.message);
+  }
+  $('d_load_groups').disabled = false;
+};
+
+$('deals-config').onsubmit = async (e) => {
+  e.preventDefault();
+  const sel = $('d_group').selectedOptions[0];
+  try {
+    if ($('d_enabled').checked && !$('d_group').value) throw new Error('Escolha o grupo');
+    await api('/api/achadinhos/config', {
+      enabled: $('d_enabled').checked,
+      group_jid: $('d_group').value,
+      group_name: sel && sel.value ? sel.textContent.replace(/ \(\d+\)$/, '') : '',
+      interval_min: $('d_interval').value,
+      hours_start: $('d_start').value,
+      hours_end: $('d_end').value,
+      repeat_queue: $('d_repeat').checked,
+    });
+    $('d_config_msg').style.color = 'var(--green-dark)';
+    $('d_config_msg').textContent = 'Salvo! ✓';
+    loadDeals();
+  } catch (err) {
+    $('d_config_msg').style.color = '';
+    $('d_config_msg').textContent = err.message;
+  }
+};
+
+$('deals-add').onsubmit = async (e) => {
+  e.preventDefault();
+  try {
+    await api('/api/achadinhos/adicionar', {
+      link: $('d_link').value, title: $('d_title').value, price: $('d_price').value,
+      notes: $('d_notes').value, image_url: $('d_image').value,
+    });
+    for (const k of ['d_link', 'd_title', 'd_price', 'd_notes', 'd_image']) $(k).value = '';
+    $('d_add_msg').textContent = '';
+    loadDeals();
+  } catch (err) {
+    $('d_add_msg').textContent = err.message;
+  }
+};
+
+$('deals-list').onclick = async (e) => {
+  const btn = e.target.closest('button[data-act]');
+  if (!btn) return;
+  const box = btn.closest('.deal');
+  const id = Number(box.dataset.id);
+  const text = box.querySelector('textarea');
+  const show = (message) => {
+    text.value = message;
+    text.classList.remove('hidden');
+    box.querySelectorAll('[data-act="regen"],[data-act="save"]').forEach((b) => b.classList.remove('hidden'));
+  };
+  btn.disabled = true;
+  try {
+    if (btn.dataset.act === 'preview' || btn.dataset.act === 'regen') {
+      btn.textContent = 'A IA está escrevendo...';
+      show((await api('/api/achadinhos/previa', { id, novo: btn.dataset.act === 'regen' })).message);
+    } else if (btn.dataset.act === 'save') {
+      await api('/api/achadinhos/texto', { id, message: text.value });
+      btn.textContent = 'Salvo ✓';
+      return;
+    } else if (btn.dataset.act === 'send') {
+      if (!confirm('Enviar este achadinho no grupo agora?')) return;
+      if (!text.classList.contains('hidden')) await api('/api/achadinhos/texto', { id, message: text.value });
+      btn.textContent = 'Enviando...';
+      await api('/api/achadinhos/enviar', { id });
+      await loadDeals();
+    } else if (btn.dataset.act === 'remove') {
+      if (!confirm('Remover este produto da fila?')) return;
+      await api('/api/achadinhos/remover', { id });
+      await loadDeals();
+    }
+  } catch (err) {
+    alert(err.message);
+    loadDeals();
+  } finally {
+    btn.disabled = false;
+    if (btn.dataset.act === 'preview') btn.textContent = 'Ver texto';
+    if (btn.dataset.act === 'regen') btn.textContent = 'Gerar outro texto';
+  }
+};
+
+loadDeals();
+
 $('logout').onclick = async () => {
   await api('/api/sair', {});
   location.href = '/';

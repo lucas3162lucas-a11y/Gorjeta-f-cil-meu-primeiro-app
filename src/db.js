@@ -72,6 +72,36 @@ db.exec(`
     received_at INTEGER NOT NULL
   );
 
+  -- Achadinhos automáticos: envio de produtos (ex.: Shopee) num grupo de WhatsApp
+  CREATE TABLE IF NOT EXISTS deals_config (
+    user_id INTEGER PRIMARY KEY,
+    enabled INTEGER NOT NULL DEFAULT 0,
+    group_jid TEXT NOT NULL DEFAULT '',
+    group_name TEXT NOT NULL DEFAULT '',
+    interval_min INTEGER NOT NULL DEFAULT 40,
+    hours_start TEXT NOT NULL DEFAULT '08:00',
+    hours_end TEXT NOT NULL DEFAULT '22:00',
+    repeat_queue INTEGER NOT NULL DEFAULT 1, -- fila acabou: recomeça do início
+    last_sent_at INTEGER NOT NULL DEFAULT 0
+  );
+
+  CREATE TABLE IF NOT EXISTS deals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    link TEXT NOT NULL,
+    title TEXT NOT NULL,
+    price TEXT NOT NULL DEFAULT '',
+    notes TEXT NOT NULL DEFAULT '',
+    image_url TEXT NOT NULL DEFAULT '',
+    message TEXT NOT NULL DEFAULT '', -- texto gerado pela IA (fica salvo para reaproveitar)
+    status TEXT NOT NULL DEFAULT 'pending', -- pending | sent | error
+    error TEXT NOT NULL DEFAULT '',
+    sent_count INTEGER NOT NULL DEFAULT 0,
+    sent_at INTEGER,
+    created_at INTEGER NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_deals ON deals (user_id, status, id);
+
   CREATE TABLE IF NOT EXISTS payments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,

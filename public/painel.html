@@ -107,6 +107,49 @@
       </form>
     </section>
 
+    <!-- Achadinhos automáticos -->
+    <section class="card" id="deals-card">
+      <h2>🔥 Achadinhos automáticos no grupo</h2>
+      <p class="hint" style="margin-top:-8px">Cadastre produtos (ex.: links de afiliado da Shopee). A IA escreve o post e o robô envia um por vez no grupo escolhido.</p>
+      <div class="alert warn" style="font-weight:500">⚠️ Envio automático não é a API oficial do WhatsApp. Para evitar bloqueio, use um número só para o grupo e não use intervalos muito curtos.</div>
+
+      <form id="deals-config">
+        <label class="check"><input type="checkbox" id="d_enabled"> Envio automático ligado</label>
+        <div class="row" style="align-items:end">
+          <div><label for="d_group">Grupo</label><select id="d_group"><option value="">— conecte o WhatsApp e clique em "Carregar grupos" —</option></select></div>
+          <div><button type="button" class="btn outline" id="d_load_groups" style="width:100%">Carregar grupos</button></div>
+        </div>
+        <div class="row">
+          <div><label for="d_interval">Enviar a cada (minutos)</label><input id="d_interval" type="number" min="10" step="5"></div>
+          <div><label for="d_start">Das</label><input id="d_start" type="time"></div>
+          <div><label for="d_end">Até</label><input id="d_end" type="time"></div>
+        </div>
+        <label class="check"><input type="checkbox" id="d_repeat"> Quando a lista acabar, recomeçar do primeiro produto</label>
+        <div class="error" id="d_config_msg"></div>
+        <button class="btn">Salvar</button>
+      </form>
+
+      <h3 style="margin:28px 0 4px">Adicionar produto</h3>
+      <form id="deals-add">
+        <label for="d_link">Link do produto (seu link de afiliado)</label>
+        <input id="d_link" placeholder="https://s.shopee.com.br/..." required>
+        <div class="row">
+          <div><label for="d_title">Nome do produto</label><input id="d_title" maxlength="200" placeholder="Escova secadora 5 em 1" required></div>
+          <div><label for="d_price">Preço (opcional)</label><input id="d_price" maxlength="40" placeholder="R$ 49,90"></div>
+        </div>
+        <label for="d_notes">Detalhes para a IA (opcional)</label>
+        <input id="d_notes" maxlength="1000" placeholder="Ex.: 5 funções, bivolt, ótima avaliação, cupom DESCONTO10">
+        <label for="d_image">Link da foto (opcional)</label>
+        <input id="d_image" placeholder="https://...jpg">
+        <div class="hint">Na Shopee: segure a foto do produto → "Copiar endereço da imagem".</div>
+        <div class="error" id="d_add_msg"></div>
+        <button class="btn">Adicionar à fila</button>
+      </form>
+
+      <h3 style="margin:28px 0 8px">Fila <span class="hint" id="d_next"></span></h3>
+      <div id="deals-list"></div>
+    </section>
+
     <!-- Conversas (Pro) -->
     <section class="card hidden" id="history-card">
       <h2>Conversas recentes</h2>

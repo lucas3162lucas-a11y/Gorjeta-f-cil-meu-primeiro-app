@@ -102,6 +102,20 @@ Veja todos os campos em `.env.example`. Os principais:
 3. Leia o QR Code com o celular (WhatsApp → Aparelhos conectados), ou use **Gerar código** se estiver no próprio celular.
 4. Mande uma mensagem de outro número e veja a IA responder.
 
+## 🔥 Achadinhos automáticos (grupo de ofertas)
+
+No painel, a seção **Achadinhos automáticos no grupo** posta produtos sozinha num grupo de WhatsApp (ex.: links de afiliado da Shopee):
+
+1. Conecte o WhatsApp (o número precisa estar no grupo, de preferência como admin).
+2. Clique em **Carregar grupos**, escolha o grupo, defina o intervalo (padrão **40 minutos**) e o horário (padrão 08:00 às 22:00).
+3. Adicione produtos: link de afiliado, nome e, se quiser, preço, detalhes e link da foto.
+4. Marque **Envio automático ligado** e salve. A cada intervalo o robô pega o próximo produto da fila, a IA da NVIDIA escreve o post e ele é enviado (com foto, se tiver).
+
+- **Ver texto** mostra o post antes de enviar; você pode editar e salvar, ou pedir outro texto.
+- **Recomeçar do primeiro produto** faz a fila girar quando acabar (senão, para de enviar até você adicionar mais).
+- A IA não inventa preço nem desconto: sem preço informado, ela escreve "Confira o preço no link". O link do post é sempre o que você cadastrou.
+- ⚠️ Não é a API oficial do WhatsApp. Envio automático e frequente em grupos pode levar a bloqueio do número. Use um número só para o grupo e o intervalo mínimo é 10 minutos.
+
 ## Páginas
 - `/` — site de vendas com os planos
 - `/entrar` — login e cadastro
@@ -121,6 +135,7 @@ src/
   subscription.js  regras de assinatura (ativo, vencido, cancelado, bloqueado)
   cakto.js         webhook da Cakto (pagamentos)
   whatsapp.js      conexão com WhatsApp e atendimento
+  deals.js         achadinhos automáticos (fila + envio no grupo)
   ai.js            IA da NVIDIA
   db.js            banco de dados (SQLite, arquivo em data/)
 public/            páginas do site

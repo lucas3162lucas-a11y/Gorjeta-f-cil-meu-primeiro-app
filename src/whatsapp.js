@@ -160,7 +160,8 @@ function saveMessage(userId, contact, role, content) {
     .run(userId, contact, role, content, Date.now());
 }
 
-function withinBusinessHours(settings) {
+// Horário de Brasília. days: "0,1,...,6" (0 = domingo).
+function withinHours(start, end, days = '0,1,2,3,4,5,6') {
   const parts = Object.fromEntries(
     new Intl.DateTimeFormat('en-US', {
       timeZone: 'America/Sao_Paulo', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
@@ -168,9 +169,10 @@ function withinBusinessHours(settings) {
   );
   const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(parts.weekday);
   const now = `${parts.hour}:${parts.minute}`;
-  const days = settings.hours_days.split(',').map(Number);
-  return days.includes(day) && now >= settings.hours_start && now < settings.hours_end;
+  return days.split(',').map(Number).includes(day) && now >= start && now < end;
 }
+
+const withinBusinessHours = (s) => withinHours(s.hours_start, s.hours_end, s.hours_days);
 
 async function send(bot, jid, text) {
   const sent = await bot.sock.sendMessage(jid, { text });
@@ -257,6 +259,36 @@ async function reply(userId, bot, user, plan, jid, text) {
   }
 }
 
+function connectedBot(userId) {
+  const bot = bots.get(userId);
+  if (!bot || bot.state !== 'connected') throw new Error('WhatsApp não está conectado');
+  return bot;
+}
+
+// Grupos de que o número conectado participa (para escolher onde postar os achadinhos).
+async function listGroups(userId) {
+  const groups = await connectedBot(userId).sock.groupFetchAllParticipating();
+  return Object.values(groups)
+    .map((g) => ({ jid: g.id, name: g.subject || g.id, size: g.participants?.length || 0 }))
+    .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+}
+
+// Envia num grupo. Com imagem, o texto vai como legenda; se a imagem falhar, manda só o texto.
+async function sendToGroup(userId, jid, text, imageUrl) {
+  if (!jid.endsWith('@g.us')) throw new Error('Grupo inválido');
+  const bot = connectedBot(userId);
+  if (imageUrl) {
+    try {
+      const sent = await bot.sock.sendMessage(jid, { image: { url: imageUrl }, caption: text });
+      if (sent?.key?.id) bot.sentIds.add(sent.key.id);
+      return;
+    } catch (e) {
+      console.warn(`[achadinhos] imagem falhou (${e.message}), enviando só o texto`);
+    }
+  }
+  await send(bot, jid, text);
+}
+
 // Ao ligar o servidor: reconecta quem está com assinatura em dia.
 async function restoreAll() {
   if (!fs.existsSync(sessionsDir)) return;
@@ -280,4 +312,6 @@ function startBillingWatcher() {
   }, 5 * 60 * 1000).unref();
 }
 
-module.exports = { start, stop, logout, status, restoreAll, startBillingWatcher, getSettings };
+module.exports = {
+  start, stop, logout, status, restoreAll, startBillingWatcher, getSettings, listGroups, sendToGroup, withinHours,
+};

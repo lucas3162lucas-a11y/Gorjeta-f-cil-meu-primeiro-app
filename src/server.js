@@ -7,6 +7,7 @@ const db = require('./db');
 const { PLANS } = require('./plans');
 const sub = require('./subscription');
 const wa = require('./whatsapp');
+const deals = require('./deals');
 const { webhookHandler } = require('./cakto');
 
 const app = express();
@@ -187,6 +188,34 @@ app.post('/api/whatsapp/desconectar', auth, async (req, res) => {
   res.json({ ok: true });
 });
 
+// ---------- Achadinhos automáticos (posts de ofertas num grupo) ----------
+const wrap = (fn) => async (req, res) => {
+  try {
+    res.json((await fn(req)) ?? { ok: true });
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+};
+
+app.get('/api/achadinhos', auth, wrap((req) => ({
+  config: deals.getConfig(req.user.id),
+  deals: deals.list(req.user.id),
+  minInterval: deals.MIN_INTERVAL,
+})));
+app.get('/api/achadinhos/grupos', auth, wrap((req) => wa.listGroups(req.user.id)));
+app.post('/api/achadinhos/config', auth, wrap((req) => deals.saveConfig(req.user.id, req.body)));
+app.post('/api/achadinhos/adicionar', auth, wrap((req) => deals.add(req.user.id, req.body)));
+app.post('/api/achadinhos/remover', auth, wrap((req) => deals.remove(req.user.id, Number(req.body.id))));
+app.post('/api/achadinhos/previa', auth, wrap(async (req) => ({
+  message: await deals.preview(req.user.id, Number(req.body.id), !!req.body.novo),
+})));
+app.post('/api/achadinhos/texto', auth, wrap((req) => deals.saveMessage(req.user.id, Number(req.body.id), req.body.message)));
+app.post('/api/achadinhos/enviar', auth, wrap(async (req) => {
+  if (!sub.isActive(req.user)) throw new Error('Assinatura inativa');
+  await deals.sendDeal(req.user.id, Number(req.body.id));
+  return { ok: true };
+}));
+
 app.get('/api/conversas', auth, (req, res) => {
   if (!PLANS[req.user.plan]?.history) return res.status(403).json({ error: 'Disponível no plano Pro' });
   const contacts = db.prepare(`SELECT contact, MAX(id) AS last_id, COUNT(*) AS total FROM messages
@@ -231,5 +260,6 @@ app.listen(config.port, async () => {
   if (!config.nvidia.apiKey) console.warn('⚠️  NVIDIA_API_KEY não configurada no .env');
   if (!config.cakto.webhookSecret) console.warn('⚠️  CAKTO_WEBHOOK_SECRET não configurado no .env');
   wa.startBillingWatcher();
+  deals.startScheduler();
   await wa.restoreAll();
 });

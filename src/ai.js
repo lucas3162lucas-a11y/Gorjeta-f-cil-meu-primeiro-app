@@ -23,18 +23,46 @@ function buildSystemPrompt(settings, plan) {
 }
 
 async function generateReply({ plan, settings, history }) {
-  const apiKey = settings.nvidia_key || config.nvidia.apiKey;
-  if (!apiKey) throw new Error('NVIDIA_API_KEY não configurada');
-
   const messages = [
     { role: 'system', content: buildSystemPrompt(settings, plan) },
     ...history.map((m) => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content })),
   ];
+  return complete({ plan, settings, messages, temperature: 0.5 });
+}
+
+// Mensagem de "achadinho" para grupo de ofertas. O link vai sempre no fim, sem alteração.
+async function generateDealMessage({ plan, settings, deal }) {
+  const system = [
+    'Você escreve posts de "achadinhos" (ofertas de produtos, ex.: Shopee) para um grupo de WhatsApp brasileiro.',
+    'Formato: título chamativo em *negrito* com emoji, 1 frase vendendo o benefício, 3 a 4 vantagens com ✅, e uma chamada curta de urgência no fim.',
+    'Use a formatação do WhatsApp (*negrito*, _itálico_). Máximo de 700 caracteres. Português do Brasil.',
+    'Nunca invente preço, desconto, frete grátis, avaliações ou características técnicas que não foram informadas.',
+    'Se o preço não foi informado, escreva "💸 Confira o preço no link".',
+    'NÃO escreva o link nem a palavra "link aqui"; o link é colocado automaticamente depois do texto.',
+    'Responda só com o texto do post, sem explicações.',
+  ].join('\n');
+  const user = [
+    `Produto: ${deal.title}`,
+    deal.price ? `Preço: ${deal.price}` : 'Preço: (não informado)',
+    deal.notes ? `Detalhes: ${deal.notes}` : '',
+  ].filter(Boolean).join('\n');
+
+  let text = await complete({
+    plan, settings, temperature: 0.8,
+    messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
+  });
+  text = text.replaceAll(deal.link, '').replace(/https?:\/\/\S+/g, '').trim();
+  return `${text}\n\n🛒 *Compre aqui:* ${deal.link}`;
+}
+
+async function complete({ plan, settings, messages, temperature }) {
+  const apiKey = settings.nvidia_key || config.nvidia.apiKey;
+  if (!apiKey) throw new Error('NVIDIA_API_KEY não configurada');
 
   const call = (model) => fetch(`${config.nvidia.baseUrl}/chat/completions`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model, messages, temperature: 0.5, max_tokens: 1024 }),
+    body: JSON.stringify({ model, messages, temperature, max_tokens: 1024 }),
     signal: AbortSignal.timeout(60_000),
   });
 
@@ -54,4 +82,4 @@ function cleanReply(text) {
   return text.replace(/<think>[\s\S]*?<\/think>/gi, '').replace(/^[\s\S]*<\/think>/i, '').trim();
 }
 
-module.exports = { generateReply };
+module.exports = { generateReply, generateDealMessage };

@@ -94,3 +94,9 @@ table { width: 100%; border-collapse: collapse; font-size: 14px; }
 th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--line); }
 .table-wrap { overflow-x: auto; }
 .hidden { display: none !important; }
+.deal { border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+.deal-head { display: flex; justify-content: space-between; gap: 8px; align-items: center; flex-wrap: wrap; }
+.deal-head b { overflow-wrap: anywhere; }
+.deal .actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.deal textarea { margin-top: 8px; min-height: 180px; font-size: 14px; }
+.deal .link { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
