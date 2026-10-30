@@ -3,7 +3,8 @@
 > **Versão:** v1 (Fase 1), 30/10/2026. **Origem:** roteiro escrito pelo agente, a pedido do usuário
 > ("faça outro vídeo"). Tema escolhido pelo agente, seguindo a preferência anterior do usuário por
 > assuntos que não envolvam dinheiro.
-> **Situação:** AGUARDANDO APROVAÇÃO. A implementação e a renderização ainda não começaram.
+> **Situação:** APROVADO ("aprovado, pode gerar", 30/10/2026). Fase 2 executada; ajustes técnicos na
+> seção 7. Texto e ordem das cenas não mudaram.
 >
 > **Convenção:** timestamps em MM:SS:FF a 30 fps. Frames em intervalo semiaberto [início, fim). Os
 > tempos são estimativas; depois da narração real, os cortes passam a seguir a voz.
@@ -101,3 +102,14 @@ com a camada 2D de badges e legendas por cima. Não há tranco de câmera.
 - [x] Tabela com 12 linhas e 7 colunas, frames contíguos e soma de 2700; plano compilado e validado.
 - [x] 213 palavras, compatível com 90 s na voz do canal; sem tranco de câmera.
 - [ ] **Ainda não feito:** TTS, render e validação visual. Isso fica para a Fase 2.
+
+## 7. Ajustes técnicos da Fase 2 (sem mudança de conteúdo)
+
+- **Voz:** Piper `pt_BR-faber-medium`; fala medida de 73,6 s; 211 das 213 palavras casadas com o áudio
+  (as outras 2 interpoladas). Pausas de 1,1 s entre as falas.
+- **Enquadramento:** na cena 2 a marmita sobe na própria panela; na cena 3 ela salta para perto da
+  câmera, e as ondas descem sobre ela. O painel do micro-ondas ficou mais transparente, para mostrar o
+  magnetron. O ícone de olho foi para a frente da porta. O mapa de pontos quentes ficou mais forte.
+- **Final:** o badge virou "MICRO-ONDAS" (o texto longo era cortado). A câmera mostra primeiro as peças
+  com rótulos e depois abre para o garçom servindo; os rótulos somem na abertura.
+- **Garçom:** fica entre o fogão e a ponta esquerda, para aparecer no início e no fim.
