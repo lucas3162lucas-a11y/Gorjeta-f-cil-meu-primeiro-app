@@ -116,6 +116,16 @@ No painel, a seção **Achadinhos automáticos no grupo** posta produtos sozinha
 - A IA não inventa preço nem desconto: sem preço informado, ela escreve "Confira o preço no link". O link do post é sempre o que você cadastrou.
 - ⚠️ Não é a API oficial do WhatsApp. Envio automático e frequente em grupos pode levar a bloqueio do número. Use um número só para o grupo e o intervalo mínimo é 10 minutos.
 
+## Esqueceu a senha?
+
+No terminal (na pasta do projeto), com o sistema ligado ou desligado:
+
+```bash
+npm run senha -- seu@email.com NovaSenha123
+```
+
+Serve também para trocar a senha de um cliente que pediu ajuda.
+
 ## Páginas
 - `/` — site de vendas com os planos
 - `/entrar` — login e cadastro

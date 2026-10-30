@@ -4,7 +4,8 @@
   "description": "IA de atendimento e vendas para WhatsApp com assinatura mensal (planos Simple, Plus e Pro)",
   "main": "src/server.js",
   "scripts": {
-    "start": "node --no-warnings src/server.js"
+    "start": "node --no-warnings src/server.js",
+    "senha": "node --no-warnings scripts/trocar-senha.js"
   },
   "repository": {
     "type": "git",

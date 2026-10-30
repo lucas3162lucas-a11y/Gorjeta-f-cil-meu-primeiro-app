@@ -9,6 +9,7 @@ const sub = require('./subscription');
 const wa = require('./whatsapp');
 const deals = require('./deals');
 const { webhookHandler } = require('./cakto');
+const { hashPassword, checkPassword } = require('./password');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -21,17 +22,6 @@ app.use(express.static(path.join(__dirname, '..', 'public'), { extensions: ['htm
 
 // ---------- Login ----------
 const SESSION_DAYS = 30;
-
-function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) {
-  const hash = crypto.scryptSync(password, salt, 64).toString('hex');
-  return `${salt}:${hash}`;
-}
-
-function checkPassword(password, stored) {
-  const [salt, hash] = stored.split(':');
-  const test = crypto.scryptSync(password, salt, 64);
-  return crypto.timingSafeEqual(test, Buffer.from(hash, 'hex'));
-}
 
 function readCookie(req, name) {
   const match = (req.headers.cookie || '').split(';').map((c) => c.trim()).find((c) => c.startsWith(`${name}=`));
