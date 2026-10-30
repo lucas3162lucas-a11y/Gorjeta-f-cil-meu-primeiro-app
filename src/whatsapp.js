@@ -35,7 +35,7 @@ function getSettings(userId) {
 function status(userId) {
   const bot = bots.get(userId);
   if (!bot) return { state: fs.existsSync(sessionPath(userId)) ? 'stopped' : 'disconnected' };
-  return { state: bot.state, qr: bot.qr || null, pairingCode: bot.pairingCode || null, number: bot.number || null };
+  return { state: bot.state, qr: bot.qr || null, pairingCode: bot.pairingCode || null, pairError: bot.pairError || null, number: bot.number || null };
 }
 
 // phone: se informado, conecta por código de 8 dígitos (sem QR Code) — ideal no celular.
@@ -55,7 +55,10 @@ async function start(userId, phone) {
   const sock = makeWASocket({ auth, logger, version, printQRInTerminal: false, browser: ['ZapVendas IA', 'Chrome', '1.0'] });
   const bot = existing || { sentIds: new Set(), queues: new Map(), offHoursSent: new Map() };
   Object.assign(bot, { sock, state: 'connecting', qr: null, pairingCode: null });
-  if (phone) bot.pairPhone = phone;
+  if (phone) {
+    bot.pairPhone = phone;
+    bot.pairError = null;
+  }
   bots.set(userId, bot);
 
   sock.ev.on('creds.update', saveCreds);
@@ -66,10 +69,12 @@ async function start(userId, phone) {
       if (!bot.pairingCode) {
         bot.state = 'pairing';
         bot.pairingCode = 'gerando';
+        bot.pairError = null;
         try {
           bot.pairingCode = await sock.requestPairingCode(bot.pairPhone);
         } catch (e) {
           console.error('[wa] código de pareamento:', e.message);
+          bot.pairError = e.message;
           bot.pairingCode = null;
           bot.pairPhone = null;
         }

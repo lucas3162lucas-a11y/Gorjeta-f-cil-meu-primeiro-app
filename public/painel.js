@@ -14,6 +14,9 @@ const api = async (url, body) => {
 let me;
 let plans = [];
 let pollTimer;
+let shownPairError = null;
+
+const INACTIVE_MSG = 'Sua conta ainda não tem plano ativo, por isso não dá para conectar o WhatsApp.\n\nAssine um plano acima ou, se você é o dono do sistema, entre em /admin e clique em "Liberar" na sua conta.';
 
 async function load() {
   [me, { plans }] = await Promise.all([api('/api/eu'), api('/api/planos')]);
@@ -92,8 +95,8 @@ function renderWhatsapp(st) {
   $('pair-code').textContent = code ? `${code.slice(0, 4)}-${code.slice(4)}` : 'Gerando...';
   $('wa-options').classList.toggle('hidden', ['connected', 'connecting', 'pairing'].includes(st.state));
   $('wa-connect').classList.toggle('hidden', st.state === 'qr');
-  $('wa-connect').disabled = !me.active;
-  $('wa-code').disabled = !me.active;
+  if (st.pairError && st.pairError !== shownPairError) alert(`Não foi possível gerar o código: ${st.pairError}\nConfira o número (DDI 55 + DDD + número) e tente de novo.`);
+  shownPairError = st.pairError || null;
   $('wa-disconnect').classList.toggle('hidden', !['connected', 'stopped'].includes(st.state));
 
   clearTimeout(pollTimer);
@@ -113,6 +116,7 @@ async function loadHistory() {
 }
 
 $('wa-connect').onclick = async () => {
+  if (!me.active) return alert(INACTIVE_MSG);
   $('wa-connect').disabled = true;
   try {
     renderWhatsapp(await api('/api/whatsapp/conectar', {}));
@@ -123,6 +127,7 @@ $('wa-connect').onclick = async () => {
 };
 
 $('wa-code').onclick = async () => {
+  if (!me.active) return alert(INACTIVE_MSG);
   const phone = $('wa-phone').value.replace(/\D/g, '');
   if (phone.length < 12) return alert('Digite o número com DDI 55 + DDD, ex.: 5511999999999');
   $('wa-code').disabled = true;
