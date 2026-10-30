@@ -40,10 +40,11 @@ function status(userId) {
 }
 
 // phone: se informado, conecta por código de 8 dígitos (sem QR Code) — ideal no celular.
-async function start(userId, phone) {
+// reconnect: chamada interna depois de uma queda (mantém o modo QR/código escolhido).
+async function start(userId, phone, reconnect = false) {
   if (!sub.isActive(sub.getUser(userId))) throw new Error('Assinatura inativa');
   const existing = bots.get(userId);
-  if (existing && existing.state !== 'closed') {
+  if (existing && !['closed', 'disconnected'].includes(existing.state)) {
     if (!phone || existing.state === 'connected') return status(userId);
     await stop(userId); // troca de QR Code para código de pareamento
     return start(userId, phone);
@@ -51,22 +52,28 @@ async function start(userId, phone) {
 
   fs.mkdirSync(sessionPath(userId), { recursive: true });
   let { state: auth, saveCreds } = await useMultiFileAuthState(sessionPath(userId));
-  // Tentativa anterior de pareamento que não terminou deixa dados velhos: começa do zero.
-  if (phone && !auth.creds.registered) {
+  // Ainda não pareado (sem "account"): começa do zero, sem restos de tentativas anteriores.
+  // Senão o WhatsApp recusa o login com "sessão encerrada".
+  if (!auth.creds.account && fs.readdirSync(sessionPath(userId)).length) {
     fs.rmSync(sessionPath(userId), { recursive: true, force: true });
     fs.mkdirSync(sessionPath(userId), { recursive: true });
     ({ state: auth, saveCreds } = await useMultiFileAuthState(sessionPath(userId)));
   }
   const { version } = await fetchLatestBaileysVersion().catch(() => ({ version: undefined }));
 
-  // O WhatsApp só aceita conexão por código com um navegador "conhecido" (Chrome no Mac).
-  const sock = makeWASocket({ auth, logger, version, printQRInTerminal: false, browser: Browsers.macOS('Chrome') });
   const bot = existing || { sentIds: new Set(), queues: new Map(), offHoursSent: new Map() };
-  Object.assign(bot, { sock, state: 'connecting', qr: null, pairingCode: null });
-  if (phone) {
-    bot.pairPhone = phone;
+  if (!reconnect) {
+    bot.pairPhone = phone || null;
     bot.pairError = null;
+    bot.pairTries = 0;
   }
+  // O WhatsApp só aceita conexão por código com um navegador "conhecido" (Chrome no Mac).
+  // No modo código, a conexão fica aberta por mais tempo para dar tempo de digitar.
+  const sock = makeWASocket({
+    auth, logger, version, printQRInTerminal: false, browser: Browsers.macOS('Chrome'),
+    qrTimeout: bot.pairPhone ? 3 * 60 * 1000 : undefined,
+  });
+  Object.assign(bot, { sock, state: 'connecting', qr: null, pairingCode: null, stopping: false });
   bots.set(userId, bot);
 
   sock.ev.on('creds.update', saveCreds);
@@ -96,20 +103,35 @@ async function start(userId, phone) {
       bot.qr = null;
       bot.pairingCode = null;
       bot.pairPhone = null;
+      bot.pairTries = 0;
       bot.number = (sock.user?.id || '').split(':')[0].split('@')[0];
       console.log(`[wa] usuário ${userId} conectado (${bot.number})`);
     }
     if (connection === 'close') {
       const code = lastDisconnect?.error?.output?.statusCode;
       bot.state = 'closed';
-      if (code === DisconnectReason.loggedOut) {
+      if (bot.stopping) {
+        bots.delete(userId);
+      } else if (!auth.creds.account) {
+        // Pareamento não terminou (código/QR expirou ou não foi digitado a tempo).
+        // Não é "usuário desconectou": gera um código/QR novo algumas vezes e depois desiste.
+        fs.rmSync(sessionPath(userId), { recursive: true, force: true });
+        bot.pairTries = (bot.pairTries || 0) + 1;
+        if (bot.pairTries <= 3 && sub.isActive(sub.getUser(userId))) {
+          console.log(`[wa] usuário ${userId}: ${bot.pairPhone ? 'código' : 'QR Code'} expirou, gerando outro (${bot.pairTries}/3)`);
+          setTimeout(() => start(userId, undefined, true).catch((e) => console.error('[wa] reconectar:', e.message)), 2000);
+        } else {
+          bot.state = 'disconnected';
+          bot.pairError = bot.pairPhone ? 'o código expirou. Clique em "Gerar código" de novo e digite logo em seguida' : null;
+          bot.pairingCode = null;
+          bot.qr = null;
+        }
+      } else if (code === DisconnectReason.loggedOut) {
         console.log(`[wa] usuário ${userId} desconectou o WhatsApp`);
         fs.rmSync(sessionPath(userId), { recursive: true, force: true });
         bots.delete(userId);
-      } else if (bot.stopping) {
-        bots.delete(userId);
       } else if (sub.isActive(sub.getUser(userId))) {
-        setTimeout(() => start(userId).catch((e) => console.error('[wa] reconectar:', e.message)), 3000);
+        setTimeout(() => start(userId, undefined, true).catch((e) => console.error('[wa] reconectar:', e.message)), 3000);
       } else {
         bots.delete(userId);
       }
@@ -307,6 +329,12 @@ async function restoreAll() {
   if (!fs.existsSync(sessionsDir)) return;
   for (const dir of fs.readdirSync(sessionsDir)) {
     const userId = Number(dir);
+    // Pareamento que nunca terminou: não há o que reconectar.
+    const creds = path.join(sessionPath(userId), 'creds.json');
+    if (!fs.existsSync(creds) || !fs.readFileSync(creds, 'utf8').includes('"account"')) {
+      fs.rmSync(sessionPath(userId), { recursive: true, force: true });
+      continue;
+    }
     if (sub.isActive(sub.getUser(userId))) {
       await start(userId).catch((e) => console.error(`[wa] restaurar ${userId}:`, e.message));
     }
