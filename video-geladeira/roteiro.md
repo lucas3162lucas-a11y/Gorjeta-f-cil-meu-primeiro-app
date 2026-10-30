@@ -2,7 +2,8 @@
 
 > **Versão:** v1 (Fase 1), 30/10/2026. **Origem:** roteiro escrito pelo agente. O usuário pediu
 > "outro vídeo assim", sobre algo que não envolva dinheiro e sem a tremedeira do vídeo anterior.
-> **Situação:** AGUARDANDO APROVAÇÃO. A implementação e a renderização ainda não começaram.
+> **Situação:** APROVADO ("aprovado, pode gerar", 30/10/2026). Fase 2 executada; ajustes técnicos na
+> seção 7. Texto e ordem das cenas não mudaram.
 >
 > **Convenção:** timestamps em MM:SS:FF a 30 fps (FF de 00 a 29). Frames em intervalo semiaberto
 > [início, fim). Os tempos são estimativas; depois da narração real, os cortes passam a seguir a voz.
@@ -129,3 +130,16 @@ O contrato completo está em [`scene-plan.ts`](./scene-plan.ts), com as 12 cenas
 - [x] Nenhum "tranco" de câmera; a tremedeira será medida no MP4 final.
 - [x] Nenhum asset dado como existente: todos os `audioCues` estão como `planned`.
 - [ ] **Ainda não feito:** nenhum render, TTS ou validação visual. Isso fica para a Fase 2.
+
+## 7. Ajustes técnicos da Fase 2 (sem mudança de conteúdo)
+
+- **Voz:** Piper `pt_BR-faber-medium` (a mesma do canal). Fala medida: 79,1 s. As 218 palavras foram
+  casadas com o áudio; o alinhador agora testa com e sem o texto de referência e casa uma a uma as
+  palavras que o reconhecedor ouviu errado (ex.: "apertado", "termostato").
+- **Cortes pela voz:** pausas de 0,8 s entre as falas. Duração das cenas (s): 6,40 · 7,13 · 7,83 ·
+  8,67 · 7,33 · 7,77 · 5,67 · 7,67 · 6,10 · 8,27 · 7,90 · 9,27, somando 90 s.
+- **Enquadramento:** o garçom fica à esquerda do balcão (para não tapar a caixa). O termômetro fica na
+  frente da caixa. As câmeras das cenas 9 e 10 subiram para mostrar o manômetro. O plano final abriu
+  para caber o garçom servindo e a geladeira inteira.
+- **Sem tremedeira:** o código de "tranco" de câmera foi removido deste projeto. A estabilidade foi
+  medida no MP4 final (ver `production-status.md`).

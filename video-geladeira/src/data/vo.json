@@ -1,0 +1,1164 @@
+{
+  "s1": {
+    "text": "Você quer servir um suco gelado. Parece que basta guardar numa caixa bem fechada.",
+    "seconds": 5.391,
+    "words": [
+      {
+        "text": "Você",
+        "start": 0,
+        "end": 0.178
+      },
+      {
+        "text": "quer",
+        "start": 0.178,
+        "end": 0.398
+      },
+      {
+        "text": "servir",
+        "start": 0.398,
+        "end": 0.658
+      },
+      {
+        "text": "um",
+        "start": 0.658,
+        "end": 0.918
+      },
+      {
+        "text": "suco",
+        "start": 0.918,
+        "end": 1.238
+      },
+      {
+        "text": "gelado.",
+        "start": 1.238,
+        "end": 1.798
+      },
+      {
+        "text": "Parece",
+        "start": 2.378,
+        "end": 2.638
+      },
+      {
+        "text": "que",
+        "start": 2.638,
+        "end": 2.918
+      },
+      {
+        "text": "basta",
+        "start": 2.918,
+        "end": 3.218
+      },
+      {
+        "text": "guardar",
+        "start": 3.218,
+        "end": 3.698
+      },
+      {
+        "text": "numa",
+        "start": 3.698,
+        "end": 3.838
+      },
+      {
+        "text": "caixa",
+        "start": 3.838,
+        "end": 4.258
+      },
+      {
+        "text": "bem",
+        "start": 4.258,
+        "end": 4.498
+      },
+      {
+        "text": "fechada.",
+        "start": 4.498,
+        "end": 5.178
+      }
+    ]
+  },
+  "s2": {
+    "text": "Só que caixa fechada não esfria nada. Ela só guarda, e o calor do suco continua lá dentro.",
+    "seconds": 6.35,
+    "words": [
+      {
+        "text": "Só",
+        "start": 0.0,
+        "end": 0.14
+      },
+      {
+        "text": "que",
+        "start": 0.14,
+        "end": 0.28
+      },
+      {
+        "text": "caixa",
+        "start": 0.28,
+        "end": 0.62
+      },
+      {
+        "text": "fechada",
+        "start": 0.62,
+        "end": 1.14
+      },
+      {
+        "text": "não",
+        "start": 1.14,
+        "end": 1.28
+      },
+      {
+        "text": "esfria",
+        "start": 1.28,
+        "end": 1.72
+      },
+      {
+        "text": "nada.",
+        "start": 1.72,
+        "end": 2.08
+      },
+      {
+        "text": "Ela",
+        "start": 2.62,
+        "end": 2.88
+      },
+      {
+        "text": "só",
+        "start": 2.88,
+        "end": 3.12
+      },
+      {
+        "text": "guarda,",
+        "start": 3.12,
+        "end": 3.6
+      },
+      {
+        "text": "e",
+        "start": 3.74,
+        "end": 3.78
+      },
+      {
+        "text": "o",
+        "start": 3.78,
+        "end": 3.9
+      },
+      {
+        "text": "calor",
+        "start": 3.9,
+        "end": 4.26
+      },
+      {
+        "text": "do",
+        "start": 4.26,
+        "end": 4.5
+      },
+      {
+        "text": "suco",
+        "start": 4.5,
+        "end": 4.84
+      },
+      {
+        "text": "continua",
+        "start": 4.84,
+        "end": 5.4
+      },
+      {
+        "text": "lá",
+        "start": 5.4,
+        "end": 5.7
+      },
+      {
+        "text": "dentro.",
+        "start": 5.7,
+        "end": 6.06
+      }
+    ]
+  },
+  "s3": {
+    "text": "Pra esfriar, é preciso tirar calor. E um líquido que evapora faz isso: ele rouba calor do que está em volta.",
+    "seconds": 7.022,
+    "words": [
+      {
+        "text": "Pra",
+        "start": 0,
+        "end": 0.107
+      },
+      {
+        "text": "esfriar,",
+        "start": 0.107,
+        "end": 0.727
+      },
+      {
+        "text": "é",
+        "start": 0.847,
+        "end": 0.927
+      },
+      {
+        "text": "preciso",
+        "start": 0.927,
+        "end": 1.167
+      },
+      {
+        "text": "tirar",
+        "start": 1.167,
+        "end": 1.527
+      },
+      {
+        "text": "calor.",
+        "start": 1.527,
+        "end": 1.927
+      },
+      {
+        "text": "E",
+        "start": 2.507,
+        "end": 2.747
+      },
+      {
+        "text": "um",
+        "start": 2.747,
+        "end": 2.847
+      },
+      {
+        "text": "líquido",
+        "start": 2.847,
+        "end": 3.227
+      },
+      {
+        "text": "que",
+        "start": 3.227,
+        "end": 3.407
+      },
+      {
+        "text": "evapora",
+        "start": 3.407,
+        "end": 3.787
+      },
+      {
+        "text": "faz",
+        "start": 3.787,
+        "end": 4.047
+      },
+      {
+        "text": "isso:",
+        "start": 4.047,
+        "end": 4.427
+      },
+      {
+        "text": "ele",
+        "start": 4.687,
+        "end": 4.827
+      },
+      {
+        "text": "rouba",
+        "start": 4.827,
+        "end": 5.207
+      },
+      {
+        "text": "calor",
+        "start": 5.207,
+        "end": 5.547
+      },
+      {
+        "text": "do",
+        "start": 5.547,
+        "end": 5.787
+      },
+      {
+        "text": "que",
+        "start": 5.787,
+        "end": 5.947
+      },
+      {
+        "text": "está",
+        "start": 5.947,
+        "end": 6.187
+      },
+      {
+        "text": "em",
+        "start": 6.187,
+        "end": 6.367
+      },
+      {
+        "text": "volta.",
+        "start": 6.367,
+        "end": 6.667
+      }
+    ]
+  },
+  "s4": {
+    "text": "Por isso, a geladeira tem um tubo com fluido refrigerante. Ele evapora lá dentro e puxa o calor. É o evaporador.",
+    "seconds": 7.881,
+    "words": [
+      {
+        "text": "Por",
+        "start": 0,
+        "end": 0.113
+      },
+      {
+        "text": "isso,",
+        "start": 0.113,
+        "end": 0.393
+      },
+      {
+        "text": "a",
+        "start": 0.633,
+        "end": 0.733
+      },
+      {
+        "text": "geladeira",
+        "start": 0.733,
+        "end": 1.153
+      },
+      {
+        "text": "tem",
+        "start": 1.153,
+        "end": 1.373
+      },
+      {
+        "text": "um",
+        "start": 1.373,
+        "end": 1.493
+      },
+      {
+        "text": "tubo",
+        "start": 1.493,
+        "end": 1.833
+      },
+      {
+        "text": "com",
+        "start": 1.833,
+        "end": 1.993
+      },
+      {
+        "text": "fluido",
+        "start": 1.993,
+        "end": 2.433
+      },
+      {
+        "text": "refrigerante.",
+        "start": 2.433,
+        "end": 3.293
+      },
+      {
+        "text": "Ele",
+        "start": 3.853,
+        "end": 4.133
+      },
+      {
+        "text": "evapora",
+        "start": 4.133,
+        "end": 4.573
+      },
+      {
+        "text": "lá",
+        "start": 4.573,
+        "end": 4.713
+      },
+      {
+        "text": "dentro",
+        "start": 4.713,
+        "end": 5.013
+      },
+      {
+        "text": "e",
+        "start": 5.013,
+        "end": 5.233
+      },
+      {
+        "text": "puxa",
+        "start": 5.233,
+        "end": 5.553
+      },
+      {
+        "text": "o",
+        "start": 5.553,
+        "end": 5.653
+      },
+      {
+        "text": "calor.",
+        "start": 5.653,
+        "end": 6.033
+      },
+      {
+        "text": "É",
+        "start": 6.553,
+        "end": 6.793
+      },
+      {
+        "text": "o",
+        "start": 6.793,
+        "end": 6.873
+      },
+      {
+        "text": "evaporador.",
+        "start": 6.873,
+        "end": 7.513
+      }
+    ]
+  },
+  "s5": {
+    "text": "Mas, depois de evaporar, esse gás fica carregado de calor. Se ficar parado ali, o frio acaba.",
+    "seconds": 6.522,
+    "words": [
+      {
+        "text": "Mas,",
+        "start": 0,
+        "end": 0.199
+      },
+      {
+        "text": "depois",
+        "start": 0.379,
+        "end": 0.639
+      },
+      {
+        "text": "de",
+        "start": 0.639,
+        "end": 0.799
+      },
+      {
+        "text": "evaporar,",
+        "start": 0.799,
+        "end": 1.539
+      },
+      {
+        "text": "esse",
+        "start": 1.659,
+        "end": 1.779
+      },
+      {
+        "text": "gás",
+        "start": 1.779,
+        "end": 2.099
+      },
+      {
+        "text": "fica",
+        "start": 2.099,
+        "end": 2.319
+      },
+      {
+        "text": "carregado",
+        "start": 2.319,
+        "end": 2.959
+      },
+      {
+        "text": "de",
+        "start": 2.959,
+        "end": 3.099
+      },
+      {
+        "text": "calor.",
+        "start": 3.099,
+        "end": 3.439
+      },
+      {
+        "text": "Se",
+        "start": 4.019,
+        "end": 4.259
+      },
+      {
+        "text": "ficar",
+        "start": 4.259,
+        "end": 4.559
+      },
+      {
+        "text": "parado",
+        "start": 4.559,
+        "end": 4.979
+      },
+      {
+        "text": "ali,",
+        "start": 4.979,
+        "end": 5.199
+      },
+      {
+        "text": "o",
+        "start": 5.539,
+        "end": 5.579
+      },
+      {
+        "text": "frio",
+        "start": 5.579,
+        "end": 5.859
+      },
+      {
+        "text": "acaba.",
+        "start": 5.859,
+        "end": 6.099
+      }
+    ]
+  },
+  "s6": {
+    "text": "Então um motor suga o gás e aperta. Apertado, ele esquenta ainda mais. É o compressor.",
+    "seconds": 6.963,
+    "words": [
+      {
+        "text": "Então",
+        "start": 0,
+        "end": 0.267
+      },
+      {
+        "text": "um",
+        "start": 0.267,
+        "end": 0.487
+      },
+      {
+        "text": "motor",
+        "start": 0.487,
+        "end": 0.747
+      },
+      {
+        "text": "suga",
+        "start": 0.747,
+        "end": 1.147
+      },
+      {
+        "text": "o",
+        "start": 1.147,
+        "end": 1.207
+      },
+      {
+        "text": "gás",
+        "start": 1.207,
+        "end": 1.527
+      },
+      {
+        "text": "e",
+        "start": 1.527,
+        "end": 1.687
+      },
+      {
+        "text": "aperta.",
+        "start": 1.687,
+        "end": 2.327
+      },
+      {
+        "text": "Apertado,",
+        "start": 2.927,
+        "end": 3.567
+      },
+      {
+        "text": "ele",
+        "start": 3.847,
+        "end": 3.947
+      },
+      {
+        "text": "esquenta",
+        "start": 3.947,
+        "end": 4.387
+      },
+      {
+        "text": "ainda",
+        "start": 4.387,
+        "end": 4.707
+      },
+      {
+        "text": "mais.",
+        "start": 4.707,
+        "end": 5.227
+      },
+      {
+        "text": "É",
+        "start": 5.967,
+        "end": 6.067
+      },
+      {
+        "text": "o",
+        "start": 6.067,
+        "end": 6.127
+      },
+      {
+        "text": "compressor.",
+        "start": 6.127,
+        "end": 6.487
+      }
+    ]
+  },
+  "s7": {
+    "text": "E agora? Esse gás quente precisa jogar o calor fora, longe da comida.",
+    "seconds": 4.876,
+    "words": [
+      {
+        "text": "E",
+        "start": 0,
+        "end": 0.1
+      },
+      {
+        "text": "agora?",
+        "start": 0.1,
+        "end": 0.36
+      },
+      {
+        "text": "Esse",
+        "start": 1.04,
+        "end": 1.36
+      },
+      {
+        "text": "gás",
+        "start": 1.36,
+        "end": 1.66
+      },
+      {
+        "text": "quente",
+        "start": 1.66,
+        "end": 1.96
+      },
+      {
+        "text": "precisa",
+        "start": 1.96,
+        "end": 2.22
+      },
+      {
+        "text": "jogar",
+        "start": 2.22,
+        "end": 2.74
+      },
+      {
+        "text": "o",
+        "start": 2.74,
+        "end": 2.86
+      },
+      {
+        "text": "calor",
+        "start": 2.86,
+        "end": 3.06
+      },
+      {
+        "text": "fora,",
+        "start": 3.06,
+        "end": 3.54
+      },
+      {
+        "text": "longe",
+        "start": 3.72,
+        "end": 3.92
+      },
+      {
+        "text": "da",
+        "start": 3.92,
+        "end": 4.12
+      },
+      {
+        "text": "comida.",
+        "start": 4.12,
+        "end": 4.42
+      }
+    ]
+  },
+  "s8": {
+    "text": "Ele passa por uma grade atrás da geladeira, solta calor pro ar da cozinha e vira líquido. É o condensador.",
+    "seconds": 6.878,
+    "words": [
+      {
+        "text": "Ele",
+        "start": 0,
+        "end": 0.137
+      },
+      {
+        "text": "passa",
+        "start": 0.137,
+        "end": 0.417
+      },
+      {
+        "text": "por",
+        "start": 0.417,
+        "end": 0.657
+      },
+      {
+        "text": "uma",
+        "start": 0.657,
+        "end": 0.777
+      },
+      {
+        "text": "grade",
+        "start": 0.777,
+        "end": 1.057
+      },
+      {
+        "text": "atrás",
+        "start": 1.057,
+        "end": 1.357
+      },
+      {
+        "text": "da",
+        "start": 1.357,
+        "end": 1.617
+      },
+      {
+        "text": "geladeira,",
+        "start": 1.617,
+        "end": 2.317
+      },
+      {
+        "text": "solta",
+        "start": 2.497,
+        "end": 2.857
+      },
+      {
+        "text": "calor",
+        "start": 2.857,
+        "end": 3.157
+      },
+      {
+        "text": "pro",
+        "start": 3.157,
+        "end": 3.337
+      },
+      {
+        "text": "ar",
+        "start": 3.337,
+        "end": 3.497
+      },
+      {
+        "text": "da",
+        "start": 3.497,
+        "end": 3.597
+      },
+      {
+        "text": "cozinha",
+        "start": 3.597,
+        "end": 4.197
+      },
+      {
+        "text": "e",
+        "start": 4.197,
+        "end": 4.457
+      },
+      {
+        "text": "vira",
+        "start": 4.457,
+        "end": 4.717
+      },
+      {
+        "text": "líquido.",
+        "start": 4.717,
+        "end": 5.237
+      },
+      {
+        "text": "É",
+        "start": 5.657,
+        "end": 5.877
+      },
+      {
+        "text": "o",
+        "start": 5.877,
+        "end": 5.897
+      },
+      {
+        "text": "condensador.",
+        "start": 5.897,
+        "end": 6.557
+      }
+    ]
+  },
+  "s9": {
+    "text": "Só que esse líquido ainda está quente e apertado. Desse jeito, ele não gela nada.",
+    "seconds": 5.274,
+    "words": [
+      {
+        "text": "Só",
+        "start": 0.0,
+        "end": 0.18
+      },
+      {
+        "text": "que",
+        "start": 0.18,
+        "end": 0.36
+      },
+      {
+        "text": "esse",
+        "start": 0.36,
+        "end": 0.52
+      },
+      {
+        "text": "líquido",
+        "start": 0.52,
+        "end": 0.96
+      },
+      {
+        "text": "ainda",
+        "start": 0.96,
+        "end": 1.16
+      },
+      {
+        "text": "está",
+        "start": 1.16,
+        "end": 1.5
+      },
+      {
+        "text": "quente",
+        "start": 1.5,
+        "end": 1.86
+      },
+      {
+        "text": "e",
+        "start": 1.86,
+        "end": 1.98
+      },
+      {
+        "text": "apertado.",
+        "start": 1.98,
+        "end": 2.64
+      },
+      {
+        "text": "Desse",
+        "start": 3.1,
+        "end": 3.5
+      },
+      {
+        "text": "jeito,",
+        "start": 3.5,
+        "end": 3.88
+      },
+      {
+        "text": "ele",
+        "start": 4.14,
+        "end": 4.24
+      },
+      {
+        "text": "não",
+        "start": 4.24,
+        "end": 4.4
+      },
+      {
+        "text": "gela",
+        "start": 4.4,
+        "end": 4.66
+      },
+      {
+        "text": "nada.",
+        "start": 4.66,
+        "end": 4.96
+      }
+    ]
+  },
+  "s10": {
+    "text": "Por isso ele passa por um tubo fininho, o capilar. A pressão cai, e ele sai gelado, pronto pra evaporar de novo.",
+    "seconds": 7.486,
+    "words": [
+      {
+        "text": "Por",
+        "start": 0,
+        "end": 0.124
+      },
+      {
+        "text": "isso",
+        "start": 0.124,
+        "end": 0.324
+      },
+      {
+        "text": "ele",
+        "start": 0.424,
+        "end": 0.484
+      },
+      {
+        "text": "passa",
+        "start": 0.484,
+        "end": 0.824
+      },
+      {
+        "text": "por",
+        "start": 0.824,
+        "end": 1.104
+      },
+      {
+        "text": "um",
+        "start": 1.104,
+        "end": 1.184
+      },
+      {
+        "text": "tubo",
+        "start": 1.184,
+        "end": 1.524
+      },
+      {
+        "text": "fininho,",
+        "start": 1.524,
+        "end": 2.064
+      },
+      {
+        "text": "o",
+        "start": 2.244,
+        "end": 2.304
+      },
+      {
+        "text": "capilar.",
+        "start": 2.304,
+        "end": 2.864
+      },
+      {
+        "text": "A",
+        "start": 3.504,
+        "end": 3.684
+      },
+      {
+        "text": "pressão",
+        "start": 3.684,
+        "end": 3.964
+      },
+      {
+        "text": "cai,",
+        "start": 3.964,
+        "end": 4.304
+      },
+      {
+        "text": "e",
+        "start": 4.304,
+        "end": 4.704
+      },
+      {
+        "text": "ele",
+        "start": 4.704,
+        "end": 4.824
+      },
+      {
+        "text": "sai",
+        "start": 4.824,
+        "end": 5.004
+      },
+      {
+        "text": "gelado,",
+        "start": 5.004,
+        "end": 5.544
+      },
+      {
+        "text": "pronto",
+        "start": 5.744,
+        "end": 6.084
+      },
+      {
+        "text": "pra",
+        "start": 6.084,
+        "end": 6.264
+      },
+      {
+        "text": "evaporar",
+        "start": 6.264,
+        "end": 6.744
+      },
+      {
+        "text": "de",
+        "start": 6.744,
+        "end": 6.904
+      },
+      {
+        "text": "novo.",
+        "start": 6.904,
+        "end": 7.184
+      }
+    ]
+  },
+  "s11": {
+    "text": "Mas gelar sem parar congelaria até o suco. Por isso, um termostato controla o compressor e segura a temperatura.",
+    "seconds": 7.098,
+    "words": [
+      {
+        "text": "Mas",
+        "start": 0,
+        "end": 0.139
+      },
+      {
+        "text": "gelar",
+        "start": 0.139,
+        "end": 0.419
+      },
+      {
+        "text": "sem",
+        "start": 0.419,
+        "end": 0.599
+      },
+      {
+        "text": "parar",
+        "start": 0.599,
+        "end": 0.859
+      },
+      {
+        "text": "congelaria",
+        "start": 0.859,
+        "end": 1.479
+      },
+      {
+        "text": "até",
+        "start": 1.479,
+        "end": 1.719
+      },
+      {
+        "text": "o",
+        "start": 1.719,
+        "end": 1.819
+      },
+      {
+        "text": "suco.",
+        "start": 1.819,
+        "end": 2.319
+      },
+      {
+        "text": "Por",
+        "start": 2.879,
+        "end": 3.019
+      },
+      {
+        "text": "isso,",
+        "start": 3.019,
+        "end": 3.319
+      },
+      {
+        "text": "um",
+        "start": 3.519,
+        "end": 3.659
+      },
+      {
+        "text": "termostato",
+        "start": 3.659,
+        "end": 4.359
+      },
+      {
+        "text": "controla",
+        "start": 4.359,
+        "end": 4.859
+      },
+      {
+        "text": "o",
+        "start": 4.859,
+        "end": 4.899
+      },
+      {
+        "text": "compressor",
+        "start": 4.899,
+        "end": 5.379
+      },
+      {
+        "text": "e",
+        "start": 5.379,
+        "end": 5.719
+      },
+      {
+        "text": "segura",
+        "start": 5.719,
+        "end": 6.119
+      },
+      {
+        "text": "a",
+        "start": 6.119,
+        "end": 6.179
+      },
+      {
+        "text": "temperatura.",
+        "start": 6.179,
+        "end": 6.659
+      }
+    ]
+  },
+  "s12": {
+    "text": "Pronto: a geladeira não cria frio. Ela leva o calor de dentro pra fora, sem parar. E o suco fica no ponto!",
+    "seconds": 7.318,
+    "words": [
+      {
+        "text": "Pronto:",
+        "start": 0,
+        "end": 0.351
+      },
+      {
+        "text": "a",
+        "start": 0.611,
+        "end": 0.691
+      },
+      {
+        "text": "geladeira",
+        "start": 0.691,
+        "end": 1.131
+      },
+      {
+        "text": "não",
+        "start": 1.131,
+        "end": 1.251
+      },
+      {
+        "text": "cria",
+        "start": 1.251,
+        "end": 1.451
+      },
+      {
+        "text": "frio.",
+        "start": 1.451,
+        "end": 1.951
+      },
+      {
+        "text": "Ela",
+        "start": 2.471,
+        "end": 2.651
+      },
+      {
+        "text": "leva",
+        "start": 2.651,
+        "end": 2.911
+      },
+      {
+        "text": "o",
+        "start": 2.911,
+        "end": 3.031
+      },
+      {
+        "text": "calor",
+        "start": 3.031,
+        "end": 3.291
+      },
+      {
+        "text": "de",
+        "start": 3.291,
+        "end": 3.491
+      },
+      {
+        "text": "dentro",
+        "start": 3.491,
+        "end": 3.751
+      },
+      {
+        "text": "pra",
+        "start": 3.751,
+        "end": 3.931
+      },
+      {
+        "text": "fora,",
+        "start": 3.931,
+        "end": 4.231
+      },
+      {
+        "text": "sem",
+        "start": 4.291,
+        "end": 4.411
+      },
+      {
+        "text": "parar.",
+        "start": 4.411,
+        "end": 4.751
+      },
+      {
+        "text": "E",
+        "start": 5.391,
+        "end": 5.631
+      },
+      {
+        "text": "o",
+        "start": 5.631,
+        "end": 5.751
+      },
+      {
+        "text": "suco",
+        "start": 5.751,
+        "end": 6.071
+      },
+      {
+        "text": "fica",
+        "start": 6.071,
+        "end": 6.371
+      },
+      {
+        "text": "no",
+        "start": 6.371,
+        "end": 6.571
+      },
+      {
+        "text": "ponto!",
+        "start": 6.571,
+        "end": 6.931
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "s1": "Você quer servir um suco gelado. Parece que basta guardar numa caixa bem fechada.",
+  "s2": "Só que caixa fechada não esfria nada. Ela só guarda, e o calor do suco continua lá dentro.",
+  "s3": "Pra esfriar, é preciso tirar calor. E um líquido que evapora faz isso: ele rouba calor do que está em volta.",
+  "s4": "Por isso, a geladeira tem um tubo com fluido refrigerante. Ele evapora lá dentro e puxa o calor. É o evaporador.",
+  "s5": "Mas, depois de evaporar, esse gás fica carregado de calor. Se ficar parado ali, o frio acaba.",
+  "s6": "Então um motor suga o gás e aperta. Apertado, ele esquenta ainda mais. É o compressor.",
+  "s7": "E agora? Esse gás quente precisa jogar o calor fora, longe da comida.",
+  "s8": "Ele passa por uma grade atrás da geladeira, solta calor pro ar da cozinha e vira líquido. É o condensador.",
+  "s9": "Só que esse líquido ainda está quente e apertado. Desse jeito, ele não gela nada.",
+  "s10": "Por isso ele passa por um tubo fininho, o capilar. A pressão cai, e ele sai gelado, pronto pra evaporar de novo.",
+  "s11": "Mas gelar sem parar congelaria até o suco. Por isso, um termostato controla o compressor e segura a temperatura.",
+  "s12": "Pronto: a geladeira não cria frio. Ela leva o calor de dentro pra fora, sem parar. E o suco fica no ponto!"
+}
