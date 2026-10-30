@@ -301,7 +301,9 @@ export const scenes: ScenePlan[] = [
     ),
     animations: [
       { type: "spring", target: "owner.reach", startFrame: W("s6", 0), endFrame: W("s6", 0) + 30, to: 0, damping: 9, unit: "0-1" },
-      { type: "interpolate", target: "camera.shake", startFrame: W("s6", 0), endFrame: W("s6", 0) + 4, from: 1, to: 0, easing: "out", unit: "0-1" },
+      // o tranco começa em 0: antes da 1ª animação a trilha vale o `from` dela (com from: 1 a câmera tremia desde o frame 0)
+      { type: "interpolate", target: "camera.shake", startFrame: W("s6", 0) - 1, endFrame: W("s6", 0), from: 0, to: 1, easing: "linear", unit: "0-1" },
+      { type: "interpolate", target: "camera.shake", startFrame: W("s6", 0), endFrame: W("s6", 0) + 4, to: 0, easing: "out", unit: "0-1" },
       { type: "spring", target: "lawIcon.pop", startFrame: W("s6", 1), endFrame: W("s6", 1) + 30, from: 0, to: 1, damping: 10, unit: "0-1" },
       { type: "interpolate", target: "register.split", startFrame: W("s6", 4), endFrame: W("s6", 7) + 6, from: 0, to: 1, easing: "out", unit: "0-1" },
       { type: "interpolate", target: "coins.sort", startFrame: W("s6", 5), endFrame: W("s6", 8) + 10, from: 0, to: 1, easing: "inOut", unit: "0-1" },
