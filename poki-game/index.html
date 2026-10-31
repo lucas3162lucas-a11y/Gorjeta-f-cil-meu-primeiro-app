@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Orbit Hopper</title>
+<!--
+  ORBIT HOPPER — jogo arcade de um toque, pronto para a Poki.
+  Arquivo único: HTML + CSS + JS (Canvas 2D + Web Audio), sem dependências além da Poki SDK.
+
+  Fluxo da Poki SDK implementado:
+    1. PokiSDK.init()  (+ .catch para adblock / SDK bloqueada)
+    2. PokiSDK.gameLoadingFinished()  -> quando o jogo está pronto para jogar
+    3. PokiSDK.gameplayStart()        -> sempre que o jogador entra em ação
+       PokiSDK.gameplayStop()         -> morte, pausa, aba oculta, saída para o menu
+    4. PokiSDK.commercialBreak()      -> antes de cada partida (Jogar / Jogar de novo)
+       PokiSDK.rewardedBreak()        -> Continuar após morrer, Moedas x2, Escudo inicial
+    5. Durante QUALQUER anúncio: loop congelado + AudioContext suspenso; retoma sozinho ao terminar.
+-->
+<!-- URL oficial da Poki SDK v2. Se um adblocker bloquear o carregamento, o jogo usa um stub (ver abaixo). -->
+<script src="https://game-cdn.poki.com/scripts/v2/poki-sdk.js"></script>
+<style>
+  :root {
+    --bg: #070b1f;
+    --panel: rgba(14, 20, 52, 0.92);
+    --accent: #ffd447;
+    --accent2: #5ef2ff;
+    --danger: #ff5e7a;
+    --text: #f2f5ff;
+    --muted: #9aa6d6;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    overflow: hidden; background: var(--bg); color: var(--text);
+    font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+    user-select: none; -webkit-user-select: none; touch-action: none;
+  }
+  #game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+
+  .overlay {
+    position: fixed; inset: 0; display: none;
+    align-items: center; justify-content: center; flex-direction: column;
+    padding: 16px; text-align: center; z-index: 10;
+  }
+  .overlay.show { display: flex; }
+  .overlay.dim { background: rgba(4, 6, 20, 0.55); }
+
+  .card {
+    background: var(--panel); border: 2px solid rgba(94, 242, 255, 0.25);
+    border-radius: 22px; padding: 22px 20px; width: min(92vw, 380px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  }
+  h1.logo {
+    margin: 0 0 6px; font-size: clamp(38px, 11vw, 64px); line-height: 0.95; letter-spacing: 1px;
+    color: var(--accent); text-shadow: 0 4px 0 #b3711a, 0 8px 24px rgba(255, 212, 71, 0.35);
+  }
+  h1.logo span { color: var(--accent2); text-shadow: 0 4px 0 #1b7f9a, 0 8px 24px rgba(94,242,255,0.35); }
+  h2 { margin: 0 0 12px; font-size: 30px; color: var(--accent); }
+  p { margin: 6px 0; color: var(--muted); }
+  .big { font-size: 46px; font-weight: 800; color: var(--text); margin: 4px 0; }
+  .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+
+  button {
+    font-family: inherit; font-weight: 800; font-size: 19px; color: #1a1030;
+    border: none; border-radius: 16px; padding: 14px 20px; cursor: pointer;
+    background: var(--accent); box-shadow: 0 5px 0 #b3711a; transition: transform .08s;
+    min-width: 140px;
+  }
+  button:active { transform: translateY(3px); box-shadow: 0 2px 0 #b3711a; }
+  button.secondary { background: #2b3a7a; color: var(--text); box-shadow: 0 5px 0 #18214a; }
+  button.reward { background: #5ef2a1; box-shadow: 0 5px 0 #23935a; }
+  button.reward::before { content: "▶ "; font-size: 15px; }
+  button.wide { width: 100%; margin-top: 10px; }
+  button:disabled { opacity: .45; cursor: default; transform: none; }
+
+  #hudButtons { position: fixed; top: 10px; right: 10px; z-index: 5; display: flex; gap: 8px; }
+  .iconBtn {
+    min-width: 0; width: 48px; height: 48px; padding: 0; font-size: 22px;
+    border-radius: 14px; background: rgba(20, 28, 70, 0.75); color: var(--text);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.4);
+  }
+  .iconBtn:active { box-shadow: 0 1px 0 rgba(0,0,0,0.4); }
+
+  #shopGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0 4px; }
+  .skin {
+    min-width: 0; padding: 10px 4px 8px; font-size: 13px; background: #1c2760; color: var(--text);
+    box-shadow: 0 4px 0 #101741; border: 2px solid transparent; border-radius: 14px;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+  .skin.selected { border-color: var(--accent); }
+  .skin .dot { width: 34px; height: 34px; border-radius: 50%; box-shadow: inset -5px -5px 0 rgba(0,0,0,0.25); }
+  .coinTag { color: var(--accent); font-weight: 800; }
+  #toast {
+    position: fixed; left: 50%; bottom: 8%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.75); color: #fff; padding: 10px 18px; border-radius: 12px;
+    font-weight: 700; z-index: 30; opacity: 0; transition: opacity .25s; pointer-events: none;
+  }
+  #toast.show { opacity: 1; }
+  #loading { font-size: 22px; color: var(--muted); }
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<!-- HUD -->
+<div id="hudButtons">
+  <button class="iconBtn" id="btnMute" aria-label="som">🔊</button>
+  <button class="iconBtn" id="btnPause" aria-label="pausa" style="display:none;font-weight:900">II</button>
+</div>
+
+<!-- Carregando -->
+<div class="overlay show" id="scrLoading"><div id="loading">Loading…</div></div>
+
+<!-- Menu -->
+<div class="overlay" id="scrMenu">
+  <h1 class="logo">ORBIT<br><span>HOPPER</span></h1>
+  <p id="txtTagline"></p>
+  <div class="card" style="margin-top:14px">
+    <p><span id="txtBest"></span>: <b id="menuBest" style="color:var(--text)">0</b> &nbsp;·&nbsp; <span class="coinTag">★ <span id="menuCoins">0</span></span></p>
+    <button class="wide" id="btnPlay"></button>
+    <button class="wide reward" id="btnShieldAd"></button>
+    <button class="wide secondary" id="btnShop"></button>
+  </div>
+</div>
+
+<!-- Loja -->
+<div class="overlay dim" id="scrShop">
+  <div class="card">
+    <h2 id="txtShop"></h2>
+    <p class="coinTag">★ <span id="shopCoins">0</span></p>
+    <div id="shopGrid"></div>
+    <button class="wide reward" id="btnFreeCoins"></button>
+    <button class="wide secondary" id="btnShopBack"></button>
+  </div>
+</div>
+
+<!-- Pausa -->
+<div class="overlay dim" id="scrPause">
+  <div class="card">
+    <h2 id="txtPaused"></h2>
+    <button class="wide" id="btnResume"></button>
+    <button class="wide secondary" id="btnPauseMenu"></button>
+  </div>
+</div>
+
+<!-- Fim de jogo -->
+<div class="overlay dim" id="scrOver">
+  <div class="card">
+    <h2 id="txtGameOver"></h2>
+    <div class="big" id="overScore">0</div>
+    <p><span id="txtBest2"></span>: <b id="overBest" style="color:var(--text)">0</b> &nbsp;·&nbsp; <span class="coinTag">+★ <span id="overCoins">0</span></span></p>
+    <button class="wide reward" id="btnContinue"></button>
+    <button class="wide reward" id="btnDouble"></button>
+    <div class="row">
+      <button id="btnAgain"></button>
+      <button class="secondary" id="btnOverMenu"></button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* =========================================================================
+   1) POKI SDK — inicialização segura (funciona mesmo com adblock)
+   ========================================================================= */
+const SdkStub = {
+  init: () => Promise.resolve(),
+  setDebug: () => {},
+  gameLoadingFinished: () => {},
+  gameplayStart: () => {},
+  gameplayStop: () => {},
+  commercialBreak: () => Promise.resolve(),
+  rewardedBreak: () => Promise.resolve(false), // sem SDK = sem recompensa
+};
+// Se o <script> da Poki foi bloqueado, window.PokiSDK não existe -> usamos o stub.
+let SDK = window.PokiSDK || SdkStub;
+let sdkReady = false;
+
+const Poki = {
+  isPlaying: false, // espelha o estado gameplayStart/gameplayStop (evita chamadas duplicadas)
+
+  init() {
+    return SDK.init()
+      .then(() => { sdkReady = true; })
+      .catch(() => {
+        // Adblock ou falha de rede: o jogo continua normalmente, só sem anúncios.
+        console.warn("[Poki] SDK bloqueada (adblock?). Continuando sem anúncios.");
+        SDK = SdkStub;
+      })
+      .finally(() => {
+        try { if (/localhost|127\.0\.0\.1/.test(location.hostname)) SDK.setDebug(true); } catch (e) {}
+      });
+  },
+  loadingFinished() { try { SDK.gameLoadingFinished(); } catch (e) {} },
+  gameplayStart() {
+    if (this.isPlaying) return;
+    this.isPlaying = true;
+    try { SDK.gameplayStart(); } catch (e) {}
+  },
+  gameplayStop() {
+    if (!this.isPlaying) return;
+    this.isPlaying = false;
+    try { SDK.gameplayStop(); } catch (e) {}
+  },
+
+  /* Anúncio comercial em transição natural. Sempre pausa jogo + som e retoma no final. */
+  commercialBreak() {
+    this.gameplayStop();
+    AdGuard.begin();
+    let p;
+    try { p = SDK.commercialBreak(); } catch (e) { p = Promise.resolve(); }
+    return Promise.resolve(p).catch(() => {}).finally(() => AdGuard.end());
+  },
+
+  /* Anúncio premiado. Resolve true somente se o jogador assistiu até o fim. */
+  rewardedBreak() {
+    this.gameplayStop();
+    AdGuard.begin();
+    let p;
+    try { p = SDK.rewardedBreak(); } catch (e) { p = Promise.resolve(false); }
+    return Promise.resolve(p)
+      .then(ok => !!ok)
+      .catch(() => false)
+      .finally(() => AdGuard.end());
+  },
+};
+
+/* =========================================================================
+   2) ADGUARD — congela loop e áudio enquanto qualquer anúncio roda
+   ========================================================================= */
+const AdGuard = {
+  active: false,
+  begin() {
+    if (this.active) return;
+    this.active = true;
+    Sound.suspend();
+    document.body.style.pointerEvents = "none"; // ignora cliques durante o anúncio
+  },
+  end() {
+    if (!this.active) return;
+    this.active = false;
+    document.body.style.pointerEvents = "";
+    Sound.resume();
+    lastFrame = performance.now(); // evita "salto" de dt depois do anúncio
+  },
+};
+
+/* =========================================================================
+   3) TEXTOS (PT / EN automático)
+   ========================================================================= */
+const LANG = (navigator.language || "en").toLowerCase().startsWith("pt") ? "pt" : "en";
+const T = {
+  pt: {
+    tagline: "Toque para saltar de planeta em planeta!", best: "Recorde", play: "JOGAR",
+    shieldAd: "Começar com escudo", shop: "Skins", shopTitle: "Skins", back: "Voltar",
+    freeCoins: "+25 moedas grátis", paused: "Pausado", resume: "Continuar", menu: "Menu",
+    gameOver: "Fim de jogo", cont: "Continuar (reviver)", dbl: "Dobrar moedas", again: "De novo",
+    tap: "TOQUE PARA SALTAR", perfect: "PERFEITO!", noAd: "Anúncio indisponível agora",
+    shieldOn: "Escudo ativado!", doubled: "Moedas dobradas!", got: "+25 moedas!",
+    owned: "Usar", using: "Em uso", newBest: "NOVO RECORDE!", shieldSaved: "Escudo salvou você!",
+    loading: "Carregando…",
+  },
+  en: {
+    tagline: "Tap to hop from planet to planet!", best: "Best", play: "PLAY",
+    shieldAd: "Start with a shield", shop: "Skins", shopTitle: "Skins", back: "Back",
+    freeCoins: "+25 free coins", paused: "Paused", resume: "Resume", menu: "Menu",
+    gameOver: "Game Over", cont: "Continue (revive)", dbl: "Double coins", again: "Again",
+    tap: "TAP TO JUMP", perfect: "PERFECT!", noAd: "Ad not available right now",
+    shieldOn: "Shield activated!", doubled: "Coins doubled!", got: "+25 coins!",
+    owned: "Use", using: "Equipped", newBest: "NEW BEST!", shieldSaved: "Shield saved you!",
+    loading: "Loading…",
+  },
+}[LANG];
+
+/* =========================================================================
+   4) SALVAMENTO (localStorage com try/catch)
+   ========================================================================= */
+const SKINS = [
+  { id: "comet",  name: "Comet",  color: "#5ef2ff", trail: "#5ef2ff", price: 0 },
+  { id: "ember",  name: "Ember",  color: "#ff8a3d", trail: "#ffd447", price: 60 },
+  { id: "mint",   name: "Mint",   color: "#5ef2a1", trail: "#c3ffde", price: 120 },
+  { id: "berry",  name: "Berry",  color: "#ff5ea8", trail: "#ffb3d9", price: 200 },
+  { id: "void",   name: "Void",   color: "#9b6bff", trail: "#e0d0ff", price: 320 },
+  { id: "gold",   name: "Gold",   color: "#ffd447", trail: "#fff4b8", price: 500 },
+];
+const Save = {
+  data: { coins: 0, best: 0, owned: ["comet"], skin: "comet", muted: false },
+  load() {
+    try {
+      const raw = localStorage.getItem("orbitHopperSave");
+      if (raw) Object.assign(this.data, JSON.parse(raw));
+    } catch (e) {}
+  },
+  write() {
+    try { localStorage.setItem("orbitHopperSave", JSON.stringify(this.data)); } catch (e) {}
+  },
+};
+
+/* =========================================================================
+   5) ÁUDIO (Web Audio sintetizado — sem arquivos externos)
+   ========================================================================= */
+const Sound = {
+  ctx: null, master: null, music: null, nextNote: 0, step: 0,
+  ensure() {
+    if (this.ctx) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    this.ctx = new AC();
+    this.master = this.ctx.createGain();
+    this.master.gain.value = Save.data.muted ? 0 : 0.6;
+    this.master.connect(this.ctx.destination);
+    this.music = this.ctx.createGain();
+    this.music.gain.value = 0.18;
+    this.music.connect(this.master);
+  },
+  suspend() { if (this.ctx && this.ctx.state === "running") this.ctx.suspend(); },
+  resume() {
+    if (!this.ctx || AdGuard.active || document.hidden) return;
+    if (this.ctx.state !== "running") this.ctx.resume();
+  },
+  setMuted(m) {
+    Save.data.muted = m; Save.write();
+    if (this.master) this.master.gain.value = m ? 0 : 0.6;
+  },
+  tone(freq, dur, type = "sine", vol = 0.3, slideTo = null, when = 0, dest = null) {
+    if (!this.ctx || this.ctx.state !== "running") return;
+    const t = this.ctx.currentTime + when;
+    const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(freq, t);
+    if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(dest || this.master);
+    o.start(t); o.stop(t + dur + 0.02);
+  },
+  jump()    { this.tone(320, 0.18, "triangle", 0.25, 760); },
+  land(p)   { this.tone(p ? 880 : 520, 0.15, "sine", 0.3, p ? 1320 : 700); if (p) this.tone(1320, 0.2, "sine", 0.18, 1760, 0.07); },
+  coin()    { this.tone(1200, 0.08, "square", 0.08); this.tone(1800, 0.12, "square", 0.07, null, 0.05); },
+  die()     { this.tone(300, 0.6, "sawtooth", 0.25, 40); },
+  click()   { this.tone(600, 0.06, "triangle", 0.15); },
+  reward()  { [660, 880, 1100, 1320].forEach((f, i) => this.tone(f, 0.18, "triangle", 0.2, null, i * 0.07)); },
+
+  /* Música procedural simples, agendada com antecedência. Como usa o relógio do
+     AudioContext, ao suspender o contexto (anúncio/pausa) a música congela junto. */
+  updateMusic(active) {
+    if (!this.ctx || this.ctx.state !== "running" || !active) return;
+    const now = this.ctx.currentTime;
+    if (this.nextNote < now) this.nextNote = now + 0.05;
+    const scale = [0, 3, 5, 7, 10, 12, 15];
+    const roots = [220, 196, 174.6, 196];
+    while (this.nextNote < now + 0.25) {
+      const bar = Math.floor(this.step / 8) % roots.length;
+      const root = roots[bar];
+      const s = this.step % 8;
+      if (s === 0) this.tone(root / 2, 0.9, "triangle", 0.5, null, this.nextNote - now, this.music);
+      const deg = scale[(this.step * 5 + bar * 2) % scale.length];
+      this.tone(root * Math.pow(2, deg / 12), 0.2, "sine", 0.35, null, this.nextNote - now, this.music);
+      this.nextNote += 0.22;
+      this.step++;
+    }
+  },
+};
+
+/* =========================================================================
+   6) CANVAS / ESCALA RESPONSIVA
+   ========================================================================= */
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const COL_W = 540, BASE_H = 960; // coluna de jogo lógica
+let DPR = 1, scale = 1, VW = COL_W, VH = BASE_H, offX = 0;
+
+function resize() {
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  const w = window.innerWidth, h = window.innerHeight;
+  canvas.width = Math.floor(w * DPR);
+  canvas.height = Math.floor(h * DPR);
+  scale = Math.min(w / COL_W, h / BASE_H);
+  VW = w / scale;           // largura lógica visível (>= 540)
+  VH = h / scale;           // altura lógica visível (>= 960)
+  offX = (VW - COL_W) / 2;  // centraliza a coluna de jogo
+}
+window.addEventListener("resize", resize);
+resize();
+
+/* =========================================================================
+   7) ESTADO DO JOGO
+   ========================================================================= */
+const rand = (a, b) => a + Math.random() * (b - a);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const PLANET_COLORS = [
+  ["#ff7b54", "#a8341c"], ["#5ef2ff", "#1b6f9a"], ["#9b6bff", "#4a2a9e"],
+  ["#5ef2a1", "#1d7a4d"], ["#ffd447", "#a8711a"], ["#ff5ea8", "#932056"],
+];
+
+let state = "loading"; // loading | menu | shop | play | paused | dying | over
+let G = null;          // dados da partida atual
+let lastFrame = performance.now();
+let time = 0;
+let bgStars = [];
+
+function makeBgStars() {
+  bgStars = [];
+  for (let i = 0; i < 160; i++) {
+    bgStars.push({ x: Math.random(), y: Math.random(), z: rand(0.15, 1), tw: rand(0, 6.28) });
+  }
+}
+makeBgStars();
+
+function newRun() {
+  G = {
+    planets: [], coins: [], rocks: [], particles: [], popups: [],
+    player: { x: 0, y: 0, vx: 0, vy: 0, planet: null, angle: Math.PI, dir: 1, orbitR: 60, flying: false,
+              flyT: 0, from: null, trail: [], invuln: 0 },
+    camY: 0, score: 0, coinsRun: 0, shake: 0, highestY: 0,
+    usedContinue: false, doubled: false, shield: false,
+    jumped: false, deathTimer: 0, newBest: false,
+  };
+  // Planeta inicial
+  const first = addPlanet(COL_W / 2, 0, 46, false);
+  first.visited = true;
+  const p = G.player;
+  p.planet = first;
+  p.orbitR = first.r + 32;
+  placeOnOrbit();
+  G.lastY = 0;
+  for (let i = 0; i < 6; i++) spawnNext();
+  G.camY = first.y - VH * 0.7;
+}
+
+function difficulty() { return G ? G.score : 0; }
+
+function addPlanet(x, y, r, moving) {
+  const c = PLANET_COLORS[Math.floor(Math.random() * PLANET_COLORS.length)];
+  const pl = {
+    x, y, baseX: x, r, c1: c[0], c2: c[1], visited: false, ring: Math.random() < 0.3,
+    amp: 0, spd: 0, ph: rand(0, 6.28), rot: rand(0, 6.28),
+  };
+  if (moving) {
+    pl.amp = Math.min(130, 40 + difficulty() * 3);
+    pl.spd = rand(0.8, 1.3) + Math.min(difficulty() * 0.02, 0.8);
+    pl.baseX = clamp(x, r + 30 + pl.amp, COL_W - r - 30 - pl.amp);
+    if (pl.baseX - pl.amp < r + 20) { pl.amp = Math.max(0, pl.baseX - r - 20); }
+  }
+  G.planets.push(pl);
+  return pl;
+}
+
+function spawnNext() {
+  const d = difficulty();
+  const prev = G.planets[G.planets.length - 1];
+  const gap = rand(230, 290) + Math.min(d * 3, 70);
+  const y = prev.y - gap;
+  let x;
+  do { x = rand(90, COL_W - 90); } while (Math.abs(x - prev.baseX) < 70);
+  const r = rand(30, 50) - Math.min(d * 0.3, 10);
+  const moving = d > 4 && Math.random() < Math.min(0.15 + d * 0.02, 0.6);
+  const pl = addPlanet(x, y, r, moving);
+
+  // Moedas no caminho entre os planetas
+  if (Math.random() < 0.75) {
+    const n = 3;
+    for (let i = 0; i < n; i++) {
+      const t = 0.35 + i * 0.15;
+      G.coins.push({ x: prev.baseX + (pl.baseX - prev.baseX) * t, y: prev.y + (pl.y - prev.y) * t, got: false, spin: rand(0, 6) });
+    }
+  } else {
+    // Anel de moedas na órbita do novo planeta
+    const or = pl.r + 32;
+    for (let i = 0; i < 4; i++) {
+      const a = i * Math.PI / 2 + 0.4;
+      G.coins.push({ planet: pl, a, or, x: 0, y: 0, got: false, spin: rand(0, 6) });
+    }
+  }
+
+  // Asteroides a partir de certa pontuação
+  if (d > 6 && Math.random() < Math.min(0.2 + d * 0.025, 0.7)) {
+    const ry = (prev.y + pl.y) / 2; // meio do vão: nunca atinge quem está em órbita
+    const speed = rand(60, 110) + Math.min(d * 3, 120);
+    const pts = [];
+    const sides = 7;
+    for (let i = 0; i < sides; i++) pts.push(rand(0.75, 1.1));
+    G.rocks.push({ x: rand(0, COL_W), y: ry, r: rand(12, 18), vx: Math.random() < 0.5 ? -speed : speed, rot: 0, vr: rand(-2, 2), pts });
+  }
+}
+
+function placeOnOrbit() {
+  const p = G.player, pl = p.planet;
+  p.x = pl.x + Math.cos(p.angle) * p.orbitR;
+  p.y = pl.y + Math.sin(p.angle) * p.orbitR;
+}
+
+/* =========================================================================
+   8) LÓGICA DO JOGO
+   ========================================================================= */
+function jump() {
+  const p = G.player;
+  if (p.flying || state !== "play") return;
+  const speed = 560 + Math.min(difficulty() * 4, 140);
+  // Tangente da órbita no sentido do movimento
+  p.vx = -Math.sin(p.angle) * p.dir * speed;
+  p.vy = Math.cos(p.angle) * p.dir * speed;
+  p.from = p.planet;
+  p.planet = null;
+  p.flying = true;
+  p.flyT = 0;
+  G.jumped = true;
+  Sound.jump();
+  burst(p.x, p.y, currentSkin().trail, 8, 120);
+}
+
+function update(dt) {
+  time += dt;
+  if (!G) return;
+  const p = G.player;
+
+  // Planetas móveis
+  for (const pl of G.planets) {
+    if (pl.amp) pl.x = pl.baseX + Math.sin(time * pl.spd + pl.ph) * pl.amp;
+    pl.rot += dt * 0.3;
+  }
+  // Moedas em órbita
+  for (const c of G.coins) {
+    c.spin += dt * 4;
+    if (c.planet) { c.a += dt * 0.8; c.x = c.planet.x + Math.cos(c.a) * c.or; c.y = c.planet.y + Math.sin(c.a) * c.or; }
+  }
+  // Asteroides
+  for (const r of G.rocks) {
+    r.x += r.vx * dt; r.rot += r.vr * dt;
+    if (r.x < -60 - offX) r.x = COL_W + 60 + offX;
+    if (r.x > COL_W + 60 + offX) r.x = -60 - offX;
+  }
+
+  if (state === "play") {
+    if (p.invuln > 0) p.invuln -= dt;
+
+    if (!p.flying) {
+      const pl = p.planet;
+      const target = pl.r + 32;
+      p.orbitR += (target - p.orbitR) * Math.min(1, dt * 6);
+      const lin = 230 + Math.min(difficulty() * 6, 180);
+      p.angle += p.dir * (lin / p.orbitR) * dt;
+      placeOnOrbit();
+    } else {
+      p.flyT += dt;
+      p.x += p.vx * dt; p.y += p.vy * dt;
+      // Captura por outro planeta
+      for (const pl of G.planets) {
+        if (pl === p.from) {
+          const d0 = Math.hypot(p.x - pl.x, p.y - pl.y);
+          if (d0 < pl.r + 80) continue;
+        }
+        const dx = p.x - pl.x, dy = p.y - pl.y, d = Math.hypot(dx, dy);
+        if (d < pl.r + 78) { capture(pl, dx, dy, d); break; }
+      }
+      // Perdido no espaço
+      const outX = p.x < -30 - offX || p.x > COL_W + 30 + offX;
+      const outY = p.y > G.camY + VH + 40 || p.y < G.camY - 120;
+      if (p.flying && (outX || outY || p.flyT > 1.5)) die();
+    }
+
+    // Moedas
+    for (const c of G.coins) {
+      if (!c.got && Math.hypot(c.x - p.x, c.y - p.y) < 28) {
+        c.got = true;
+        G.coinsRun++;
+        Save.data.coins++;
+        Sound.coin();
+        burst(c.x, c.y, "#ffd447", 6, 90);
+      }
+    }
+    // Colisão com asteroides
+    if (p.invuln <= 0) {
+      for (const r of G.rocks) {
+        if (Math.hypot(r.x - p.x, r.y - p.y) < r.r + 11) { die(); break; }
+      }
+    }
+
+    // Trilha
+    p.trail.push({ x: p.x, y: p.y });
+    if (p.trail.length > 18) p.trail.shift();
+
+    // Câmera segue o planeta atual (ou o jogador em voo)
+    const focusY = p.flying ? Math.min(p.y, (p.from ? p.from.y : p.y)) : p.planet.y;
+    const target = focusY - VH * 0.68;
+    if (target < G.camY) G.camY += (target - G.camY) * Math.min(1, dt * 3.5);
+    else G.camY += (target - G.camY) * Math.min(1, dt * 1.2);
+
+    // Geração / limpeza infinita
+    while (G.planets[G.planets.length - 1].y > G.camY - VH) spawnNext();
+    const cut = G.camY + VH + 400;
+    G.planets = G.planets.filter(pl => pl.y < cut || pl === p.planet || pl === p.from);
+    G.coins = G.coins.filter(c => !c.got && c.y < cut);
+    G.rocks = G.rocks.filter(r => r.y < cut);
+  }
+
+  if (state === "dying") {
+    G.deathTimer -= dt;
+    if (G.deathTimer <= 0) showGameOver();
+  }
+
+  // Partículas e textos flutuantes
+  for (const pt of G.particles) { pt.x += pt.vx * dt; pt.y += pt.vy * dt; pt.vx *= 0.96; pt.vy *= 0.96; pt.life -= dt; }
+  G.particles = G.particles.filter(pt => pt.life > 0);
+  for (const pp of G.popups) { pp.y -= 50 * dt; pp.life -= dt; }
+  G.popups = G.popups.filter(pp => pp.life > 0);
+  G.shake = Math.max(0, G.shake - dt * 30);
+
+  Sound.updateMusic(state === "play");
+}
+
+function capture(pl, dx, dy, d) {
+  const p = G.player;
+  const cross = dx * p.vy - dy * p.vx;
+  p.dir = cross >= 0 ? 1 : -1;
+  p.angle = Math.atan2(dy, dx);
+  p.orbitR = d;
+  p.planet = pl;
+  p.flying = false;
+  p.from = null;
+  const perfect = Math.abs(d - (pl.r + 32)) < 16;
+  if (!pl.visited) {
+    pl.visited = true;
+    G.score += perfect ? 2 : 1;
+    if (perfect) {
+      G.popups.push({ x: p.x, y: p.y - 20, text: T.perfect, life: 0.9, color: "#5ef2ff" });
+      G.shake = 4;
+    } else {
+      G.popups.push({ x: p.x, y: p.y - 20, text: "+1", life: 0.7, color: "#ffffff" });
+    }
+  }
+  Sound.land(perfect);
+  burst(p.x, p.y, pl.c1, 10, 140);
+}
+
+function die() {
+  const p = G.player;
+  // Escudo (recompensa do anúncio no menu) salva uma vez
+  if (G.shield) {
+    G.shield = false;
+    G.popups.push({ x: p.x, y: p.y, text: T.shieldSaved, life: 1.2, color: "#5ef2a1" });
+    revivePlayer();
+    return;
+  }
+  Sound.die();
+  burst(p.x, p.y, currentSkin().color, 30, 260);
+  G.shake = 14;
+  state = "dying";
+  G.deathTimer = 0.9;
+  Poki.gameplayStop(); // jogador parou de jogar
+  ui.pauseBtn.style.display = "none";
+}
+
+function revivePlayer() {
+  const p = G.player;
+  // Volta ao último planeta visitado mais alto que ainda existe
+  let best = null;
+  for (const pl of G.planets) if (pl.visited && (!best || pl.y < best.y)) best = pl;
+  p.planet = best || G.planets[0];
+  p.flying = false; p.from = null;
+  p.orbitR = p.planet.r + 32;
+  p.angle = Math.PI;
+  p.invuln = 2.2;
+  p.trail = [];
+  placeOnOrbit();
+  // Remove asteroides próximos para um recomeço justo
+  G.rocks = G.rocks.filter(r => Math.abs(r.y - p.planet.y) > 220);
+  burst(p.x, p.y, "#5ef2a1", 20, 200);
+  Sound.reward();
+}
+
+function burst(x, y, color, n, spd) {
+  for (let i = 0; i < n; i++) {
+    const a = rand(0, 6.28), s = rand(spd * 0.3, spd);
+    G.particles.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: rand(0.3, 0.8), color, size: rand(2, 5) });
+  }
+}
+
+function currentSkin() { return SKINS.find(s => s.id === Save.data.skin) || SKINS[0]; }
+
+/* =========================================================================
+   9) RENDERIZAÇÃO
+   ========================================================================= */
+function render() {
+  const w = canvas.width, h = canvas.height;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  const grd = ctx.createLinearGradient(0, 0, 0, h);
+  grd.addColorStop(0, "#0b1033"); grd.addColorStop(1, "#05071a");
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, w, h);
+
+  const camY = G ? G.camY : -time * 20;
+  // Estrelas de fundo com parallax
+  for (const s of bgStars) {
+    const sy = ((s.y * h - camY * s.z * 0.3 * DPR * scale) % h + h) % h;
+    const a = 0.35 + 0.35 * Math.sin(time * 2 + s.tw);
+    ctx.fillStyle = `rgba(255,255,255,${a * s.z})`;
+    ctx.fillRect(s.x * w, sy, 2 * s.z * DPR, 2 * s.z * DPR);
+  }
+
+  if (!G) return;
+  const sh = G.shake;
+  const k = scale * DPR;
+  ctx.setTransform(k, 0, 0, k, (offX + rand(-sh, sh) * 0.5) * k, (-G.camY + rand(-sh, sh) * 0.5) * k);
+
+  // Planetas
+  for (const pl of G.planets) {
+    // Órbita-guia
+    ctx.strokeStyle = pl.visited ? "rgba(255,255,255,0.08)" : "rgba(94,242,255,0.18)";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 8]);
+    ctx.beginPath(); ctx.arc(pl.x, pl.y, pl.r + 32, 0, Math.PI * 2); ctx.stroke();
+    ctx.setLineDash([]);
+    // Corpo
+    const g = ctx.createRadialGradient(pl.x - pl.r * 0.4, pl.y - pl.r * 0.4, pl.r * 0.1, pl.x, pl.y, pl.r);
+    g.addColorStop(0, pl.c1); g.addColorStop(1, pl.c2);
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(pl.x, pl.y, pl.r, 0, Math.PI * 2); ctx.fill();
+    // Crateras
+    ctx.fillStyle = "rgba(0,0,0,0.15)";
+    for (let i = 0; i < 3; i++) {
+      const a = pl.rot + i * 2.1, rr = pl.r * 0.5;
+      ctx.beginPath(); ctx.arc(pl.x + Math.cos(a) * rr, pl.y + Math.sin(a) * rr, pl.r * 0.16, 0, Math.PI * 2); ctx.fill();
+    }
+    if (pl.ring) {
+      ctx.strokeStyle = "rgba(255,255,255,0.35)"; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.ellipse(pl.x, pl.y, pl.r * 1.5, pl.r * 0.38, -0.35, 0, Math.PI * 2); ctx.stroke();
+    }
+  }
+
+  // Moedas (estrelas)
+  for (const c of G.coins) {
+    if (c.got) continue;
+    const sx = Math.abs(Math.cos(c.spin));
+    ctx.save(); ctx.translate(c.x, c.y); ctx.scale(0.35 + sx * 0.65, 1);
+    drawStar(0, 0, 13, 6, "#ffd447");
+    ctx.restore();
+  }
+
+  // Asteroides
+  for (const r of G.rocks) {
+    ctx.save(); ctx.translate(r.x, r.y); ctx.rotate(r.rot);
+    ctx.fillStyle = "#7a7f99"; ctx.strokeStyle = "#ff5e7a"; ctx.lineWidth = 2;
+    ctx.beginPath();
+    r.pts.forEach((m, i) => {
+      const a = i / r.pts.length * Math.PI * 2;
+      const fn = i ? "lineTo" : "moveTo";
+      ctx[fn](Math.cos(a) * r.r * m, Math.sin(a) * r.r * m);
+    });
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.restore();
+  }
+
+  // Jogador
+  const p = G.player, skin = currentSkin();
+  if (state !== "dying" && state !== "over") {
+    // Mira (ajuda casual)
+    if (!p.flying && state === "play") {
+      const tx = -Math.sin(p.angle) * p.dir, ty = Math.cos(p.angle) * p.dir;
+      ctx.strokeStyle = "rgba(255,255,255,0.35)"; ctx.lineWidth = 2; ctx.setLineDash([4, 10]);
+      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + tx * 110, p.y + ty * 110); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    // Trilha
+    for (let i = 0; i < p.trail.length; i++) {
+      const t = p.trail[i], a = i / p.trail.length;
+      ctx.globalAlpha = a * 0.5; ctx.fillStyle = skin.trail;
+      ctx.beginPath(); ctx.arc(t.x, t.y, 10 * a, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = (p.invuln > 0 && Math.floor(time * 12) % 2) ? 0.4 : 1;
+    ctx.fillStyle = skin.color;
+    ctx.beginPath(); ctx.arc(p.x, p.y, 13, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.2)";
+    ctx.beginPath(); ctx.arc(p.x + 3, p.y + 3, 10, 0, Math.PI * 2); ctx.fill();
+    // Olhinho virado para o movimento
+    const ang = p.flying ? Math.atan2(p.vy, p.vx) : p.angle + p.dir * Math.PI / 2;
+    ctx.fillStyle = "#fff";
+    ctx.beginPath(); ctx.arc(p.x + Math.cos(ang) * 5, p.y + Math.sin(ang) * 5, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#111";
+    ctx.beginPath(); ctx.arc(p.x + Math.cos(ang) * 7, p.y + Math.sin(ang) * 7, 2.4, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 1;
+    if (G.shield) {
+      ctx.strokeStyle = `rgba(94,242,161,${0.6 + 0.3 * Math.sin(time * 6)})`; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 20, 0, Math.PI * 2); ctx.stroke();
+    }
+  }
+
+  // Partículas
+  for (const pt of G.particles) {
+    ctx.globalAlpha = Math.max(0, pt.life * 1.5);
+    ctx.fillStyle = pt.color;
+    ctx.fillRect(pt.x - pt.size / 2, pt.y - pt.size / 2, pt.size, pt.size);
+  }
+  ctx.globalAlpha = 1;
+
+  // Textos flutuantes
+  ctx.textAlign = "center"; ctx.font = "bold 26px Trebuchet MS, sans-serif";
+  for (const pp of G.popups) {
+    ctx.globalAlpha = Math.min(1, pp.life * 2);
+    ctx.fillStyle = pp.color; ctx.fillText(pp.text, pp.x, pp.y);
+  }
+  ctx.globalAlpha = 1;
+
+  // HUD (coordenadas de tela)
+  ctx.setTransform(k, 0, 0, k, 0, 0);
+  if (state === "play" || state === "paused" || state === "dying") {
+    ctx.textAlign = "center";
+    ctx.font = "bold 64px Trebuchet MS, sans-serif";
+    ctx.fillStyle = "rgba(0,0,0,0.35)"; ctx.fillText(G.score, VW / 2 + 3, 93);
+    ctx.fillStyle = "#fff"; ctx.fillText(G.score, VW / 2, 90);
+    ctx.textAlign = "left"; ctx.font = "bold 28px Trebuchet MS, sans-serif";
+    drawStar(30, 38, 14, 6, "#ffd447");
+    ctx.fillStyle = "#ffd447"; ctx.fillText(Save.data.coins, 52, 48);
+    if (!G.jumped && state === "play") {
+      ctx.textAlign = "center"; ctx.font = "bold 30px Trebuchet MS, sans-serif";
+      ctx.globalAlpha = 0.6 + 0.4 * Math.sin(time * 5);
+      ctx.fillStyle = "#fff"; ctx.fillText(T.tap, VW / 2, VH * 0.88);
+      ctx.globalAlpha = 1;
+    }
+  }
+}
+
+function drawStar(x, y, R, r, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  for (let i = 0; i < 10; i++) {
+    const a = -Math.PI / 2 + i * Math.PI / 5, rad = i % 2 ? r : R;
+    ctx.lineTo(x + Math.cos(a) * rad, y + Math.sin(a) * rad);
+  }
+  ctx.closePath(); ctx.fill();
+}
+
+/* =========================================================================
+   10) LOOP PRINCIPAL — congela totalmente durante anúncios
+   ========================================================================= */
+function frame(now) {
+  requestAnimationFrame(frame);
+  if (AdGuard.active) { lastFrame = now; return; } // anúncio rodando: nada atualiza
+  let dt = (now - lastFrame) / 1000;
+  lastFrame = now;
+  dt = Math.min(dt, 1 / 30); // estabilidade após travadas
+  if (state !== "paused") update(dt);
+  render();
+}
+
+/* =========================================================================
+   11) INTERFACE E FLUXO DE TELAS
+   ========================================================================= */
+const $ = id => document.getElementById(id);
+const ui = {
+  screens: ["scrLoading", "scrMenu", "scrShop", "scrPause", "scrOver"].map($),
+  pauseBtn: $("btnPause"),
+};
+function showScreen(id) { ui.screens.forEach(s => s.classList.toggle("show", s.id === id)); }
+function toast(msg) {
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 1600);
+}
+
+function applyTexts() {
+  $("loading").textContent = T.loading;
+  $("txtTagline").textContent = T.tagline;
+  $("txtBest").textContent = T.best; $("txtBest2").textContent = T.best;
+  $("btnPlay").textContent = T.play; $("btnShieldAd").textContent = T.shieldAd;
+  $("btnShop").textContent = T.shop; $("txtShop").textContent = T.shopTitle;
+  $("btnShopBack").textContent = T.back; $("btnFreeCoins").textContent = T.freeCoins;
+  $("txtPaused").textContent = T.paused; $("btnResume").textContent = T.resume;
+  $("btnPauseMenu").textContent = T.menu; $("txtGameOver").textContent = T.gameOver;
+  $("btnContinue").textContent = T.cont; $("btnDouble").textContent = T.dbl;
+  $("btnAgain").textContent = T.again; $("btnOverMenu").textContent = T.menu;
+  $("btnMute").textContent = Save.data.muted ? "🔇" : "🔊";
+}
+
+let pendingShield = false;
+
+function goMenu() {
+  Poki.gameplayStop();
+  state = "menu";
+  G = null;
+  ui.pauseBtn.style.display = "none";
+  $("menuBest").textContent = Save.data.best;
+  $("menuCoins").textContent = Save.data.coins;
+  $("btnShieldAd").disabled = pendingShield;
+  showScreen("scrMenu");
+}
+
+/* Início de partida: commercialBreak numa transição natural, depois gameplayStart. */
+let starting = false;
+function startRun() {
+  if (starting) return;
+  starting = true;
+  Sound.ensure(); Sound.resume();
+  showScreen(null);
+  Poki.commercialBreak().then(() => {
+    starting = false;
+    newRun();
+    if (pendingShield) { G.shield = true; pendingShield = false; }
+    state = "play";
+    ui.pauseBtn.style.display = "";
+    Poki.gameplayStart();
+  });
+}
+
+function pauseGame() {
+  if (state !== "play") return;
+  state = "paused";
+  Poki.gameplayStop();
+  Sound.suspend();
+  showScreen("scrPause");
+}
+function resumeGame() {
+  if (state !== "paused") return;
+  state = "play";
+  showScreen(null);
+  Sound.resume();
+  lastFrame = performance.now();
+  Poki.gameplayStart();
+}
+
+function showGameOver() {
+  state = "over";
+  if (G.score > Save.data.best) { Save.data.best = G.score; G.newBest = true; }
+  Save.write();
+  $("overScore").textContent = G.score;
+  $("overBest").textContent = Save.data.best + (G.newBest ? "  ★ " + T.newBest : "");
+  $("overCoins").textContent = G.coinsRun;
+  $("btnContinue").style.display = G.usedContinue ? "none" : "";
+  $("btnDouble").style.display = (G.doubled || G.coinsRun === 0) ? "none" : "";
+  showScreen("scrOver");
+}
+
+/* --- Anúncios premiados (vantagens reais) --- */
+function rewardContinue() {
+  if (state !== "over" || G.usedContinue) return;
+  Poki.rewardedBreak().then(ok => {
+    if (!ok) { toast(T.noAd); return; }
+    G.usedContinue = true;
+    showScreen(null);
+    revivePlayer();
+    state = "play";
+    ui.pauseBtn.style.display = "";
+    lastFrame = performance.now();
+    Poki.gameplayStart();
+  });
+}
+function rewardDouble() {
+  if (state !== "over" || G.doubled) return;
+  Poki.rewardedBreak().then(ok => {
+    if (!ok) { toast(T.noAd); return; }
+    G.doubled = true;
+    Save.data.coins += G.coinsRun;
+    G.coinsRun *= 2;
+    Save.write();
+    $("overCoins").textContent = G.coinsRun;
+    $("btnDouble").style.display = "none";
+    Sound.reward(); toast(T.doubled);
+  });
+}
+function rewardShield() {
+  if (pendingShield) return;
+  Sound.ensure();
+  Poki.rewardedBreak().then(ok => {
+    if (!ok) { toast(T.noAd); return; }
+    pendingShield = true;
+    $("btnShieldAd").disabled = true;
+    Sound.reward(); toast(T.shieldOn);
+  });
+}
+function rewardCoins() {
+  Sound.ensure();
+  Poki.rewardedBreak().then(ok => {
+    if (!ok) { toast(T.noAd); return; }
+    Save.data.coins += 25; Save.write();
+    Sound.reward(); toast(T.got);
+    renderShop();
+  });
+}
+
+/* --- Loja de skins --- */
+function renderShop() {
+  $("shopCoins").textContent = Save.data.coins;
+  const grid = $("shopGrid");
+  grid.innerHTML = "";
+  for (const s of SKINS) {
+    const owned = Save.data.owned.includes(s.id);
+    const b = document.createElement("button");
+    b.className = "skin" + (Save.data.skin === s.id ? " selected" : "");
+    const label = Save.data.skin === s.id ? T.using : owned ? T.owned : "★ " + s.price;
+    b.innerHTML = `<div class="dot" style="background:${s.color}"></div><div>${s.name}</div><div class="coinTag">${label}</div>`;
+    if (!owned && Save.data.coins < s.price) b.disabled = true;
+    b.onclick = () => {
+      Sound.ensure(); Sound.click();
+      if (!owned) {
+        if (Save.data.coins < s.price) return;
+        Save.data.coins -= s.price;
+        Save.data.owned.push(s.id);
+      }
+      Save.data.skin = s.id;
+      Save.write();
+      renderShop();
+    };
+    grid.appendChild(b);
+  }
+}
+
+/* --- Ligações dos botões --- */
+function bind(id, fn) {
+  $(id).addEventListener("click", e => { e.stopPropagation(); Sound.ensure(); Sound.resume(); Sound.click(); fn(); });
+}
+bind("btnPlay", startRun);
+bind("btnAgain", startRun);
+bind("btnShieldAd", rewardShield);
+bind("btnShop", () => { state = "shop"; renderShop(); showScreen("scrShop"); });
+bind("btnShopBack", goMenu);
+bind("btnFreeCoins", rewardCoins);
+bind("btnPause", pauseGame);
+bind("btnResume", resumeGame);
+bind("btnPauseMenu", goMenu);
+bind("btnContinue", rewardContinue);
+bind("btnDouble", rewardDouble);
+bind("btnOverMenu", goMenu);
+bind("btnMute", () => { Sound.setMuted(!Save.data.muted); $("btnMute").textContent = Save.data.muted ? "🔇" : "🔊"; });
+
+/* --- Entrada de jogo (toque / clique / teclado) --- */
+canvas.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  Sound.ensure(); Sound.resume();
+  if (state === "play" && !AdGuard.active) jump();
+});
+window.addEventListener("keydown", e => {
+  // Requisito Poki: impedir rolagem da página com espaço/setas
+  if ([" ", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) e.preventDefault();
+  if (AdGuard.active) return;
+  if ((e.key === " " || e.key === "ArrowUp" || e.key === "w") && !e.repeat) {
+    Sound.ensure(); Sound.resume();
+    if (state === "play") jump();
+  }
+  if (e.key === "Escape" || e.key === "p") {
+    if (state === "play") pauseGame(); else if (state === "paused") resumeGame();
+  }
+}, { passive: false });
+window.addEventListener("wheel", e => e.preventDefault(), { passive: false });
+document.addEventListener("contextmenu", e => e.preventDefault());
+
+/* --- Aba oculta: pausa jogo e som --- */
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    if (state === "play") pauseGame();
+    Sound.suspend();
+  } else if (state !== "paused") {
+    Sound.resume();
+  }
+});
+
+/* =========================================================================
+   12) BOOT — init da SDK -> carregamento -> gameLoadingFinished -> menu
+   ========================================================================= */
+Save.load();
+applyTexts();
+requestAnimationFrame(frame);
+
+Poki.init().then(() => {
+  // Tudo é gerado proceduralmente; não há assets externos para carregar.
+  // Em um jogo com imagens/sons, chame gameLoadingFinished() após carregá-los.
+  Poki.loadingFinished();
+  goMenu();
+});
+</script>
+</body>
+</html>
