@@ -47,6 +47,7 @@ const lerProdutos = () => {
   return p;
 };
 const salvarProdutos = (p) => salvarJson(ARQ_PRODUTOS, p);
+const salvarConfig = (c) => salvarJson(ARQ_CONFIG, c);
 
 const ESTADO_PADRAO = { indiceLoja: 0, totalShein: 0, afiliadosShein: 0, postsSemVitrine: 0, postsSemConvite: 0, ultimoEnvio: {}, ultimaDivulgacao: 0, pausado: false, totalPosts: 0 };
 const lerEstado = () => ({ ...ESTADO_PADRAO, ...lerJson(ARQ_ESTADO, {}) });
@@ -63,7 +64,9 @@ function menosRecente(loja, candidatos, estado) {
   return sortear(candidatos.filter((p) => quando(p) === menor));
 }
 
-const ativos = (lista) => lista.filter((p) => p && p.link && p.ativo !== false);
+// Ignora os produtos de exemplo (links falsos) para não irem parar no grupo.
+const ehExemplo = (p) => /SEU-LINK|LINK-DO-PRODUTO/.test(p.link);
+const ativos = (lista) => lista.filter((p) => p && p.link && p.ativo !== false && !ehExemplo(p));
 
 // Na Shein, mantém a porcentagem configurada de produtos com o seu link de afiliado.
 function escolherShein(produtos, config, estado) {
@@ -165,6 +168,6 @@ function dentroDoHorario(config) {
 
 module.exports = {
   LOJAS, ARQ_CONFIG, ARQ_PRODUTOS, PASTA_DADOS,
-  lojaPorApelido, garantirArquivos, lerConfig, lerProdutos, salvarProdutos, lerEstado, salvarEstado,
+  lojaPorApelido, garantirArquivos, lerConfig, salvarConfig, lerProdutos, salvarProdutos, lerEstado, salvarEstado,
   proximoProduto, registrarEnvio, textoProduto, extrasDepoisDoPost, textoDivulgacao, dentroDoHorario, numero, ativos,
 };

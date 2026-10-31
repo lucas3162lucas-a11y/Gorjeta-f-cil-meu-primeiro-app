@@ -16,7 +16,7 @@ npm install
 npm run achadinhos
 ```
 
-Na primeira vez ele cria `achadinhos/config.json` e `achadinhos/produtos.json`. Pare o bot (Ctrl+C), edite os dois e ligue de novo.
+Dá para configurar tudo pelos comandos do WhatsApp (`!usargrupo`, `!vitrine`, `!addafiliado`...), sem editar arquivo. Na primeira vez ele também cria `achadinhos/config.json` e `achadinhos/produtos.json`. Pare o bot (Ctrl+C), edite os dois e ligue de novo.
 No Termux: `nano achadinhos/config.json` (salvar: Ctrl+O, Enter, Ctrl+X).
 
 **Conectar o WhatsApp:**
@@ -50,7 +50,7 @@ Para ver como vão ficar os posts sem conectar nada: `npm run achadinhos:simular
 Cada loja tem uma lista. Em cada produto: `titulo`, `preco`, `precoAntigo` (opcional, mostra o % OFF), `link`, `imagem` (link de uma foto, opcional), `cupom` (opcional).
 Na Shein, coloque `"afiliado": true` nos produtos com o **seu link de afiliado**. Para pausar um produto sem apagar: `"ativo": false`.
 
-Pode editar o arquivo com o bot ligado — ele relê antes de cada post.
+Os produtos de exemplo (links com `SEU-LINK`) nunca são postados. Pode editar o arquivo com o bot ligado — ele relê antes de cada post.
 
 ## Comandos pelo WhatsApp
 
@@ -63,7 +63,11 @@ Mande no **"Conversar comigo"** (o chat com você mesmo) do número conectado:
 | `!enviar` / `!enviar shein` / `!enviar ml` / `!enviar shopee` | Posta agora |
 | `!divulgar` | Divulga o grupo agora |
 | `!pausar` / `!voltar` | Para ou volta a postar |
-| `!grupos` | Mostra o nome exato dos seus grupos |
+| `!grupos` | Lista seus grupos numerados |
+| `!usargrupo 2` | Escolhe o grupo nº 2 como grupo de achadinhos (e salva o link de convite) |
+| `!vitrine https://...` | Salva seu link de afiliado/vitrine da Shein |
+| `!convite https://chat.whatsapp.com/...` | Salva o link de convite do grupo |
+| `!intervalo 30` | Posta a cada 30 minutos |
 | `!lista shein` | Produtos cadastrados (⭐ = seu afiliado) |
 | `!addafiliado link \| título \| preço \| preço antigo` | Cadastra produto da Shein com SEU link de afiliado |
 | `!add shopee link \| título \| preço \| preço antigo \| cupom` | Cadastra produto (shein, ml ou shopee) |

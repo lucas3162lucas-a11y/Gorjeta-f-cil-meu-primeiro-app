@@ -17,7 +17,12 @@ r.garantirArquivos();
 // ---------- modo simulação ----------
 if (SIMULAR) {
   const config = r.lerConfig();
-  const produtos = r.lerProdutos();
+  let produtos = r.lerProdutos();
+  if (!Object.values(produtos).some((l) => r.ativos(l).length)) {
+    console.log('(Você ainda não cadastrou produtos — mostrando os de exemplo.)');
+    produtos = JSON.parse(fs.readFileSync(path.join(__dirname, 'produtos.exemplo.json'), 'utf8'));
+    for (const l of Object.values(produtos)) for (const p of l) p.link = p.link.replace(/SEU-LINK|LINK-DO-PRODUTO/, 'exemplo');
+  }
   const estado = { ...r.lerEstado(), ultimoEnvio: {} };
   const qtd = Number(process.argv[process.argv.indexOf('--simular') + 1]) || 12;
   for (let i = 1; i <= qtd; i++) {
@@ -117,9 +122,13 @@ async function acharGrupos(nomes) {
   for (const nome of nomes.filter(Boolean)) {
     const g = String(nome).endsWith('@g.us') ? todos.find((x) => x.id === nome) : todos.find((x) => norm(x.subject) === norm(nome));
     if (g) achados.push(g);
-    else log(`⚠️ Grupo não encontrado: "${nome}". Mande !grupos para ver os nomes certos.`);
+    else log(`⚠️ Grupo não encontrado: "${nome}". No "Conversar comigo" mande !grupos e depois !usargrupo com o número.`);
   }
   return achados;
+}
+
+async function gruposOrdenados() {
+  return Object.values(await sock.groupFetchAllParticipating()).sort((a, b) => String(a.subject).localeCompare(String(b.subject), 'pt-BR'));
 }
 
 async function enviarProduto(jid, loja, produto) {
@@ -139,10 +148,10 @@ async function postar(forcarLoja) {
   try {
     const config = r.lerConfig();
     const [grupo] = await acharGrupos([config.grupoAchadinhos]);
-    if (!grupo) return 'Grupo de achadinhos não encontrado. Confira "grupoAchadinhos" no config.json (use !grupos).';
+    if (!grupo) return 'Ainda não sei qual é o seu grupo. Mande *!grupos* e depois *!usargrupo* com o número dele.';
     const estado = r.lerEstado();
     const escolha = r.proximoProduto(config, r.lerProdutos(), estado, forcarLoja);
-    if (!escolha) return forcarLoja ? `Não tem produto ativo da ${r.LOJAS[forcarLoja].nome}.` : 'Nenhum produto cadastrado.';
+    if (!escolha) return forcarLoja ? `Não tem produto cadastrado da ${r.LOJAS[forcarLoja].nome}. Use !add ou !addafiliado.` : 'Nenhum produto cadastrado ainda. Use !addafiliado ou !add (veja !ajuda).';
     await enviarProduto(grupo.id, escolha.loja, escolha.produto);
     r.registrarEnvio(estado, escolha);
     const extras = r.extrasDepoisDoPost(config, estado);
@@ -201,12 +210,16 @@ async function relogio() {
 // ---------- comandos (mande no "Conversar comigo" do seu WhatsApp) ----------
 const AJUDA = `🤖 *Comandos do bot de achadinhos*
 
+*!grupos* — lista seus grupos numerados
+*!usargrupo 2* — escolhe o grupo nº 2 como seu grupo de achadinhos
+*!vitrine https://...* — salva seu link de afiliado/vitrine da Shein
+*!convite https://chat.whatsapp.com/...* — salva o link de convite do grupo
+*!intervalo 30* — posta a cada 30 minutos
 *!status* — como o bot está
 *!enviar* — posta o próximo produto agora
 *!enviar shein* (ou ml / shopee) — posta dessa loja agora
 *!divulgar* — manda o convite nos grupos de divulgação agora
 *!pausar* / *!voltar* — para ou volta a postar
-*!grupos* — lista seus grupos com o nome exato
 *!lista shein* (ou ml / shopee) — produtos cadastrados
 *!add shein link | título | preço | preço antigo | cupom* — cadastra produto
 *!addafiliado link | título | preço | preço antigo* — produto Shein com SEU link de afiliado
@@ -242,7 +255,7 @@ async function tratarComando(m) {
     case 'status': {
       const c = r.lerConfig(); const e = r.lerEstado(); const p = r.lerProdutos();
       const falta = Math.max(0, Math.round((proximoPostEm - Date.now()) / MIN));
-      return responder(`📊 *Status*\n${e.pausado ? '⏸️ Pausado' : '▶️ Postando'} | horário ${c.horarioInicio}h–${c.horarioFim}h ${r.dentroDoHorario(c) ? '(agora dentro)' : '(agora fora)'}\nPróximo post em ~${falta} min\nPosts feitos: ${e.totalPosts} (Shein: ${e.totalShein}, seus afiliados: ${e.afiliadosShein})\nProdutos: Shein ${r.ativos(p.shein).length} (${p.shein.filter((x) => x.afiliado).length} afiliados) | Mercado Livre ${r.ativos(p.mercadolivre).length} | Shopee ${r.ativos(p.shopee).length}`);
+      return responder(`📊 *Status*\n${e.pausado ? '⏸️ Pausado' : '▶️ Postando'} | horário ${c.horarioInicio}h–${c.horarioFim}h ${r.dentroDoHorario(c) ? '(agora dentro)' : '(agora fora)'}\nPróximo post em ~${falta} min\nPosts feitos: ${e.totalPosts} (Shein: ${e.totalShein}, seus afiliados: ${e.afiliadosShein})\nProdutos: Shein ${r.ativos(p.shein).length} (${r.ativos(p.shein).filter((x) => x.afiliado).length} afiliados) | Mercado Livre ${r.ativos(p.mercadolivre).length} | Shopee ${r.ativos(p.shopee).length}`);
     }
     case 'enviar': case 'postar': {
       const loja = args ? r.lojaPorApelido(args) : undefined;
@@ -256,8 +269,40 @@ async function tratarComando(m) {
       return responder(e.pausado ? '⏸️ Bot pausado. Mande !voltar para continuar.' : '▶️ Bot voltou a postar.');
     }
     case 'grupos': {
-      const gs = Object.values(await sock.groupFetchAllParticipating());
-      return responder(`👥 *Seus grupos* (copie o nome igualzinho para o config.json):\n\n${gs.map((g) => `• ${g.subject}\n  ${g.id}`).join('\n') || 'Nenhum grupo.'}`);
+      const gs = await gruposOrdenados();
+      return responder(`👥 *Seus grupos*\n\n${gs.map((g, i) => `*${i + 1}.* ${g.subject}`).join('\n') || 'Nenhum grupo.'}\n\nPara escolher o grupo de achadinhos mande, por exemplo: *!usargrupo 2*`);
+    }
+    case 'usargrupo': {
+      const gs = await gruposOrdenados();
+      const g = gs[Number(args) - 1] || gs.find((x) => x.subject.trim().toLowerCase() === args.trim().toLowerCase());
+      if (!g) return responder('Não achei esse grupo. Mande *!grupos* e depois *!usargrupo* com o número dele.');
+      const c = r.lerConfig();
+      c.grupoAchadinhos = g.id;
+      let extra = '';
+      try {
+        c.linkConviteGrupo = 'https://chat.whatsapp.com/' + (await sock.groupInviteCode(g.id));
+        extra = `\n🔗 Link de convite salvo: ${c.linkConviteGrupo}`;
+      } catch {
+        extra = '\n⚠️ Não consegui pegar o link de convite (o número precisa ser admin). Mande *!convite* com o link do grupo.';
+      }
+      r.salvarConfig(c);
+      proximoPostEm = Date.now() + 10 * 1000;
+      return responder(`✅ Grupo de achadinhos: *${g.subject}*${extra}\n\nO primeiro post sai em instantes (se tiver produto cadastrado e estiver no horário).`);
+    }
+    case 'vitrine': case 'convite': {
+      if (!/^https?:\/\//.test(args)) return responder(`Use: !${cmd} https://...`);
+      const c = r.lerConfig();
+      if (cmd.toLowerCase() === 'vitrine') c.shein = { ...(c.shein || {}), linkVitrine: args.trim() };
+      else c.linkConviteGrupo = args.trim();
+      r.salvarConfig(c);
+      return responder(cmd.toLowerCase() === 'vitrine' ? '✅ Link da sua vitrine Shein salvo.' : '✅ Link de convite do grupo salvo.');
+    }
+    case 'intervalo': {
+      const min = Number(args);
+      if (!(min >= 5)) return responder('Use: !intervalo 30 (em minutos, mínimo 5)');
+      const c = r.lerConfig(); c.intervaloMinutos = min; r.salvarConfig(c);
+      proximoPostEm = Math.min(proximoPostEm, Date.now() + min * MIN);
+      return responder(`✅ Vou postar a cada ~${min} minutos.`);
     }
     case 'lista': {
       const loja = r.lojaPorApelido(args);
