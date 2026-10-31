@@ -6,7 +6,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyName>IAaBordo</AssemblyName>
     <RootNamespace>IAaBordo</RootNamespace>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Description>IA a Bordo: bonecos do modo treino controlados por IA (andam, fazem tarefas, matam, reportam, conversam e votam).</Description>
     <DebugType>embedded</DebugType>
   </PropertyGroup>

@@ -15,6 +15,7 @@ public static class IA
     private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(120) };
     private static readonly ConcurrentQueue<Action> FilaPrincipal = new();
     private static int falhasSeguidas;
+    public static string Status { get; private set; } = "IA: ainda não usada";
     private static DateTime pausaAte = DateTime.MinValue;
 
     public static bool Disponivel =>
@@ -47,9 +48,11 @@ public static class IA
                 var conteudo = doc.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString() ?? "";
                 resultado = ExtrairJson(conteudo);
                 falhasSeguidas = 0;
+                Status = "IA: conectada";
             }
             catch (Exception e)
             {
+                Status = "IA: sem conexão (falas prontas)";
                 if (++falhasSeguidas >= 3)
                 {
                     pausaAte = DateTime.UtcNow.AddSeconds(60);

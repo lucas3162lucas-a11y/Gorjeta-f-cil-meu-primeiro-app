@@ -13,8 +13,8 @@ namespace IAaBordo;
 // Eles andam pela nave fazendo tarefas, um ou mais são infiltrados secretos que matam quando ninguém está vendo,
 // quem acha corpo reporta, e nas reuniões eles conversam no chat e votam.
 // O mod não faz nada em partidas online ou locais com outras pessoas.
+// (Sem [BepInProcess]: no celular o processo do jogo não se chama "Among Us.exe".)
 [BepInAutoPlugin("lucas.iaabordo", "IA a Bordo")]
-[BepInProcess("Among Us.exe")]
 [BepInDependency(ReactorPlugin.Id)]
 [BepInDependency(MiraApiPlugin.Id)]
 public partial class IAaBordoPlugin : BasePlugin, IMiraPlugin
