@@ -79,6 +79,9 @@ button { font: inherit; color: inherit; }
   max-height: calc(100% - 170px); overflow-y: auto; background: rgba(4, 19, 27, .86); border: 1px solid var(--linha);
   border-radius: 12px; padding: 10px 12px; font-size: 13px;
 }
+@media (max-width: 699px) {
+  #lateral { left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); width: auto; top: auto; bottom: calc(52px + env(safe-area-inset-bottom, 0px)); max-height: 42%; }
+}
 #lateral h3 { margin: 0 0 6px; font: 700 11px var(--f-mono); letter-spacing: .1em; color: var(--suave); text-transform: uppercase; }
 .evento { padding: 4px 0; border-bottom: 1px dashed rgba(141, 181, 179, .18); }
 .evento b { font-weight: 700; }
@@ -120,6 +123,7 @@ button { font: inherit; color: inherit; }
 .acao.usar:not(:disabled) { border-color: var(--bio); color: var(--bio); }
 .acao.matar:not(:disabled) { border-color: var(--alarme); color: #ffb3bb; }
 .acao.reportar:not(:disabled) { border-color: var(--ambar); color: var(--ambar); }
+.acao.hab:not(:disabled) { border-color: #b57cff; color: #d9b8ff; }
 .acao .cd { position: absolute; inset: 0; display: grid; place-items: center; font-size: 22px; color: var(--texto); background: rgba(4,19,27,.92); border-radius: 14px; }
 #tubos { left: 50%; bottom: calc(240px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: calc(100% - 32px); }
 
@@ -159,6 +163,17 @@ input:focus-visible, button:focus-visible { outline: 2px solid var(--bio); outli
 }
 .botao { background: var(--casco-2); border: 1px solid var(--linha); border-radius: 10px; padding: 9px 14px; cursor: pointer; font-weight: 700; }
 .botao.claro { background: var(--bio); color: #02241d; border-color: var(--bio); }
+.dica-lobby { margin: 0; color: var(--suave); font-size: 13px; }
+.funcoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.funcao { text-align: left; background: var(--casco); border: 2px solid var(--linha); border-radius: 12px; padding: 8px 10px; cursor: pointer; opacity: .55; }
+.funcao.ativa { opacity: 1; }
+.funcao.trip.ativa { border-color: var(--bio); }
+.funcao.inf.ativa { border-color: var(--alarme); }
+.funcao.neutro.ativa { border-color: var(--ambar); }
+.funcao b { display: block; font-size: 14px; }
+.funcao span { font-size: 11.5px; line-height: 1.3; color: var(--suave); display: block; }
+.funcao small { font: 700 10px var(--f-mono); letter-spacing: .08em; }
+.funcao.trip small { color: var(--bio); } .funcao.inf small { color: var(--alarme); } .funcao.neutro small { color: var(--ambar); }
 .regras { margin: 0; padding-left: 18px; color: var(--suave); font-size: 13.5px; display: grid; gap: 3px; }
 .regras b { color: var(--texto); }
 #status-ia { font-size: 13px; color: var(--suave); }
@@ -245,6 +260,7 @@ input:focus-visible, button:focus-visible { outline: 2px solid var(--bio); outli
   opacity: 0; transition: opacity .3s; width: calc(100% - 32px);
 }
 #aviso.visivel { opacity: 1; }
+#aviso small { display: block; font: 400 16px/1.4 var(--f-corpo); margin: 10px auto 0; max-width: 34ch; color: var(--texto); }
 @media (prefers-reduced-motion: reduce) { #alerta { animation: none; } .trilho i { transition: none; } }
 </style>
 
@@ -256,7 +272,8 @@ input:focus-visible, button:focus-visible { outline: 2px solid var(--bio); outli
     <button class="pilula" id="b-mapa">MAPA</button>
     <button class="pilula" id="b-vel" hidden>1×</button>
     <button class="pilula ativa" id="b-papeis" hidden>PAPÉIS</button>
-    <button class="pilula" id="b-painel" hidden>PAINEL</button>
+    <button class="pilula" id="b-painel" hidden>PENSAMENTOS</button>
+    <button class="pilula ativa" id="b-baloes" hidden>BALÕES</button>
     <button class="pilula" id="b-sair">SAIR</button>
   </div>
   <div id="alerta" hidden></div>
@@ -275,6 +292,7 @@ input:focus-visible, button:focus-visible { outline: 2px solid var(--bio); outli
     <button class="acao matar" id="a-matar" hidden>MATAR</button>
     <button class="acao" id="a-tubo" hidden>TUBO</button>
     <button class="acao" id="a-sabotar" hidden>SABO&shy;TAR</button>
+    <button class="acao hab" id="a-hab" hidden>HABILI&shy;DADE</button>
   </div>
 
   <!-- LOBBY -->
@@ -296,9 +314,9 @@ input:focus-visible, button:focus-visible { outline: 2px solid var(--bio); outli
 
       <div class="cartao">
         <h2>Partida</h2>
-        <div class="linha-campo"><label for="c-jog">Jogadores</label><input type="range" id="c-jog" min="5" max="10" value="8"><output id="o-jog">8</output></div>
-        <div class="linha-campo"><label for="c-inf">Infiltrados</label><input type="range" id="c-inf" min="1" max="3" value="2"><output id="o-inf">2</output></div>
-        <div class="linha-campo"><label for="c-cd">Tempo p/ matar</label><input type="range" id="c-cd" min="15" max="45" step="5" value="30"><output id="o-cd">30s</output></div>
+        <div class="linha-campo"><label for="c-jog">Jogadores</label><input type="range" id="c-jog" min="5" max="15" value="8"><output id="o-jog">8</output></div>
+        <div class="linha-campo"><label for="c-inf">Infiltrados</label><input type="range" id="c-inf" min="1" max="5" value="2"><output id="o-inf">2</output></div>
+        <div class="linha-campo"><label for="c-cd">Tempo p/ matar</label><input type="range" id="c-cd" min="15" max="60" step="5" value="35"><output id="o-cd">35s</output></div>
         <div id="campos-jogar" hidden>
           <div class="linha-campo"><label for="c-nome">Seu nome</label><input type="text" id="c-nome" maxlength="12" value="Jogador"></div>
           <div class="linha-campo" style="margin-top:8px"><label>Seu papel</label>
@@ -309,6 +327,12 @@ input:focus-visible, button:focus-visible { outline: 2px solid var(--bio); outli
             </div>
           </div>
         </div>
+      </div>
+
+      <div class="cartao">
+        <h2>Funções especiais</h2>
+        <p class="dica-lobby">Toque para ligar ou desligar. Cada função ligada vai para um jogador sorteado.</p>
+        <div class="funcoes" id="op-funcoes"></div>
       </div>
 
       <div class="cartao">
@@ -340,7 +364,9 @@ input:focus-visible, button:focus-visible { outline: 2px solid var(--bio); outli
           <li>Achou um corpo? <b>Reporte</b>. Desconfiou? Toque o <b>sino de emergência</b> no Átrio.</li>
           <li>Na <b>reunião</b> todo mundo conversa e vota. O mais votado é expelido pela câmara de descompressão.</li>
           <li>Quem morre vira fantasma e continua fazendo tarefas.</li>
-          <li>No celular: joystick à esquerda, ações à direita. No PC: WASD/setas, E usar, Q matar, R reportar, V tubo, X sabotar, M mapa.</li>
+          <li><b>Funções especiais</b>: xerife atira, médico vê sinais vitais, engenheiro usa tubos, detetive recebe pistas, prefeito vota em dobro, bobo quer ser expulso; metamorfo se disfarça, sombra fica invisível, vampiro morde.</li>
+          <li>No modo assistir, os <b>balões</b> mostram o que cada IA está pensando.</li>
+          <li>No celular: joystick à esquerda, ações à direita. No PC: WASD/setas, E usar, Q matar, R reportar, V tubo, X sabotar, H habilidade, M mapa.</li>
         </ul>
       </div>
     </div>
@@ -477,15 +503,35 @@ function salaEm(x, y) {
 const nomeLugar = (x, y) => salaEm(x, y)?.nome ?? "um corredor";
 
 // ---------------- ESTADO ----------------
-const NOMES = ["Ana", "Bruno", "Carla", "Davi", "Elisa", "Fábio", "Gabi", "Heitor", "Iara", "Júlio", "Kátia"];
-const CORES = ["#e8524a", "#3b82f6", "#22c55e", "#f59e0b", "#a855f7", "#ec4899", "#14b8a6", "#f97316", "#e5e7eb", "#8b5a2b", "#facc15"];
+const NOMES = ["Ana", "Bruno", "Carla", "Davi", "Elisa", "Fábio", "Gabi", "Heitor", "Iara", "Júlio", "Kátia", "Léo", "Mila", "Nico", "Olga"];
+const CORES = ["#e8524a", "#3b82f6", "#22c55e", "#f59e0b", "#a855f7", "#ec4899", "#14b8a6", "#f97316", "#e5e7eb", "#8b5a2b", "#facc15", "#06b6d4", "#84cc16", "#be123c", "#6366f1"];
 const PERSONALIDADES = [
   "desconfiada e direta, acusa rápido", "brincalhão, faz piada até em reunião", "calado, fala pouco e curto",
   "líder, tenta organizar a votação", "nervoso, se defende demais", "analítica, cita horários e lugares",
   "dramática, exagera tudo", "teimoso, não muda de opinião fácil", "gentil, defende quem parece inocente", "sarcástica",
 ];
 
-const cfg = { modo: "assistir", jogadores: 8, infiltrados: 2, killCd: 30, nome: "Jogador", papel: "aleatorio", cerebro: "ia", leve: (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 3 };
+const FUNCOES = {
+  tripulante: { nome: "Tripulante", curto: "", lado: "trip", desc: "Faça suas tarefas e descubra os infiltrados." },
+  xerife: { nome: "Xerife", curto: "XER", lado: "trip", desc: "Pode atirar em alguém. Se for infiltrado, ele morre. Se for inocente, quem morre é você." },
+  medico: { nome: "Médico", curto: "MED", lado: "trip", desc: "Vê os sinais vitais: quem morreu e há quanto tempo." },
+  engenheiro: { nome: "Engenheiro", curto: "ENG", lado: "trip", desc: "Pode andar pelos tubos como os infiltrados (e pode levar a culpa por isso)." },
+  detetive: { nome: "Detetive", curto: "DET", lado: "trip", desc: "Ao ver um corpo, descobre dois suspeitos: um deles é o assassino." },
+  prefeito: { nome: "Prefeito", curto: "PRE", lado: "trip", desc: "Seu voto vale por dois." },
+  bobo: { nome: "Bobo", curto: "BOBO", lado: "neutro", desc: "Você ganha sozinho se for expulso na votação. Pareça suspeito." },
+  infiltrado: { nome: "Infiltrado", curto: "INF", lado: "inf", desc: "Elimine a tripulação sem ser descoberto." },
+  metamorfo: { nome: "Metamorfo", curto: "META", lado: "inf", desc: "Pode se disfarçar de outro jogador por 15s. Quem te vir vai achar que é ele." },
+  sombra: { nome: "Sombra", curto: "SOMB", lado: "inf", desc: "Pode ficar invisível por 7s." },
+  vampiro: { nome: "Vampiro", curto: "VAMP", lado: "inf", desc: "Morde em vez de matar: a vítima cai morta 8s depois, longe de você." },
+};
+const FUNCOES_ESPECIAIS = ["xerife", "medico", "engenheiro", "detetive", "prefeito", "bobo", "metamorfo", "sombra", "vampiro"];
+const nomeFuncao = (p) => FUNCOES[p.funcao]?.nome ?? "Tripulante";
+const ehBobo = (p) => p.funcao === "bobo";
+// aparência: o metamorfo disfarçado parece outra pessoa
+const aparencia = (p) => (p.disfarce && J && J.T < p.disfarce.ate ? J.jog[p.disfarce.id] : p);
+const invisivel = (p) => J && p.invisivelAte > J.T;
+
+const cfg = { funcoes: [...FUNCOES_ESPECIAIS], baloes: true, modo: "assistir", jogadores: 8, infiltrados: 2, killCd: 35, nome: "Jogador", papel: "aleatorio", cerebro: "ia", leve: (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 3 };
 let J = null; // estado da partida
 
 function novaPartida() {
@@ -499,6 +545,7 @@ function novaPartida() {
       personalidade: pers[i % pers.length], tarefas: [], killCd: 12, emergencias: 1, memoria: [], segredos: [], visto: {}, viuCorpo: new Set(),
       confia: new Set(), suspeita: {}, caminho: null, fazendo: null, escaneando: false, emTubo: null, plano: {}, decisaoT: 0, espera: 0,
       alvoReport: null, chamarSino: false, vistoEm: {}, consertar: null, presoT: 0, ultimoXY: { x: 0, y: 0 }, pensamento: "",
+      funcao: "tripulante", habCd: 15, disfarce: null, invisivelAte: 0, balao: null, ultimoPensar: "", pistas: [],
     });
   }
   let humano = null;
@@ -512,18 +559,29 @@ function novaPartida() {
   let candidatos = embaralhar(jog.map((p) => p.id));
   if (humano && cfg.papel === "infiltrado") candidatos = [humano.id, ...candidatos.filter((id) => id !== humano.id)];
   if (humano && cfg.papel === "tripulante") candidatos = candidatos.filter((id) => id !== humano.id);
-  const ninf = Math.min(cfg.infiltrados, Math.max(1, Math.floor((n - 1) / 2)));
-  candidatos.slice(0, ninf).forEach((id) => (jog[id].papel = "infiltrado"));
+  const ninf = Math.min(cfg.infiltrados, Math.max(1, Math.floor((n - 1) / 2.5)));
+  candidatos.slice(0, ninf).forEach((id) => { jog[id].papel = "infiltrado"; jog[id].funcao = "infiltrado"; });
+  // funções especiais
+  const ativas = embaralhar(cfg.funcoes.filter((f) => FUNCOES[f]));
+  const infs = embaralhar(jog.filter((p) => p.papel === "infiltrado"));
+  const trips = embaralhar(jog.filter((p) => p.papel === "tripulante"));
+  for (const f of ativas.filter((f) => FUNCOES[f].lado === "inf")) { const p = infs.shift(); if (p) p.funcao = f; }
+  const vagasTrip = Math.max(0, trips.length - 2); // sempre sobra tripulante comum
+  for (const f of ativas.filter((f) => FUNCOES[f].lado !== "inf").slice(0, vagasTrip)) {
+    if (f === "bobo" && n < 7) continue;
+    const p = trips.shift(); if (p) p.funcao = f;
+  }
+  for (const p of jog) if (p.funcao === "xerife") p.habCd = 25;
   // tarefas
   for (const p of jog) {
-    p.tarefas = embaralhar(TAREFAS).slice(0, 6).map((t) => ({ ...t, feita: false }));
-    p.killCd = 18;
+    p.tarefas = embaralhar(TAREFAS).slice(0, 7).map((t) => ({ ...t, feita: false }));
+    p.killCd = 25;
   }
   posicionarNaMesa(jog);
   J = {
     jog, humano, T: 0, corpos: [], sab: null, sabCd: 20, portas: null, portasCd: 15, estado: "jogando", reunioes: 0, historico: [],
     eventos: [], pensamentos: [], seguindo: humano ? humano.id : jog.find((p) => p.papel === "tripulante").id, vel: 1, verPapeis: cfg.modo === "assistir",
-    verMapa: false, vencedor: null, idCorpo: 0, abort: new AbortController(), cameraXY: { x: SINO.x, y: SINO.y },
+    verMapa: false, vencedor: null, idCorpo: 0, mordidas: [], mortes: [], abort: new AbortController(), cameraXY: { x: SINO.x, y: SINO.y },
   };
   for (const p of jog) p.ultimoXY = { x: p.x, y: p.y };
   iniciarHUD();
@@ -531,7 +589,9 @@ function novaPartida() {
   if (humano) {
     const inf = humano.papel === "infiltrado";
     const parceiros = jog.filter((p) => p.papel === "infiltrado" && p !== humano).map((p) => p.nome);
-    aviso(inf ? `Você é INFILTRADO${parceiros.length ? `<br><small>parceiro: ${parceiros.join(", ")}</small>` : ""}` : "Você é TRIPULANTE", 2600, inf ? "#ff4b5c" : "#3ee6c4");
+    const f = FUNCOES[humano.funcao];
+    const titulo = ehBobo(humano) ? "Você é o BOBO" : inf ? `Você é INFILTRADO${humano.funcao !== "infiltrado" ? ` · ${f.nome.toUpperCase()}` : ""}` : `Você é TRIPULANTE${humano.funcao !== "tripulante" ? ` · ${f.nome.toUpperCase()}` : ""}`;
+    aviso(`${titulo}<small>${f.desc}${inf && parceiros.length ? `<br>Parceiros: ${parceiros.map(esc).join(", ")}` : ""}</small>`, 4200, ehBobo(humano) ? "#ffb02e" : inf ? "#ff4b5c" : "#3ee6c4");
   }
 }
 
@@ -577,6 +637,7 @@ function raioVisao(p) {
 function ve(obs, alvo) {
   if (obs === alvo) return true;
   if (alvo.emTubo != null) return false;
+  if (invisivel(alvo) && obs.vivo) return false;
   if (alvo.vivo === false && obs.vivo && alvo.id !== undefined && alvo.fantasma !== false) return false; // vivos não veem fantasmas
   return dist(obs, alvo) <= raioVisao(obs) && linhaLivre(obs, alvo);
 }
@@ -623,7 +684,7 @@ function irPara(p, alvo) {
   p.caminho = c; p.destino = { x: alvo.x, y: alvo.y };
   return !!c;
 }
-function velocidade(p) { return (p.vivo ? 128 : 150); }
+function velocidade(p) { return (p.vivo ? 96 : 115); }
 function andar(p, dt) {
   if (!p.caminho || !p.caminho.length) { p.andando = false; return true; }
   const alvo = p.caminho[0];
@@ -654,7 +715,7 @@ function pensamento(p, txt) {
   J.pensamentos.length = Math.min(J.pensamentos.length, 30);
   painelSujo = true;
 }
-const tripulantes = () => J.jog.filter((p) => p.papel === "tripulante");
+const tripulantes = () => J.jog.filter((p) => p.papel === "tripulante" && !ehBobo(p));
 const vivos = () => J.jog.filter((p) => p.vivo);
 const infiltradosVivos = () => J.jog.filter((p) => p.vivo && p.papel === "infiltrado");
 
@@ -665,33 +726,109 @@ function progressoTarefas() {
 }
 
 // ---------------- AÇÕES DO JOGO ----------------
-function matar(assassino, vitima) {
-  if (!assassino.vivo || !vitima.vivo || J.estado !== "jogando") return;
+// Cria o corpo e marca a morte. Usado por matar, mordida e tiro do xerife.
+function eliminar(vitima, autor) {
   const sala = nomeLugar(vitima.x, vitima.y);
-  const testemunhas = J.jog.filter((o) => o.vivo && o !== assassino && o !== vitima && ve(o, assassino));
   vitima.vivo = false; vitima.fazendo = null; vitima.escaneando = false; vitima.caminho = null; vitima.alvoReport = null; vitima.consertar = null;
-  const corpo = { id: ++J.idCorpo, vitima: vitima.id, nome: vitima.nome, cor: vitima.cor, x: vitima.x, y: vitima.y, sala, t: J.T };
+  vitima.disfarce = null; vitima.invisivelAte = 0; vitima.balao = null;
+  const corpo = { id: ++J.idCorpo, vitima: vitima.id, nome: vitima.nome, cor: vitima.cor, x: vitima.x, y: vitima.y, sala, t: J.T, autor: autor?.id ?? null };
   J.corpos.push(corpo);
-  assassino.x = vitima.x; assassino.y = vitima.y;
-  assassino.killCd = cfg.killCd;
-  assassino.segredos.push({ t: J.T, txt: `matei ${vitima.nome} em ${sala}` });
-  for (const w of testemunhas) {
-    lembrar(w, `VI ${assassino.nome} MATAR ${vitima.nome} em ${sala}!`, true);
-    w.suspeita[assassino.id] = (w.suspeita[assassino.id] || 0) + 100;
-    w.testemunha = { assassino: assassino.id, vitima: vitima.id, sala };
-    if (w.bot) w.alvoReport = corpo.id;
-  }
-  evento(`<b style="color:${assassino.cor}">${esc(assassino.nome)}</b> eliminou <b style="color:${vitima.cor}">${esc(vitima.nome)}</b> em ${sala}${testemunhas.length ? ` (testemunha: ${testemunhas.map((t) => esc(t.nome)).join(", ")})` : ""}.`);
-  som("matar");
+  J.mortes.push({ id: vitima.id, t: J.T });
+  for (const m of J.jog) if (m.vivo && m.funcao === "medico") lembrar(m, `sinais vitais: ${vitima.nome} morreu aos ${Math.round(J.T)}s`, true);
   if (vitima === J.humano) aviso("Você foi eliminado<br><small>Agora é fantasma: continue as tarefas</small>", 2600, "#ff4b5c");
+  return corpo;
+}
+
+function matar(assassino, vitima) {
+  if (!assassino.vivo || !vitima.vivo || J.estado !== "jogando" || assassino.killCd > 0) return;
+  if (assassino.funcao === "vampiro") return morder(assassino, vitima);
+  const visto = aparencia(assassino);
+  const testemunhas = J.jog.filter((o) => o.vivo && o !== assassino && o !== vitima && ve(o, assassino));
+  const corpo = eliminar(vitima, assassino);
+  assassino.x = vitima.x; assassino.y = vitima.y;
+  assassino.killCd = cfg.killCd * (assassino.bot ? rnd(1, 1.3) : 1);
+  assassino.segredos.push({ t: J.T, txt: `matei ${vitima.nome} em ${corpo.sala}${visto !== assassino ? ` disfarçado de ${visto.nome}` : ""}${invisivel(assassino) ? " invisível" : ""}` });
+  for (const w of testemunhas) {
+    lembrar(w, `VI ${visto.nome} MATAR ${vitima.nome} em ${corpo.sala}!`, true);
+    w.suspeita[visto.id] = (w.suspeita[visto.id] || 0) + 100;
+    w.testemunha = { assassino: visto.id, vitima: vitima.id, sala: corpo.sala };
+    if (w.bot && w.papel !== "infiltrado") { w.alvoReport = corpo.id; pensar(w, `${visto.nome} matou ${vitima.nome}! Vou reportar agora.`, true); }
+  }
+  evento(`<b style="color:${assassino.cor}">${esc(assassino.nome)}</b>${visto !== assassino ? ` (disfarçado de ${esc(visto.nome)})` : ""} eliminou <b style="color:${vitima.cor}">${esc(vitima.nome)}</b> em ${corpo.sala}${testemunhas.length ? ` (testemunha: ${testemunhas.map((t) => esc(t.nome)).join(", ")})` : ""}.`);
+  som("matar");
   verificarVitoria();
+}
+
+function morder(vampiro, vitima) {
+  vampiro.killCd = cfg.killCd;
+  J.mordidas.push({ v: vampiro.id, alvo: vitima.id, em: J.T + 8 });
+  vampiro.segredos.push({ t: J.T, txt: `mordi ${vitima.nome} em ${nomeLugar(vitima.x, vitima.y)} (vai morrer em 8s)` });
+  for (const o of J.jog) if (o.vivo && o !== vampiro && o !== vitima && ve(o, vampiro) && dist(o, vampiro) < 5 * TILE) {
+    lembrar(o, `vi ${aparencia(vampiro).nome} encostar em ${vitima.nome} em ${nomeLugar(vitima.x, vitima.y)}`);
+    o.suspeita[aparencia(vampiro).id] = (o.suspeita[aparencia(vampiro).id] || 0) + 20;
+  }
+  if (J.verPapeis) evento(`<b style="color:${vampiro.cor}">${esc(vampiro.nome)}</b> mordeu <b style="color:${vitima.cor}">${esc(vitima.nome)}</b>. Ele cai em 8s.`);
+  som("tubo");
+}
+function resolverMordida(m) {
+  const v = J.jog[m.v], vitima = J.jog[m.alvo];
+  if (!vitima.vivo) return;
+  const testemunhas = J.jog.filter((o) => o.vivo && o !== vitima && ve(o, vitima));
+  const corpo = eliminar(vitima, v);
+  for (const w of testemunhas) { lembrar(w, `vi ${vitima.nome} cair morto do nada em ${corpo.sala}`, true); if (w.bot && w.papel !== "infiltrado") w.alvoReport = corpo.id; }
+  evento(`<b style="color:${vitima.cor}">${esc(vitima.nome)}</b> caiu morto em ${corpo.sala} (mordida).`);
+  som("matar");
+  verificarVitoria();
+}
+
+function atirar(xerife, alvo) {
+  if (!xerife.vivo || !alvo.vivo || xerife.habCd > 0 || J.estado !== "jogando") return;
+  xerife.habCd = 30;
+  const culpado = alvo.papel === "infiltrado";
+  const morto = culpado ? alvo : xerife;
+  const testemunhas = J.jog.filter((o) => o.vivo && o !== xerife && o !== alvo && (ve(o, xerife) || ve(o, alvo)));
+  const corpo = eliminar(morto, culpado ? xerife : null);
+  for (const w of testemunhas) lembrar(w, culpado ? `vi ${xerife.nome} atirar em ${alvo.nome}, que caiu: ${xerife.nome} deve ser xerife e ${alvo.nome} era infiltrado` : `vi ${xerife.nome} atirar em ${alvo.nome} e morrer (tiro errado de xerife)`, true);
+  if (culpado) for (const w of testemunhas) w.confia.add(xerife.id);
+  evento(culpado ? `Xerife <b style="color:${xerife.cor}">${esc(xerife.nome)}</b> acertou <b style="color:${alvo.cor}">${esc(alvo.nome)}</b>, que era infiltrado!` : `Xerife <b style="color:${xerife.cor}">${esc(xerife.nome)}</b> atirou em <b style="color:${alvo.cor}">${esc(alvo.nome)}</b>, que era inocente, e morreu.`);
+  som("matar");
+  verificarVitoria();
+}
+
+function disfarcar(p, alvo) {
+  if (p.funcao !== "metamorfo" || p.habCd > 0 || !alvo || alvo === p) return;
+  p.disfarce = { id: alvo.id, ate: J.T + 15 };
+  p.habCd = 35;
+  p.segredos.push({ t: J.T, txt: `me disfarcei de ${alvo.nome}` });
+  if (J.verPapeis) evento(`<b style="color:${p.cor}">${esc(p.nome)}</b> se disfarçou de <b style="color:${alvo.cor}">${esc(alvo.nome)}</b>.`);
+  som("tubo");
+}
+function sumir(p) {
+  if (p.funcao !== "sombra" || p.habCd > 0) return;
+  p.invisivelAte = J.T + 7;
+  p.habCd = 35;
+  p.segredos.push({ t: J.T, txt: "fiquei invisível" });
+  if (J.verPapeis) evento(`<b style="color:${p.cor}">${esc(p.nome)}</b> ficou invisível.`);
+  som("tubo");
+}
+
+// Pensamentos de mapa (o que o boneco decidiu, em palavras). Aparecem em balões no modo assistir.
+function pensar(p, txt, forte) {
+  if (!txt || p.ultimoPensar === txt) return;
+  const agora = performance.now();
+  if (!forte && p.balao && agora < p.balao.ate - 3000) return;
+  p.ultimoPensar = txt;
+  p.balao = { txt, ate: agora + 7500 };
+  pensamento(p, txt);
 }
 
 function entrarTubo(p, tubo) {
   if (p.emTubo != null) return;
+  const vp = aparencia(p);
   for (const o of J.jog) if (o.vivo && o !== p && o.papel === "tripulante" && ve(o, p)) {
-    lembrar(o, `VI ${p.nome} ENTRAR num tubo em ${nomeLugar(tubo.x, tubo.y)}!`, true);
-    o.suspeita[p.id] = (o.suspeita[p.id] || 0) + 80; o.viuTubo = p.id;
+    lembrar(o, `VI ${vp.nome} ENTRAR num tubo em ${nomeLugar(tubo.x, tubo.y)}!`, true);
+    o.suspeita[vp.id] = (o.suspeita[vp.id] || 0) + 80; o.viuTubo = vp.id;
+    pensar(o, `${vp.nome} entrou num tubo! Isso é coisa de infiltrado.`, true);
     if (o.bot && o.emergencias > 0) o.chamarSino = true;
   }
   p.emTubo = tubo.id; p.x = tubo.x; p.y = tubo.y; p.caminho = null; p.fazendo = null;
@@ -703,9 +840,11 @@ function sairTubo(p) {
   if (p.emTubo == null) return;
   const t = TUBOS[p.emTubo];
   p.emTubo = null; p.x = t.x; p.y = t.y;
+  const vp = aparencia(p);
   for (const o of J.jog) if (o.vivo && o !== p && o.papel === "tripulante" && ve(o, p)) {
-    lembrar(o, `VI ${p.nome} SAIR de um tubo em ${nomeLugar(t.x, t.y)}!`, true);
-    o.suspeita[p.id] = (o.suspeita[p.id] || 0) + 80; o.viuTubo = p.id;
+    lembrar(o, `VI ${vp.nome} SAIR de um tubo em ${nomeLugar(t.x, t.y)}!`, true);
+    o.suspeita[vp.id] = (o.suspeita[vp.id] || 0) + 80; o.viuTubo = vp.id;
+    pensar(o, `${vp.nome} saiu de um tubo! Vou tocar o sino.`, true);
     if (o.bot && o.emergencias > 0) o.chamarSino = true;
   }
   som("tubo");
@@ -725,7 +864,7 @@ function sabotar(tipo, por) {
   for (const e of s.estacoes) {
     const st = ESTACOES[e];
     const perto = J.jog.filter((p) => p.vivo && p.bot && p.papel === "tripulante" && !p.alvoReport).sort((a, b) => dist(a, st) - dist(b, st)).slice(0, s.critica ? 2 : 1);
-    for (const p of perto) { p.consertar = e; p.caminho = null; p.fazendo = null; }
+    for (const p of perto) { p.consertar = e; p.caminho = null; p.fazendo = null; pensar(p, `Sabotagem! Vou consertar: ${ESTACOES[e].nome}.`, true); }
   }
   return true;
 }
@@ -822,6 +961,27 @@ function botTripulante(p, dt) {
     if (!p.caminho) irPara(p, st) || (p.espera = 0.5);
     andar(p, dt); return;
   } else p.consertar = null;
+  // 3b. xerife: atira em quem tem certeza
+  if (p.vivo && p.funcao === "xerife" && p.habCd <= 0) {
+    const alvoId = p.plano?.atirar ?? melhorSuspeito(p, 80);
+    const alvo = alvoId != null ? J.jog[alvoId] : null;
+    if (alvo?.vivo && alvo !== p && ve(p, alvo) && dist(p, alvo) < 7 * TILE) {
+      if (dist(p, alvo) < TILE * 1.4) { pensar(p, `Tenho certeza que é ${aparencia(alvo).nome}. Fogo!`, true); atirar(p, alvo); return; }
+      if (!p.cacandoT || p.cacandoT < J.T) { p.cacandoT = J.T + 0.5; irPara(p, alvo); pensar(p, `Vou atrás de ${aparencia(alvo).nome}.`); }
+      andar(p, dt); return;
+    }
+  }
+  // 3c. engenheiro: às vezes corta caminho pelos tubos
+  if (p.vivo && p.funcao === "engenheiro") {
+    if (!p.querTubo && Math.random() < dt * 0.012) {
+      const t = TUBOS.filter((v) => dist(v, p) < 8 * TILE).sort((a, b) => dist(a, p) - dist(b, p))[0];
+      if (t) { p.querTubo = t; p.caminho = null; irPara(p, t); pensar(p, "Vou cortar caminho pelo tubo."); }
+    }
+    if (p.querTubo) {
+      if (dist(p, p.querTubo) < TILE * 0.7) { entrarTubo(p, p.querTubo); p.querTubo = null; p.tuboT = rnd(0.8, 1.6); p.tuboPulos = 0; return; }
+      if (!p.caminho) { p.querTubo = null; } else { andar(p, dt); return; }
+    }
+  }
   // 4. evitar suspeito
   if (p.vivo && p.plano?.evitar != null) {
     const ev = J.jog[p.plano.evitar];
@@ -832,12 +992,16 @@ function botTripulante(p, dt) {
   // 5. tarefas
   if (p.caminho && p.caminho.length) { andar(p, dt); return; }
   if (p.destinoTarefa && dist(p, p.destinoTarefa) < TILE * 0.6) {
-    p.fazendo = { tarefa: p.destinoTarefa, t: p.destinoTarefa.dur * rnd(1.6, 2.4) };
-    p.destinoTarefa = null; p.esperaDepois = rnd(0.8, 3); return;
+    p.fazendo = { tarefa: p.destinoTarefa, t: p.destinoTarefa.dur * rnd(2.2, 3.2) };
+    p.destinoTarefa = null; p.esperaDepois = rnd(1.5, 4.5); return;
   }
   if (p.esperaDepois) { p.espera = p.esperaDepois; p.esperaDepois = 0; return; }
   const t = proximaTarefa(p);
-  if (t) { p.destinoTarefa = t; irPara(p, t) || (p.espera = 0.5); return; }
+  if (t) {
+    p.destinoTarefa = t; irPara(p, t) || (p.espera = 0.5);
+    if (Math.random() < 0.45) pensar(p, ehBobo(p) ? escolha([`Vou fingir "${t.nome}". Ninguém sabe que sou o Bobo.`, "Na reunião vou parecer bem suspeito, hehe."]) : escolha([`Vou fazer "${t.nome}" em ${nomeLugar(t.x, t.y)}.`, `Próxima tarefa: ${t.nome}.`]));
+    return;
+  }
   // 6. sem tarefas: anda pela estação ou acompanha alguém de confiança
   p.destinoTarefa = null;
   const amigo = p.plano?.seguir != null ? J.jog[p.plano.seguir] : null;
@@ -846,21 +1010,26 @@ function botTripulante(p, dt) {
   p.espera = rnd(0.5, 2.5);
 }
 
+function melhorSuspeito(p, minimo) {
+  let melhor = null, max = minimo;
+  for (const [id, v] of Object.entries(p.suspeita)) { const o = J.jog[id]; if (o?.vivo && o !== p && v >= max) { max = v; melhor = o.id; } }
+  return melhor;
+}
 function seguro(assassino, vitima) {
-  return !J.jog.some((o) => o.vivo && o !== assassino && o !== vitima && o.papel === "tripulante" && (ve(o, assassino) || ve(o, vitima)));
+  return !J.jog.some((o) => o.vivo && o !== assassino && o !== vitima && o.papel === "tripulante" && (ve(o, assassino) || ve(o, vitima) || dist(o, vitima) < 7 * TILE));
 }
 
 function botInfiltrado(p, dt) {
   const estilo = p.plano?.estilo === "agressivo" ? 1.6 : p.plano?.estilo === "cauteloso" ? 0.6 : 1;
   // sabotar
-  if (!J.sab && J.sabCd <= 0 && J.T > 25 && Math.random() < dt * 0.045 * estilo) {
+  if (!J.sab && J.sabCd <= 0 && J.T > 45 && Math.random() < dt * 0.025 * estilo) {
     let tipo = p.plano?.sabotagem && SABOTAGENS[p.plano.sabotagem] ? p.plano.sabotagem : null;
     if (!tipo || Math.random() < 0.4) tipo = escolha(["luzes", "luzes", "luzes", "comms", "o2", "brecha"]);
-    if (sabotar(tipo, p)) { p.plano.sabotagem = null; }
+    if (sabotar(tipo, p)) { p.plano.sabotagem = null; pensar(p, `Hora do caos: ${SABOTAGENS[tipo].nome}.`, true); }
   } else if (!J.portas && J.portasCd <= 0 && Math.random() < dt * 0.02 * estilo) {
     const alvo = J.jog.find((o) => o.vivo && o.papel === "tripulante" && dist(o, p) < 6 * TILE);
     const sala = alvo ? salaEm(alvo.x, alvo.y) : null;
-    if (sala && sala.id !== "atrio") trancarPortas(sala, p);
+    if (sala && sala.id !== "atrio" && trancarPortas(sala, p)) pensar(p, `Tranquei ${alvo.nome} na ${sala.nome}.`, true);
   }
   // fuga depois de matar
   if (p.fugir) {
@@ -873,22 +1042,29 @@ function botInfiltrado(p, dt) {
   }
   // caçar (com uma pausa aleatória antes, para não ser uma máquina de matar)
   if (p.killCd > 0) p.cacaLiberada = null;
-  else if (p.cacaLiberada == null) p.cacaLiberada = J.T + rnd(4, 20) / estilo;
+  else if (p.cacaLiberada == null) p.cacaLiberada = J.T + rnd(12, 35) / estilo;
   if (p.killCd <= 0 && J.T >= p.cacaLiberada) {
     const preferido = p.plano?.alvo != null ? J.jog[p.plano.alvo] : null;
     const candidatos = J.jog.filter((o) => o.vivo && o.papel === "tripulante" && dist(o, p) < 7 * TILE && ve(p, o));
     let alvo = candidatos.find((o) => o === preferido) ?? candidatos.sort((a, b) => dist(a, p) - dist(b, p))[0];
-    if (alvo && (seguro(p, alvo) || (J.sab?.tipo === "luzes" && Math.random() < dt * 2))) {
+    // sombra some quando tem gente olhando
+    if (alvo && p.funcao === "sombra" && p.habCd <= 0 && !seguro(p, alvo) && dist(p, alvo) < 4 * TILE) { sumir(p); pensar(p, "Ninguém vai me ver agora.", true); }
+    if (alvo && (seguro(p, alvo) || invisivel(p) || (J.sab?.tipo === "luzes" && Math.random() < dt * 2))) {
+      if (p.funcao === "metamorfo" && p.habCd <= 0 && !p.disfarce) {
+        const bode = J.jog.filter((o) => o.vivo && o !== p && o !== alvo && o.papel === "tripulante").sort((a, b) => dist(b, p) - dist(a, p))[0];
+        if (bode) { disfarcar(p, bode); pensar(p, `Vou atacar disfarçado de ${bode.nome}.`, true); }
+      }
       if (dist(p, alvo) < TILE * 1.3) {
         matar(p, alvo);
+        if (p.funcao === "vampiro") { pensar(p, `Mordi ${alvo.nome}. Em 8 segundos ele cai, e eu estarei longe.`, true); p.fugir = null; irPara(p, lugarAleatorio()); return; }
         const sala = salaEm(p.x, p.y);
         const tubo = TUBOS.filter((t) => dist(t, p) < 7 * TILE && linhaLivre(p, t)).sort((a, b) => dist(a, p) - dist(b, p))[0];
         p.fugir = { tubo: Math.random() < 0.85 ? tubo : null };
-        if (!p.fugir.tubo) { irPara(p, lugarAleatorio()); p.fugir = { tubo: null }; }
-        else irPara(p, tubo);
+        if (!p.fugir.tubo) { irPara(p, lugarAleatorio()); p.fugir = { tubo: null }; pensar(p, "Feito. Agora saio andando como se nada tivesse acontecido.", true); }
+        else { irPara(p, tubo); pensar(p, "Feito. Preciso sumir pelo tubo.", true); }
         return;
       }
-      if (!p.cacandoT || p.cacandoT < J.T) { p.cacandoT = J.T + 0.4; irPara(p, alvo); }
+      if (!p.cacandoT || p.cacandoT < J.T) { p.cacandoT = J.T + 0.4; irPara(p, alvo); pensar(p, `${alvo.nome} está sozinho... é minha chance.`); }
       andar(p, dt); return;
     }
     // persegue de longe quem está sozinho
@@ -902,7 +1078,7 @@ function botInfiltrado(p, dt) {
     if (!p.viuCorpo.has(c.id) && veCorpo(p, c)) {
       p.viuCorpo.add(c.id);
       const meu = p.segredos.some((s) => s.txt.includes(`matei ${c.nome}`));
-      if (Math.random() < (meu ? 0.12 : 0.35) && J.T - c.t > 4) { p.alvoReportFalso = c.id; }
+      if (Math.random() < (meu ? 0.12 : 0.35) && J.T - c.t > 4) { p.alvoReportFalso = c.id; pensar(p, "Vou reportar esse corpo pra parecer inocente.", true); }
     }
   }
   if (p.alvoReportFalso) {
@@ -915,6 +1091,7 @@ function botInfiltrado(p, dt) {
   if (p.destinoTarefa && dist(p, p.destinoTarefa) < TILE * 0.7) { p.fazendo = { tarefa: null, t: rnd(2.5, 5) }; p.destinoTarefa = null; return; }
   const t = escolha(p.tarefas);
   p.destinoTarefa = t; irPara(p, t) || (p.espera = 0.5);
+  if (Math.random() < 0.35) pensar(p, escolha([`Vou fingir "${t.nome}" pra ninguém desconfiar.`, "Preciso parecer ocupado.", `Quem será que está sozinho perto de ${nomeLugar(t.x, t.y)}?`]));
 }
 
 function botNoTubo(p, dt) {
@@ -940,15 +1117,28 @@ function observar(p) {
     if (o === p || !o.vivo || o.emTubo != null) continue;
     if (!ve(p, o)) continue;
     const l = nomeLugar(o.x, o.y);
-    if (p.visto[o.id] !== l) { p.visto[o.id] = l; lembrar(p, `vi ${o.nome} em ${l}`, false, { quem: o.id, lugar: l }); }
-    p.vistoEm[o.id] = { t: J.T, lugar: l };
+    const a = aparencia(o);
+    if (p.visto[a.id] !== l) { p.visto[a.id] = l; lembrar(p, `vi ${a.nome} em ${l}`, false, { quem: a.id, lugar: l }); }
+    p.vistoEm[a.id] = { t: J.T, lugar: l };
     if (o.escaneando && !p.confia.has(o.id)) { p.confia.add(o.id); lembrar(p, `vi ${o.nome} fazer o escaneamento médico (só tripulante consegue)`, true); p.suspeita[o.id] = (p.suspeita[o.id] || 0) - 100; }
   }
   for (const c of J.corpos) {
     if (p.viuCorpo.has(c.id) || !veCorpo(p, c)) continue;
     p.viuCorpo.add(c.id);
     lembrar(p, `encontrei o corpo de ${c.nome} em ${c.sala}`, true);
-    if (p.bot && p.papel === "tripulante") p.alvoReport = c.id;
+    if (p.bot && p.papel === "tripulante") { p.alvoReport = c.id; pensar(p, `Um corpo! É ${c.nome}. Vou reportar.`, true); }
+    if (p.funcao === "detetive" && c.autor != null) {
+      const real = J.jog[c.autor];
+      const falso = escolha(J.jog.filter((o) => o.vivo && o !== p && o !== real));
+      if (falso) {
+        const par = embaralhar([real.nome, falso.nome]);
+        const txt = `PISTA DE DETETIVE: quem matou ${c.nome} foi ${par[0]} ou ${par[1]}`;
+        lembrar(p, txt, true); p.pistas.push(`${c.nome}: ${par[0]} ou ${par[1]}`);
+        p.suspeita[real.id] = (p.suspeita[real.id] || 0) + 50; p.suspeita[falso.id] = (p.suspeita[falso.id] || 0) + 50;
+        pensar(p, `Pista: quem matou ${c.nome} foi ${par[0]} ou ${par[1]}.`, true);
+        if (p === J.humano) aviso(`<span style="font:700 18px var(--f-mono)">PISTA: ${esc(par[0])} ou ${esc(par[1])}</span>`, 3500, "#ffb02e");
+      }
+    }
     // quem estava perto do corpo (agora ou pouco antes) fica suspeito
     for (const o of J.jog) {
       if (!o.vivo || o === p) continue;
@@ -979,22 +1169,28 @@ async function iniciarReuniao(info) {
   fecharModal();
   som("reuniao");
   J.sab = null; J.portas = null;
+  const mordidosAgora = [];
+  for (const m of J.mordidas) { const v = J.jog[m.alvo]; if (v.vivo) { eliminar(v, J.jog[m.v]); mordidosAgora.push(v.nome); } }
+  J.mordidas = [];
+  for (const p of J.jog) { p.disfarce = null; p.invisivelAte = 0; p.balao = null; p.querTubo = null; }
   for (const p of J.jog) { p.consertar = null; p.alvoReport = null; p.alvoReportFalso = null; p.fugir = null; if (p.emTubo != null) sairTubo(p); p.fazendo = null; p.escaneando = false; }
   const corposAntes = J.corpos.map((c) => c.nome);
   J.corpos = [];
-  R = { num: J.reunioes, motivo: info.motivo, info, chat: [], votos: {}, fim: false, ctl: new AbortController(), mostrarPensa: J.verPapeis, mortosAgora: corposAntes };
+  R = { num: J.reunioes, motivo: info.motivo, info, chat: [], filaVer: [], mostrando: false, votos: {}, fim: false, ctl: new AbortController(), mostrarPensa: cfg.modo === "assistir", mortosAgora: corposAntes };
   for (const p of J.jog) if (p.vivo) lembrar(p, `reunião: ${info.motivo}`);
-  aviso(info.tipo === "corpo" ? "CORPO ENCONTRADO" : "REUNIÃO DE EMERGÊNCIA", 1500, "#ffb02e");
-  await esperar(1500);
+  if (mordidosAgora.length) for (const p of J.jog) if (p.vivo) lembrar(p, `${mordidosAgora.join(", ")} caiu morto logo antes da reunião`, true);
+  if (verificarVitoria()) return;
+  aviso(info.tipo === "corpo" ? "CORPO ENCONTRADO" : "REUNIÃO DE EMERGÊNCIA", 2400, "#ffb02e");
+  await esperar(2400);
   if (!J || J.estado !== "reuniao") return;
   const RR = R;
   mostrarReuniao();
   msgSistema(info.motivo + (corposAntes.length > 1 ? ` Corpos encontrados: ${corposAntes.join(", ")}.` : ""));
+  if (mordidosAgora.length) msgSistema(`${mordidosAgora.join(", ")} caiu morto a caminho da reunião.`);
 
   const bots = vivos().filter((p) => p.bot);
   const humanoVivo = J.humano?.vivo;
-  const tempoMax = humanoVivo ? 110 : 0;
-  R.prazo = humanoVivo ? performance.now() + tempoMax * 1000 : null;
+  R.prazo = null;
 
   // quem chamou fala primeiro
   const ordem = [...bots].sort((a, b) => (a === info.por ? -1 : b === info.por ? 1 : Math.random() - 0.5));
@@ -1004,7 +1200,8 @@ async function iniciarReuniao(info) {
   if (R !== RR || RR.fim) return;
   R.botsTerminaram = true;
   atualizarVotantes();
-  if (!humanoVivo) { await esperar(1800); if (R === RR) encerrarVotacao(); }
+  if (humanoVivo && R.votos[J.humano.id] === undefined) R.prazo = performance.now() + 40000;
+  if (!humanoVivo) { $("#digitando").textContent = "Votação encerrando…"; await esperar(3000); if (R === RR) encerrarVotacao(); }
   else if (R.votos[J.humano.id] !== undefined) { await esperar(1200); if (R === RR) encerrarVotacao(); }
   else $("#digitando").textContent = "Todos já votaram. Falta você.";
 }
@@ -1029,7 +1226,7 @@ async function rodadaFalas(bots, rodada) {
     const resp = normalizarResposta(b, r, rodada);
     pendentes.delete(b.id);
     mostrarDigitando();
-    if (resp.pensamento) pensamento(b, resp.pensamento);
+    if (resp.pensamento) { pensamento(b, resp.pensamento); b.balao = { txt: resp.pensamento, ate: performance.now() + 9000 }; b.ultimoPensar = resp.pensamento; }
     if (resp.fala) msgJogador(b, resp.fala, resp.pensamento);
     if (rodada === 2) {
       registrarVoto(b, resp.voto);
@@ -1037,6 +1234,7 @@ async function rodadaFalas(bots, rodada) {
     }
   });
   await Promise.all(tarefas);
+  await esperarFila();
 }
 
 function nomeParaId(nome, excluir) {
@@ -1058,7 +1256,7 @@ function normalizarResposta(b, r, rodada) {
         const alvo = nomeParaId(pl.alvo);
         out.plano = { alvo: alvo != null && J.jog[alvo].papel === "tripulante" ? alvo : null, sabotagem: mapaSabotagem(pl.sabotagem), estilo: pl.estilo === "agressivo" || pl.estilo === "cauteloso" ? pl.estilo : "normal" };
       } else {
-        out.plano = { seguir: nomeParaId(pl.seguir, b.id), evitar: nomeParaId(pl.evitar, b.id) };
+        out.plano = { seguir: nomeParaId(pl.seguir, b.id), evitar: nomeParaId(pl.evitar, b.id), atirar: b.funcao === "xerife" ? nomeParaId(pl.atirar, b.id) : null };
       }
     }
     if (out.fala || rodada === 2) return out;
@@ -1091,6 +1289,13 @@ function heuristica(b, rodada) {
     out.plano = { alvo: acusavel.filter((o) => o.papel === "tripulante")[0]?.id ?? null, sabotagem: null, estilo: "normal" };
     return out;
   }
+  if (ehBobo(b)) {
+    const alguem = escolha(vivosOutros);
+    out.pensamento = "Quero que votem em mim. Vou parecer suspeito.";
+    out.fala = rodada === 1 ? escolha(["Eu? Eu tava... por aí. Fazendo coisas.", "Não fui eu! Eu acho. Sei lá.", `Por que vocês estão olhando pra mim? Foi o ${alguem.nome}! Ou não.`]) : escolha(["Podem votar em quem quiserem, inclusive em mim kkk", "Tô tranquilo. Muito tranquilo. Demais até."]);
+    out.voto = rodada === 2 ? (Math.random() < 0.5 ? alguem.id : "pular") : "pular";
+    return out;
+  }
   // tripulante
   const t = b.testemunha && J.jog[b.testemunha.assassino]?.vivo ? b.testemunha : null;
   const tubo = b.viuTubo != null && J.jog[b.viuTubo].vivo ? J.jog[b.viuTubo] : null;
@@ -1108,7 +1313,13 @@ function heuristica(b, rodada) {
     else out.fala = top && top.s > 35 ? `Acho que é ${top.o.nome}.` : escolha(["Sem provas, vou pular.", "", "Pulo dessa vez."]);
     out.voto = top && top.s > 35 ? top.o.id : "pular";
     out.pensamento = top && top.s > 35 ? `Desconfio de ${top.o.nome}.` : "Não tenho prova de nada.";
+    // conhecimento de função
+    const pista = b.memoria.slice().reverse().find((m) => m.txt.startsWith("PISTA DE DETETIVE"));
+    const vital = b.memoria.slice().reverse().find((m) => m.txt.startsWith("sinais vitais"));
+    if (rodada === 1 && pista) out.fala = `Sou detetive. ${pista.txt.replace("PISTA DE DETETIVE: ", "Minha pista: ")}.`;
+    else if (rodada === 1 && vital) out.fala = `Sou médico. Pelos sinais vitais, ${vital.txt.replace("sinais vitais: ", "")}.`;
   }
+  if (b.funcao === "engenheiro" && contaAcusacoes(b) > 0 && rodada === 2) out.fala = "Calma, sou engenheiro! Posso usar tubo.";
   const confio = vivosOutros.find((o) => b.confia.has(o.id));
   out.plano = { seguir: confio?.id ?? null, evitar: ranking[0]?.s > 30 ? ranking[0].o.id : null };
   return out;
@@ -1122,17 +1333,22 @@ function promptReuniao(b, rodada) {
   const vivosN = vivos().map((p) => p.nome).join(", ");
   const mortosN = J.jog.filter((p) => !p.vivo).map((p) => p.nome).join(", ") || "ninguém";
   const parceiros = J.jog.filter((p) => p.papel === "infiltrado" && p !== b).map((p) => `${p.nome}${p.vivo ? "" : " (morto)"}`).join(", ") || "nenhum";
-  const papel = b.papel === "infiltrado"
-    ? `INFILTRADO. Parceiro(s) infiltrado(s): ${parceiros}. Objetivo: não ser descoberto e eliminar a tripulação. Minta com naturalidade, invente álibis coerentes com as salas do mapa, desvie a suspeita para inocentes (sem exagerar) e proteja seu parceiro sem deixar óbvio. Nunca admita ser infiltrado.`
-    : `TRIPULANTE. Objetivo: descobrir quem são os infiltrados e votar para expulsá-los. Use o que você viu de verdade e cruze as falas: infiltrados mentem. Se não tiver prova, pular o voto é aceitável.`;
+  const f = FUNCOES[b.funcao];
+  const funcoesNoJogo = [...new Set(J.jog.map((p) => p.funcao))].filter((x) => x !== "tripulante" && x !== "infiltrado").map((x) => `${FUNCOES[x].nome} (${FUNCOES[x].desc})`).join("; ") || "nenhuma";
+  const papel = ehBobo(b)
+    ? `BOBO (neutro, não é tripulante nem infiltrado). ${f.desc} Faça os outros desconfiarem de você de forma sutil e engraçada (contradições, nervosismo, defesa fraca), sem confessar diretamente.`
+    : b.papel === "infiltrado"
+    ? `INFILTRADO${b.funcao !== "infiltrado" ? `, com a habilidade ${f.nome}: ${f.desc}` : ""}. Você pode mentir que tem uma função de tripulante. Parceiro(s): ${parceiros}. Objetivo: não ser descoberto e eliminar a tripulação. Minta com naturalidade, invente álibis coerentes com as salas do mapa, desvie a suspeita para inocentes (sem exagerar) e proteja seu parceiro sem deixar óbvio. Nunca admita ser infiltrado.`
+    : `TRIPULANTE${b.funcao !== "tripulante" ? `, com a função ${f.nome}: ${f.desc} Revelar sua função pode ajudar, mas infiltrados também mentem que têm funções` : ""}. Objetivo: descobrir quem são os infiltrados e votar para expulsá-los. Use o que você viu de verdade e cruze as falas: infiltrados mentem. Se não tiver prova, pular o voto é aceitável.`;
   const mem = b.memoria.slice(-24).map((m) => `- [${Math.round(m.t)}s] ${m.txt}`).join("\n") || "- (nada de importante)";
   const segredos = b.papel === "infiltrado" ? `\nO que você fez de verdade (SEGREDO, não conte):\n${b.segredos.slice(-8).map((s) => `- [${Math.round(s.t)}s] ${s.txt}`).join("\n") || "- nada ainda"}` : "";
   const hist = J.historico.length ? J.historico.join(" ") : "nenhuma";
   const chat = R.chat.filter((m) => !m.sistema).map((m) => `${m.nome}: ${m.texto}`).join("\n") || "(ninguém falou ainda)";
   const formato = rodada === 1
     ? `Agora é sua vez de falar no chat. Responda só com JSON, sem mais nada:\n{"pensamento":"seu raciocínio secreto em 1 frase","fala":"sua mensagem no chat: até 160 caracteres, português do Brasil, informal como num jogo online"}`
-    : `Última chance de falar antes da votação. Responda só com JSON, sem mais nada:\n{"pensamento":"seu raciocínio secreto em 1 frase","fala":"mensagem curta no chat (pode ser vazia)","voto":"nome exato de um jogador vivo, ou pular",${b.papel === "infiltrado" ? `"plano":{"alvo":"tripulante que você quer eliminar depois","sabotagem":"luzes, comunicacoes, oxigenio ou brecha","estilo":"agressivo, normal ou cauteloso"}` : `"plano":{"seguir":"jogador vivo em quem você confia para andar junto, ou vazio","evitar":"jogador vivo de quem você quer distância, ou vazio"}`}}`;
+    : `Última chance de falar antes da votação. Responda só com JSON, sem mais nada:\n{"pensamento":"seu raciocínio secreto em 1 frase","fala":"mensagem curta no chat (pode ser vazia)","voto":"nome exato de um jogador vivo, ou pular",${b.papel === "infiltrado" ? `"plano":{"alvo":"tripulante que você quer eliminar depois","sabotagem":"luzes, comunicacoes, oxigenio ou brecha","estilo":"agressivo, normal ou cauteloso"}` : `"plano":{"seguir":"jogador vivo em quem você confia para andar junto, ou vazio","evitar":"jogador vivo de quem você quer distância, ou vazio"${b.funcao === "xerife" ? `,"atirar":"em quem você vai atirar quando ficar sozinho com ele (só se tiver certeza), ou vazio"` : ""}}`}}`;
   return `Você é ${b.nome}, jogador(a) de "Estação Abissal", um jogo de dedução social numa estação de pesquisa no fundo do mar. Salas: ${SALAS.map((s) => s.nome).join(", ")}. Infiltrados podem matar, usar tubos de ventilação entre salas e sabotar; tripulantes fazem tarefas. Escaneamento médico só tripulante consegue fazer.
+Funções especiais nesta partida: ${funcoesNoJogo}.
 Seu papel secreto: ${papel}
 Sua personalidade: ${b.personalidade}.
 Tempo de jogo: ${Math.round(J.T)}s. Reunião nº ${R.num}: ${R.motivo}
@@ -1158,7 +1374,7 @@ function encerrarVotacao() {
   R.ctl.abort();
   for (const p of vivos()) if (R.votos[p.id] === undefined) R.votos[p.id] = "pular";
   const contagem = {};
-  for (const v of Object.values(R.votos)) contagem[v] = (contagem[v] || 0) + 1;
+  for (const [quemVotou, v] of Object.entries(R.votos)) contagem[v] = (contagem[v] || 0) + (J.jog[quemVotou].funcao === "prefeito" ? 2 : 1);
   R.mostrarVotos = true;
   atualizarVotantes();
   $("#digitando").textContent = "";
@@ -1167,7 +1383,7 @@ function encerrarVotacao() {
     if (n > max) { max = n; quem = k; empate = false; } else if (n === max) empate = true;
   }
   const expulso = !empate && quem !== "pular" && quem != null ? J.jog[Number(quem)] : null;
-  setTimeout(() => mostrarEjecao(expulso, empate), 2600);
+  setTimeout(() => mostrarEjecao(expulso, empate), 4200);
 }
 async function mostrarEjecao(expulso, empate) {
   $("#reuniao").hidden = true;
@@ -1176,7 +1392,8 @@ async function mostrarEjecao(expulso, empate) {
   if (expulso) {
     expulso.vivo = false; expulso.fazendo = null;
     $("#e-titulo").textContent = `${expulso.nome} foi expelido pela câmara de descompressão.`;
-    $("#e-sub").textContent = expulso.papel === "infiltrado" ? `${expulso.nome} era um Infiltrado.` : `${expulso.nome} não era um Infiltrado.`;
+    const fn = nomeFuncao(expulso);
+    $("#e-sub").textContent = ehBobo(expulso) ? `${expulso.nome} era o Bobo... e era exatamente isso que ele queria.` : expulso.papel === "infiltrado" ? `${expulso.nome} era um Infiltrado${expulso.funcao !== "infiltrado" ? ` (${fn})` : ""}.` : `${expulso.nome} não era um Infiltrado${expulso.funcao !== "tripulante" ? `. Era o ${fn}` : ""}.`;
     J.historico.push(`${expulso.nome} foi expulso e ${expulso.papel === "infiltrado" ? "ERA" : "NÃO era"} infiltrado.`);
     evento(`<b style="color:${expulso.cor}">${esc(expulso.nome)}</b> foi expulso (${expulso.papel === "infiltrado" ? "era infiltrado" : "inocente"}).`);
     for (const p of J.jog) lembrar(p, `${expulso.nome} foi expulso e ${expulso.papel === "infiltrado" ? "era" : "não era"} infiltrado`, true);
@@ -1186,13 +1403,14 @@ async function mostrarEjecao(expulso, empate) {
     J.historico.push(`Reunião ${R.num}: ninguém foi expulso.`);
   }
   som("ejecao");
-  await esperar(3600);
+  await esperar(5000);
   tela.hidden = true;
   if (!J) return;
   R = null;
+  if (expulso && ehBobo(expulso)) { fimDeJogo("bobo", `${expulso.nome} era o Bobo e conseguiu ser expulso.`); return; }
   if (verificarVitoria()) return;
   posicionarNaMesa(J.jog);
-  for (const p of J.jog) { if (p.papel === "infiltrado") p.killCd = Math.max(15, cfg.killCd * 0.8); p.testemunha = null; p.viuTubo = null; p.chamarSino = false; p.destinoTarefa = null; p.espera = rnd(0, 1); }
+  for (const p of J.jog) { if (p.papel === "infiltrado") p.killCd = Math.max(15, cfg.killCd * 0.8); if (p.habCd < 10) p.habCd = 10; p.testemunha = null; p.viuTubo = null; p.chamarSino = false; p.destinoTarefa = null; p.espera = rnd(0, 1); }
   J.sabCd = 15; J.portasCd = 10;
   J.estado = "jogando";
 }
@@ -1214,12 +1432,13 @@ function fimDeJogo(quem, motivo) {
     $("#reuniao").hidden = true; $("#ejecao").hidden = true;
     $("#fim").hidden = false;
     $("#f-motivo").textContent = motivo.toUpperCase();
-    const venceu = J.humano ? (J.humano.papel === "infiltrado") === (quem === "infiltrados") : null;
-    $("#f-titulo").innerHTML = `${quem === "tripulantes" ? "Tripulação vence" : "Infiltrados vencem"}${venceu === null ? "" : `<br><small style="font-size:.45em;color:${venceu ? "#3ee6c4" : "#ff4b5c"}">${venceu ? "Você ganhou" : "Você perdeu"}</small>`}`;
-    $("#f-titulo").style.color = quem === "tripulantes" ? "var(--bio)" : "var(--alarme)";
+    const h = J.humano;
+    const venceu = !h ? null : quem === "bobo" ? ehBobo(h) : ehBobo(h) ? false : (h.papel === "infiltrado") === (quem === "infiltrados");
+    $("#f-titulo").innerHTML = `${quem === "tripulantes" ? "Tripulação vence" : quem === "bobo" ? "O Bobo venceu" : "Infiltrados vencem"}${venceu === null ? "" : `<br><small style="font-size:.45em;color:${venceu ? "#3ee6c4" : "#ff4b5c"}">${venceu ? "Você ganhou" : "Você perdeu"}</small>`}`;
+    $("#f-titulo").style.color = quem === "tripulantes" ? "var(--bio)" : quem === "bobo" ? "var(--ambar)" : "var(--alarme)";
     $("#f-lista").replaceChildren(...J.jog.map((p) => {
       const d = document.createElement("div");
-      d.innerHTML = `<span class="ponto" style="background:${p.cor}"></span><span><b>${esc(p.nome)}</b>${p === J.humano ? " (você)" : ""}<br><small style="color:${p.papel === "infiltrado" ? "#ff4b5c" : "#8db5b3"}">${p.papel === "infiltrado" ? "Infiltrado" : "Tripulante"}${p.vivo ? "" : " · morto"}</small></span>`;
+      d.innerHTML = `<span class="ponto" style="background:${p.cor}"></span><span><b>${esc(p.nome)}</b>${p === J.humano ? " (você)" : ""}<br><small style="color:${p.papel === "infiltrado" ? "#ff4b5c" : ehBobo(p) ? "#ffb02e" : "#8db5b3"}">${p.papel === "infiltrado" && p.funcao !== "infiltrado" ? "Infiltrado · " : ""}${nomeFuncao(p)}${p.vivo ? "" : " · morto"}</small></span>`;
       return d;
     }));
   }, 900);
@@ -1279,6 +1498,7 @@ function tratarErroIA(e) {
 }
 function statusIA(txt, cls) { const el = $("#status-ia"); el.textContent = txt; el.className = cls || ""; }
 (function procurarServidor() {
+  if (location.protocol === "file:") return;
   fetch("ia/status").then((r) => (r.ok ? r.json() : null)).then((j) => {
     if (!j?.ok) {
       if (j?.motivo) { $("#op-servidor").hidden = false; $("#op-servidor").disabled = true; $("#servidor-desc").textContent = j.motivo; }
@@ -1311,6 +1531,12 @@ function passo(dt) {
   J.T += dt;
   J.sabCd = Math.max(0, J.sabCd - dt);
   J.portasCd = Math.max(0, J.portasCd - dt);
+  if (J.mordidas.length) {
+    const prontas = J.mordidas.filter((m) => J.T >= m.em);
+    J.mordidas = J.mordidas.filter((m) => J.T < m.em);
+    for (const m of prontas) resolverMordida(m);
+    if (J.estado !== "jogando") return;
+  }
   if (J.portas && J.T >= J.portas.ate) { J.portas = null; for (const p of J.jog) p.caminho = null; }
   if (J.sab?.fim && J.T >= J.sab.fim) {
     fimDeJogo("infiltrados", J.sab.tipo === "o2" ? "O oxigênio da estação acabou." : "A pressão do oceano esmagou a estação.");
@@ -1318,6 +1544,8 @@ function passo(dt) {
   }
   for (const p of J.jog) {
     if (p.papel === "infiltrado" && p.vivo) p.killCd = Math.max(0, p.killCd - dt);
+    if (p.vivo) p.habCd = Math.max(0, p.habCd - dt);
+    if (p.disfarce && J.T >= p.disfarce.ate) p.disfarce = null;
     if (p.bot) atualizarBot(p, dt);
   }
   if (J.humano) atualizarHumano(dt);
@@ -1389,7 +1617,7 @@ function vitimaPerto() {
 }
 function tuboPerto() {
   const h = J.humano;
-  if (!h?.vivo || h.papel !== "infiltrado") return null;
+  if (!h?.vivo || (h.papel !== "infiltrado" && h.funcao !== "engenheiro")) return null;
   return TUBOS.find((t) => dist(t, h) < TILE * 1.2) ?? null;
 }
 
@@ -1397,7 +1625,7 @@ function acaoUsar() {
   const c = contextoUsar();
   if (!c) return;
   if (c.tipo === "tarefa") {
-    if (J.humano.papel === "infiltrado") { toastJogo("Você finge fazer a tarefa…"); return; }
+    if (J.humano.papel === "infiltrado" || ehBobo(J.humano)) { toastJogo("Você finge fazer a tarefa…"); return; }
     abrirTarefa(c.t);
   } else if (c.tipo === "consertar") abrirConserto(c.e);
   else if (c.tipo === "sino") {
@@ -1405,6 +1633,38 @@ function acaoUsar() {
     else if (J.sab?.fim) toastJogo("Não dá para chamar reunião durante uma crise.");
     else emergencia(J.humano);
   } else if (c.tipo === "cameras") abrirCameras();
+}
+function acaoHabilidade() {
+  const h = J.humano;
+  if (!h?.vivo || J.estado !== "jogando" || h.habCd > 0) return;
+  if (h.funcao === "xerife") {
+    const alvo = J.jog.filter((o) => o.vivo && o !== h && dist(o, h) < TILE * 1.5 && linhaLivre(h, o)).sort((a, b) => dist(a, h) - dist(b, h))[0];
+    if (alvo) atirar(h, alvo); else toastJogo("Chegue perto de alguém para atirar.");
+  } else if (h.funcao === "sombra") sumir(h);
+  else if (h.funcao === "medico") abrirVitais();
+  else if (h.funcao === "metamorfo") {
+    const corpo = $("#modal-corpo");
+    corpo.innerHTML = `<h3>Disfarce</h3><p class="dica">Por 15s você fica com a cara de quem escolher.</p>`;
+    const lista = document.createElement("div"); lista.className = "opcoes";
+    for (const o of J.jog.filter((o) => o.vivo && o !== h)) {
+      const b = document.createElement("button"); b.className = "botao"; b.innerHTML = `<span class="ponto" style="background:${o.cor};display:inline-block;vertical-align:middle"></span> ${esc(o.nome)}`;
+      b.onclick = () => { disfarcar(h, o); fecharModal(); };
+      lista.append(b);
+    }
+    corpo.append(lista, botaoFechar()); abrirModal();
+  }
+}
+function abrirVitais() {
+  const corpo = $("#modal-corpo");
+  corpo.innerHTML = `<h3>Sinais vitais</h3>`;
+  const lista = document.createElement("div"); lista.className = "fim-lista";
+  for (const o of J.jog) {
+    const morte = J.mortes.find((m) => m.id === o.id);
+    const d = document.createElement("div");
+    d.innerHTML = `<span class="ponto" style="background:${o.cor}"></span><span><b>${esc(o.nome)}</b><br><small style="color:${morte ? "#ff4b5c" : "#3ee6c4"}">${morte ? `morto há ${Math.round(J.T - morte.t)}s` : "vivo"}</small></span>`;
+    lista.append(d);
+  }
+  corpo.append(lista, botaoFechar()); abrirModal();
 }
 function acaoReportar() { const c = corpoPerto(); if (c) reportar(J.humano, c); }
 function acaoMatar() { const v = vitimaPerto(); if (v && J.humano.killCd <= 0) matar(J.humano, v); }
@@ -1734,6 +1994,17 @@ function desenharCorpo(c, k) {
   for (let i = 0; i < 3; i++) { const yy = -10 - ((t * 18 + i * 13) % 34); c.beginPath(); c.arc(16 + Math.sin(t * 2 + i) * 3, yy, 2 - i * 0.4, 0, 7); c.fill(); }
   c.restore();
 }
+function quebrarTexto(c, txt, largura) {
+  const palavras = String(txt).split(" ");
+  const linhas = [];
+  let atual = "";
+  for (const w of palavras) {
+    const teste = atual ? atual + " " + w : w;
+    if (c.measureText(teste).width > largura && atual) { linhas.push(atual); atual = w; } else atual = teste;
+  }
+  if (atual) linhas.push(atual);
+  return linhas;
+}
 function shade(hex, q) {
   const n = parseInt(hex.slice(1), 16);
   const r = Math.max(0, Math.min(255, (n >> 16) + q)), g = Math.max(0, Math.min(255, ((n >> 8) & 255) + q)), b = Math.max(0, Math.min(255, (n & 255) + q));
@@ -1778,12 +2049,15 @@ function desenharVista(c, w, h, cx, cy, escala, obs, soVivos, k = 1) {
       continue;
     }
     if (obs && obs.vivo && p !== obs && !ve(obs, p)) continue;
+    const alfa = invisivel(p) ? (p === obs || !obs ? 0.3 : 0) : 1;
+    if (alfa === 0) continue;
     if (p.escaneando) {
       c.save(); c.strokeStyle = "rgba(62,230,196,.8)"; c.lineWidth = 2;
       const yy = p.y - 22 + ((tempo * 40) % 40);
       c.beginPath(); c.ellipse(p.x, yy, 16, 5, 0, 0, 7); c.stroke(); c.restore();
     }
-    desenharMergulhador(c, p, tempo);
+    const ap = aparencia(p);
+    desenharMergulhador(c, ap === p ? p : { ...p, cor: ap.cor }, tempo, alfa);
   }
   // nomes
   c.font = "700 11px Atkinson Hyperlegible, system-ui, sans-serif"; c.textAlign = "center";
@@ -1791,13 +2065,39 @@ function desenharVista(c, w, h, cx, cy, escala, obs, soVivos, k = 1) {
     if (p.emTubo != null) continue;
     if (!p.vivo && ((obs && obs.vivo) || soVivos)) continue;
     if (p.vivo && obs && obs.vivo && p !== obs && !ve(obs, p)) continue;
+    if (invisivel(p) && obs && p !== obs) continue;
     const inf = p.papel === "infiltrado" && (J.verPapeis || (h0 && h0.papel === "infiltrado"));
+    const ap = aparencia(p);
+    const revela = J.verPapeis || p === obs || (inf && h0?.papel === "infiltrado");
+    const funcaoTxt = J.verPapeis && cfg.modo === "assistir" && p.funcao !== "tripulante" ? ` · ${nomeFuncao(p)}` : "";
     c.fillStyle = "rgba(0,0,0,.55)";
-    const txt = p.nome + (p.fazendo && cfg.modo === "assistir" ? " ⋯" : "");
+    const txt = ap.nome + (ap !== p && revela ? ` (${p.nome})` : "") + funcaoTxt + (p.fazendo && cfg.modo === "assistir" ? " ⋯" : "");
     const tw = c.measureText(txt).width;
     c.fillRect(p.x - tw / 2 - 4, p.y - 41, tw + 8, 15);
-    c.fillStyle = inf ? "#ff8a96" : p.vivo ? "#fff" : "rgba(255,255,255,.55)";
+    c.fillStyle = inf ? "#ff8a96" : ehBobo(p) && J.verPapeis ? "#ffcf7a" : p.vivo ? "#fff" : "rgba(255,255,255,.55)";
     c.fillText(txt, p.x, p.y - 30);
+  }
+  // balões de pensamento (só no modo assistir)
+  if (cfg.modo === "assistir" && cfg.baloes) {
+    const agora = performance.now();
+    c.font = "italic 400 13px Atkinson Hyperlegible, system-ui, sans-serif"; c.textAlign = "left";
+    for (const p of lista) {
+      if (!p.balao || agora > p.balao.ate || p.emTubo != null) continue;
+      const fade = Math.min(1, (p.balao.ate - agora) / 600);
+      const linhas = quebrarTexto(c, p.balao.txt, 180).slice(0, 4);
+      const lw = Math.max(...linhas.map((l) => c.measureText(l).width)) + 16, lh = linhas.length * 16 + 10;
+      const esq = cx - w / (2 * escala) + 6, dir = cx + w / (2 * escala) - 6, topo = cy - h / (2 * escala) + 150 / escala;
+      const bx = Math.max(esq, Math.min(dir - lw, p.x - lw / 2)), by = Math.max(topo, p.y - 50 - lh);
+      c.save(); c.globalAlpha = 0.92 * fade;
+      c.fillStyle = p.papel === "infiltrado" && J.verPapeis ? "#3a0d14" : "#0b2f3a";
+      c.strokeStyle = p.papel === "infiltrado" && J.verPapeis ? "#ff4b5c" : p.cor; c.lineWidth = 1.5;
+      c.beginPath(); c.roundRect(bx, by, lw, lh, 10); c.fill(); c.stroke();
+      c.beginPath(); c.arc(p.x - 4, by + lh + 5, 3.5, 0, 7); c.fill(); c.stroke();
+      c.beginPath(); c.arc(p.x - 8, by + lh + 12, 2, 0, 7); c.fill(); c.stroke();
+      c.fillStyle = "#e6fbf7";
+      linhas.forEach((l, i) => c.fillText(l, bx + 8, by + 18 + i * 16));
+      c.restore();
+    }
   }
   // escuridão (visão do jogador)
   c.setTransform(k, 0, 0, k, 0, 0);
@@ -1825,23 +2125,32 @@ function desenhar() {
 }
 
 // ---------------- HUD ----------------
+function tagFuncao(p) {
+  if (!J.verPapeis || p.funcao === "tripulante") return "";
+  const cor = p.papel === "infiltrado" ? "var(--alarme)" : ehBobo(p) ? "var(--ambar)" : "var(--bio)";
+  return ` <span class="tag-inf" style="color:${cor}">${FUNCOES[p.funcao].curto}</span>`;
+}
 function iniciarHUD() {
   const assistir = cfg.modo === "assistir";
   $("#app").classList.toggle("assistindo", assistir);
   $("#topo").hidden = false;
-  $("#b-vel").hidden = !assistir; $("#b-papeis").hidden = !assistir; $("#b-painel").hidden = !assistir;
+  $("#b-vel").hidden = !assistir; $("#b-papeis").hidden = !assistir; $("#b-painel").hidden = !assistir; $("#b-baloes").hidden = !assistir;
+  $("#b-baloes").classList.toggle("ativa", cfg.baloes);
   $("#b-papeis").classList.toggle("ativa", J.verPapeis);
   $("#b-vel").textContent = "1×";
   $("#seguir").hidden = !assistir;
   $("#lateral").hidden = !assistir || CW < 700;
+  $("#regras-funcoes")?.remove();
   $("#b-painel").classList.toggle("ativa", !$("#lateral").hidden);
   $("#minhas-tarefas").hidden = assistir;
   $("#joystick").hidden = assistir; $("#acoes").hidden = assistir;
   const inf = J.humano?.papel === "infiltrado";
-  $("#a-matar").hidden = !inf; $("#a-tubo").hidden = !inf; $("#a-sabotar").hidden = !inf;
+  const fh = J.humano?.funcao;
+  $("#a-matar").hidden = !inf; $("#a-tubo").hidden = !(inf || fh === "engenheiro"); $("#a-sabotar").hidden = !inf;
+  $("#a-hab").hidden = !["xerife", "medico", "metamorfo", "sombra"].includes(fh);
   $("#minhas-tarefas").classList.toggle("aberta", CW >= 700);
   $("#tarefas-toggle").setAttribute("aria-expanded", String(CW >= 700));
-  if (J.humano) { $("#papel-selo").textContent = inf ? "INFILTRADO" : "TRIPULANTE"; $("#papel-selo").style.color = inf ? "var(--alarme)" : "var(--bio)"; }
+  if (J.humano) { $("#papel-selo").textContent = nomeFuncao(J.humano).toUpperCase(); $("#papel-selo").style.color = ehBobo(J.humano) ? "var(--ambar)" : inf ? "var(--alarme)" : "var(--bio)"; }
   desenharChips();
   painelSujo = true;
 }
@@ -1850,7 +2159,7 @@ function desenharChips() {
   $("#seguir").replaceChildren(...J.jog.map((p) => {
     const b = document.createElement("button");
     b.className = "chip" + (J.seguindo === p.id ? " ativa" : "") + (p.vivo ? "" : " morto");
-    b.innerHTML = `<span class="ponto" style="background:${p.cor}"></span>${esc(p.nome)}${J.verPapeis && p.papel === "infiltrado" ? ' <span class="tag-inf">INF</span>' : ""}`;
+    b.innerHTML = `<span class="ponto" style="background:${p.cor}"></span>${esc(p.nome)}${tagFuncao(p)}`;
     b.onclick = () => { J.seguindo = p.id; J.verMapa = false; $("#b-mapa").classList.remove("ativa"); desenharChips(); };
     return b;
   }));
@@ -1884,30 +2193,33 @@ function atualizarHUD() {
     painelSujo = false;
     $("#pensamentos").innerHTML = J.pensamentos.slice(0, 10).map((x) => {
       const p = J.jog[x.id];
-      return `<div class="evento pensa"><span class="quem" style="color:${p.cor}">${esc(p.nome)}${J.verPapeis && p.papel === "infiltrado" ? " (inf.)" : ""}:</span> ${esc(x.txt)}</div>`;
+      return `<div class="evento pensa"><span class="quem" style="color:${p.cor}">${esc(p.nome)}${tagFuncao(p)}:</span> ${esc(x.txt)}</div>`;
     }).join("") || `<div class="evento" style="color:var(--suave)">Os pensamentos aparecem nas reuniões.</div>`;
     $("#eventos").innerHTML = J.eventos.slice(0, 14).map((e) => `<div class="evento"><span style="color:var(--suave);font-family:var(--f-mono);font-size:11px">${Math.round(e.t)}s</span> ${e.txt}</div>`).join("");
   }
   // tarefas e botões do humano
   if (h) {
     const ul = $("#lista-tarefas");
-    $("#tarefas-cont").textContent = h.papel === "infiltrado" ? "· tarefas falsas" : `· ${h.tarefas.filter((t) => t.feita).length}/${h.tarefas.length} tarefas`;
+    $("#tarefas-cont").textContent = h.papel === "infiltrado" || ehBobo(h) ? "· fingir" : `· ${h.tarefas.filter((t) => t.feita).length}/${h.tarefas.length} tarefas`;
     if (semComms && h.papel === "tripulante") ul.innerHTML = `<li style="color:var(--alarme)">Comunicações cortadas</li>`;
-    else ul.innerHTML = h.tarefas.map((t) => `<li class="${t.feita ? "feita" : ""}">${h.papel === "infiltrado" ? "(fingir) " : ""}${esc(nomeLugar(t.x, t.y))}: ${esc(t.nome)}</li>`).join("");
+    else ul.innerHTML = (h.funcao !== "tripulante" && h.funcao !== "infiltrado" ? `<li style="color:#d9b8ff">${esc(FUNCOES[h.funcao].desc)}</li>` : "") + h.pistas.map((x) => `<li style="color:var(--ambar)">Pista: ${esc(x)}</li>`).join("") + h.tarefas.map((t) => `<li class="${t.feita ? "feita" : ""}">${h.papel === "infiltrado" || ehBobo(h) ? "(fingir) " : ""}${esc(nomeLugar(t.x, t.y))}: ${esc(t.nome)}</li>`).join("");
     const ctxU = contextoUsar();
     const bU = $("#a-usar");
     bU.disabled = !ctxU;
     bU.textContent = !ctxU ? "USAR" : ctxU.tipo === "sino" ? "SINO" : ctxU.tipo === "cameras" ? "CÂMERAS" : ctxU.tipo === "consertar" ? "CONSERTAR" : "USAR";
     $("#a-reportar").disabled = !corpoPerto();
-    if (h.papel === "infiltrado") {
-      const bM = $("#a-matar");
-      bM.disabled = !vitimaPerto() || h.killCd > 0;
-      bM.innerHTML = h.killCd > 0 && h.vivo ? `MATAR<span class="cd">${Math.ceil(h.killCd)}</span>` : "MATAR";
+    const bH = $("#a-hab");
+    if (!bH.hidden) {
+      const rot = { xerife: "ATIRAR", medico: "VITAIS", metamorfo: "DISFAR­CE", sombra: "SUMIR" }[h.funcao] || "HABILIDADE";
+      bH.disabled = !h.vivo || J.estado !== "jogando" || (h.habCd > 0 && h.funcao !== "medico");
+      bH.innerHTML = h.habCd > 0 && h.vivo && h.funcao !== "medico" ? `${rot}<span class="cd">${Math.ceil(h.habCd)}</span>` : rot;
+    }
+    if (h.funcao === "engenheiro") {
       const bT = $("#a-tubo");
       bT.disabled = !(tuboPerto() || h.emTubo != null);
       bT.textContent = h.emTubo != null ? "SAIR" : "TUBO";
-      $("#a-sabotar").disabled = J.estado !== "jogando";
-      // destinos de tubo
+    }
+    if (h.papel === "infiltrado" || h.funcao === "engenheiro") {
       const tb = $("#tubos");
       if (h.emTubo != null) {
         tb.hidden = false;
@@ -1917,6 +2229,16 @@ function atualizarHUD() {
           tb.replaceChildren(...ligacoesTubo(TUBOS[h.emTubo]).map((d) => { const b = document.createElement("button"); b.className = "pilula"; b.textContent = `→ ${nomeLugar(d.x, d.y)}`; b.onclick = () => moverNoTubo(h, d); return b; }));
         }
       } else { tb.hidden = true; tb.dataset.k = ""; }
+    }
+    if (h.papel === "infiltrado") {
+      const bM = $("#a-matar");
+      bM.disabled = !vitimaPerto() || h.killCd > 0;
+      const rotM = h.funcao === "vampiro" ? "MORDER" : "MATAR";
+      bM.innerHTML = h.killCd > 0 && h.vivo ? `${rotM}<span class="cd">${Math.ceil(h.killCd)}</span>` : rotM;
+      const bT = $("#a-tubo");
+      bT.disabled = !(tuboPerto() || h.emTubo != null);
+      bT.textContent = h.emTubo != null ? "SAIR" : "TUBO";
+      $("#a-sabotar").disabled = J.estado !== "jogando";
     }
   }
 }
@@ -1945,7 +2267,7 @@ function atualizarVotantes() {
     b.className = "votante" + (p.vivo ? "" : " morto") + (podeVotar && p.vivo ? " pode" : "") + (h && R.votos[h.id] === p.id ? " escolhido" : "");
     b.disabled = !(podeVotar && p.vivo);
     const votou = p.vivo && R.votos[p.id] !== undefined;
-    const tagInf = J.verPapeis && p.papel === "infiltrado" ? '<span class="tag-inf">INF </span>' : "";
+    const tagInf = tagFuncao(p) ? tagFuncao(p) + " " : "";
     b.innerHTML = `<span class="ponto" style="background:${p.cor}"></span><span class="nome">${tagInf}${esc(p.nome)}${p === h ? " (você)" : ""}</span>${votou && !R.mostrarVotos ? '<span class="marca-voto">VOTOU</span>' : ""}${!p.vivo ? '<span class="marca-voto" style="color:var(--alarme)">MORTO</span>' : ""}<span class="votos">${(contagem[p.id] || []).map((v) => `<i style="background:${v.cor}" title="${esc(v.nome)}"></i>`).join("")}</span>`;
     b.onclick = () => { if (podeVotar && p.vivo) votoHumano(p.id); };
     return b;
@@ -1962,14 +2284,35 @@ function votoHumano(alvo) {
   if (R.botsTerminaram) setTimeout(encerrarVotacao, 800);
 }
 function msgSistema(txt) { R.chat.push({ sistema: true, texto: txt }); adicionarMsg(null, txt); }
-function msgJogador(p, txt, pensa) { R.chat.push({ id: p.id, nome: p.nome, texto: txt }); adicionarMsg(p, txt, pensa); som("msg"); }
+function msgJogador(p, txt, pensa) {
+  R.chat.push({ id: p.id, nome: p.nome, texto: txt });
+  if (!p.bot) { adicionarMsg(p, txt, pensa); som("msg"); return; }
+  R.filaVer.push({ p, txt, pensa });
+  mostrarProximaMsg();
+}
+// Mostra as falas das IAs uma de cada vez, com tempo para ler (texto + pensamento).
+function mostrarProximaMsg() {
+  if (!R || R.mostrando || !R.filaVer.length) return;
+  const RR = R;
+  const m = R.filaVer.shift();
+  R.mostrando = true;
+  adicionarMsg(m.p, m.txt, m.pensa);
+  som("msg");
+  const leitura = 1600 + m.txt.length * 45 + (m.pensa && R.mostrarPensa ? m.pensa.length * 30 : 0);
+  const fator = cfg.modo === "assistir" ? 1 / Math.max(0.5, J.vel) : 0.75;
+  setTimeout(() => { if (R !== RR) return; RR.mostrando = false; mostrarProximaMsg(); }, Math.min(9000, leitura) * fator);
+}
+async function esperarFila() {
+  const RR = R;
+  while (R === RR && !RR.fim && (RR.filaVer.length || RR.mostrando)) await esperar(200);
+}
 function adicionarMsg(p, txt, pensa) {
   const chat = $("#chat");
   const d = document.createElement("div");
   if (!p) { d.className = "msg sistema"; d.textContent = txt; }
   else {
     d.className = "msg";
-    d.innerHTML = `<span class="ponto" style="background:${p.cor};margin-top:3px"></span><div class="corpo"><div class="quem" style="color:${p.cor}">${esc(p.nome)}${J.verPapeis && p.papel === "infiltrado" ? ' <span class="tag-inf">INF</span>' : ""}</div><div class="texto"></div>${pensa ? `<div class="pensa" ${R.mostrarPensa ? "" : "hidden"}></div>` : ""}</div>`;
+    d.innerHTML = `<span class="ponto" style="background:${p.cor};margin-top:3px"></span><div class="corpo"><div class="quem" style="color:${p.cor}">${esc(p.nome)}${tagFuncao(p)}</div><div class="texto"></div>${pensa ? `<div class="pensa" ${R.mostrarPensa ? "" : "hidden"}></div>` : ""}</div>`;
     d.querySelector(".texto").textContent = txt;
     if (pensa) d.querySelector(".pensa").textContent = `pensando: ${pensa}`;
   }
@@ -2018,6 +2361,7 @@ window.addEventListener("keydown", (e) => {
   if (k === "q") acaoMatar();
   if (k === "v") acaoTubo();
   if (k === "x") acaoSabotar();
+  if (k === "h") acaoHabilidade();
   if (k === "m") alternarMapa();
   if (k === "escape") fecharModal();
 });
@@ -2045,12 +2389,14 @@ $("#a-reportar").onclick = acaoReportar;
 $("#a-matar").onclick = acaoMatar;
 $("#a-tubo").onclick = acaoTubo;
 $("#a-sabotar").onclick = acaoSabotar;
+$("#a-hab").onclick = acaoHabilidade;
+$("#b-baloes").onclick = () => { cfg.baloes = !cfg.baloes; $("#b-baloes").classList.toggle("ativa", cfg.baloes); };
 function alternarMapa() {
   if (cfg.modo === "assistir") { J.verMapa = !J.verMapa; $("#b-mapa").classList.toggle("ativa", J.verMapa); }
   else if ($("#modal").hidden) abrirMapa(); else fecharModal();
 }
 $("#b-mapa").onclick = alternarMapa;
-$("#b-vel").onclick = () => { J.vel = J.vel === 1 ? 2 : J.vel === 2 ? 3 : 1; $("#b-vel").textContent = `${J.vel}×`; };
+$("#b-vel").onclick = () => { const vs = [0.5, 1, 2, 3]; J.vel = vs[(vs.indexOf(J.vel) + 1) % vs.length]; $("#b-vel").textContent = `${String(J.vel).replace(".", ",")}×`; };
 $("#b-papeis").onclick = () => { J.verPapeis = !J.verPapeis; $("#b-papeis").classList.toggle("ativa", J.verPapeis); painelSujo = true; ultimoChips = ""; };
 $("#b-painel").onclick = () => { const l = $("#lateral"); l.hidden = !l.hidden; $("#b-painel").classList.toggle("ativa", !l.hidden); painelSujo = true; };
 $("#b-sair").onclick = () => voltarAoMenu();
@@ -2075,6 +2421,23 @@ function grupoOpcoes(sel, chave, aoMudar) {
     cfg[chave] = b.dataset.v; aoMudar?.();
   }));
 }
+(function lobbyFuncoes() {
+  const caixa = $("#op-funcoes");
+  const lado = { trip: "TRIPULAÇÃO", inf: "INFILTRADO", neutro: "NEUTRO" };
+  caixa.replaceChildren(...FUNCOES_ESPECIAIS.map((f) => {
+    const d = FUNCOES[f];
+    const b = document.createElement("button");
+    b.className = `funcao ${d.lado}` + (cfg.funcoes.includes(f) ? " ativa" : "");
+    b.dataset.f = f;
+    b.setAttribute("aria-pressed", String(cfg.funcoes.includes(f)));
+    b.innerHTML = `<small>${lado[d.lado]}</small><b>${d.nome}</b><span>${d.desc}</span>`;
+    b.onclick = () => {
+      cfg.funcoes = cfg.funcoes.includes(f) ? cfg.funcoes.filter((x) => x !== f) : [...cfg.funcoes, f];
+      b.classList.toggle("ativa", cfg.funcoes.includes(f)); b.setAttribute("aria-pressed", String(cfg.funcoes.includes(f)));
+    };
+    return b;
+  }));
+})();
 grupoOpcoes("#op-modo", "modo", () => { $("#campos-jogar").hidden = cfg.modo !== "jogar"; });
 grupoOpcoes("#op-papel", "papel");
 grupoOpcoes("#op-cerebro", "cerebro");
@@ -2095,6 +2458,8 @@ try { const salvo = JSON.parse(localStorage.getItem("abissal.cfg") || "null"); i
   for (const [sel, chave] of [["#op-modo", "modo"], ["#op-papel", "papel"], ["#op-cerebro", "cerebro"]]) document.querySelectorAll(`${sel} .opcao`).forEach((b) => b.classList.toggle("ativa", b.dataset.v === cfg[chave]));
   $("#campos-jogar").hidden = cfg.modo !== "jogar";
   document.querySelectorAll("#op-leve .opcao").forEach((b) => b.classList.toggle("ativa", (b.dataset.v === "sim") === !!cfg.leve));
+  if (!Array.isArray(cfg.funcoes)) cfg.funcoes = [...FUNCOES_ESPECIAIS];
+  document.querySelectorAll("#op-funcoes .funcao").forEach((b) => { const on = cfg.funcoes.includes(b.dataset.f); b.classList.toggle("ativa", on); b.setAttribute("aria-pressed", String(on)); });
 })();
 
 function comecar() {
