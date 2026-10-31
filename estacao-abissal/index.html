@@ -316,6 +316,7 @@ input:focus-visible, button:focus-visible { outline: 2px solid var(--bio); outli
         <div class="opcoes" id="op-cerebro">
           <button class="opcao ativa" data-v="ia"><b>IA de verdade (LLM)</b><span>Claude pensa, fala e vota por cada boneco. Usa o seu Claude.</span></button>
           <button class="opcao" data-v="simples"><b>Bots simples</b><span>Regras prontas. Rápido e não gasta nada.</span></button>
+          <button class="opcao" data-v="servidor" id="op-servidor" hidden><b>Sua IA</b><span id="servidor-desc">NVIDIA, OpenRouter ou modelo local</span></button>
         </div>
         <div id="status-ia">Verificando a IA…</div>
       </div>
@@ -1219,16 +1220,38 @@ function fimDeJogo(quem, motivo) {
 
 // ---------------- IA (Claude) ----------------
 const IA = { sample: null, pronta: false, perm: true, ateQuando: 0, ativos: 0, fila: [] };
-function iaUsavel() { return cfg.cerebro === "ia" && IA.sample && IA.perm && Date.now() > IA.ateQuando; }
+const SERVIDOR = { ok: false, paralelo: 2, falhas: 0 };
+function iaUsavel() {
+  if (Date.now() <= IA.ateQuando) return false;
+  if (cfg.cerebro === "servidor") return SERVIDOR.ok;
+  return cfg.cerebro === "ia" && IA.sample && IA.perm;
+}
+// "Sua IA": o servidor local (servidor.js) repassa o pedido para NVIDIA, OpenRouter ou Ollama.
+async function perguntarServidor(prompt, signal) {
+  const r = await fetch("ia", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt }), signal });
+  const dados = await r.json().catch(() => ({}));
+  if (!r.ok) throw { code: r.status === 429 ? "rate_limited" : "servidor", message: dados.erro || `erro ${r.status}` };
+  return extrairJSON(dados.texto || "");
+}
+function extrairJSON(texto) {
+  let t = String(texto).replace(/<think>[\s\S]*?<\/think>/gi, "").replace(/^[\s\S]*<\/think>/i, "").trim();
+  const cerca = t.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (cerca) t = cerca[1];
+  const ini = t.indexOf("{"), fim = t.lastIndexOf("}");
+  if (ini < 0 || fim <= ini) throw { code: "invalid_json", message: "a IA não respondeu em JSON" };
+  try { return JSON.parse(t.slice(ini, fim + 1)); } catch { throw { code: "invalid_json", message: "JSON quebrado" }; }
+}
 function perguntarIA(prompt, signal) {
   return new Promise((res, rej) => { IA.fila.push({ prompt, signal, res, rej }); bombear(); });
 }
 function bombear() {
-  while (IA.ativos < 2 && IA.fila.length) {
+  const limite = cfg.cerebro === "servidor" ? SERVIDOR.paralelo : 2;
+  while (IA.ativos < limite && IA.fila.length) {
     const j = IA.fila.shift();
     if (j.signal?.aborted) { j.rej({ code: "cancelled" }); continue; }
     IA.ativos++;
-    IA.sample.json(j.prompt, { modelTier: "quick", cache: false, signal: j.signal })
+    (cfg.cerebro === "servidor" ? perguntarServidor(j.prompt, j.signal) : IA.sample.json(j.prompt, { modelTier: "quick", cache: false, signal: j.signal }))
+      .then((r) => { SERVIDOR.falhas = 0; return r; })
       .then(j.res, j.rej)
       .finally(() => { IA.ativos--; bombear(); });
   }
@@ -1242,12 +1265,30 @@ function tratarErroIA(e) {
   } else if (c === "rate_limited") {
     IA.ateQuando = Date.now() + 60000;
     evento("A IA pediu uma pausa (limite de uso). Bots simples por 1 minuto.");
+  } else if (cfg.cerebro === "servidor" && c !== "cancelled") {
+    if (++SERVIDOR.falhas >= 3) { IA.ateQuando = Date.now() + 60000; SERVIDOR.falhas = 0; evento(`Sua IA falhou 3 vezes (${esc(e?.message || c)}). Bots simples por 1 minuto.`); }
   }
 }
 function statusIA(txt, cls) { const el = $("#status-ia"); el.textContent = txt; el.className = cls || ""; }
+(function procurarServidor() {
+  fetch("ia/status").then((r) => (r.ok ? r.json() : null)).then((j) => {
+    if (!j?.ok) {
+      if (j?.motivo) { $("#op-servidor").hidden = false; $("#op-servidor").disabled = true; $("#servidor-desc").textContent = j.motivo; }
+      return;
+    }
+    SERVIDOR.ok = true; SERVIDOR.paralelo = j.paralelo || 2;
+    $("#op-servidor").hidden = false;
+    $("#servidor-desc").textContent = `${j.provedor} · ${j.modelo}`;
+    if (!window.claude?.use || cfg.cerebro === "servidor") {
+      cfg.cerebro = "servidor";
+      document.querySelectorAll("#op-cerebro .opcao").forEach((b) => b.classList.toggle("ativa", b.dataset.v === "servidor"));
+      statusIA(`Sua IA conectada: ${j.provedor} (${j.modelo}).`, "ok");
+    }
+  }).catch(() => {});
+})();
 (function prepararIA() {
   const c = window.claude;
-  if (!c?.use) { statusIA("IA indisponível fora do Claude. Os bots simples vão jogar.", "ruim"); return; }
+  if (!c?.use) { if (!SERVIDOR.ok) statusIA("Fora do Claude: rode o servidor.js para usar sua IA. Sem ele, os bots simples jogam.", "ruim"); return; }
   c.use("sample").then((s) => {
     IA.sample = s; IA.pronta = true;
     if (s) statusIA("IA pronta. Na primeira reunião o Claude vai pedir sua permissão.", "ok");
