@@ -321,6 +321,14 @@ input:focus-visible, button:focus-visible { outline: 2px solid var(--bio); outli
         <div id="status-ia">Verificando a IA…</div>
       </div>
 
+      <div class="cartao">
+        <h2>Gráficos</h2>
+        <div class="opcoes" id="op-leve">
+          <button class="opcao" data-v="nao"><b>Normal</b><span>Mais bonito.</span></button>
+          <button class="opcao" data-v="sim"><b>Leve</b><span>Para celular ou navegador lento.</span></button>
+        </div>
+      </div>
+
       <button class="botao-grande" id="b-comecar">Descer para a estação</button>
 
       <div class="cartao">
@@ -477,7 +485,7 @@ const PERSONALIDADES = [
   "dramática, exagera tudo", "teimoso, não muda de opinião fácil", "gentil, defende quem parece inocente", "sarcástica",
 ];
 
-const cfg = { modo: "assistir", jogadores: 8, infiltrados: 2, killCd: 30, nome: "Jogador", papel: "aleatorio", cerebro: "ia" };
+const cfg = { modo: "assistir", jogadores: 8, infiltrados: 2, killCd: 30, nome: "Jogador", papel: "aleatorio", cerebro: "ia", leve: (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 3 };
 let J = null; // estado da partida
 
 function novaPartida() {
@@ -1316,6 +1324,7 @@ function passo(dt) {
   acumObs += dt;
   if (acumObs > 0.25) { acumObs = 0; for (const p of J.jog) observar(p); }
 }
+let quadro = 0;
 function laco(agora) {
   const dtReal = Math.min(0.1, (agora - ultimo) / 1000);
   ultimo = agora;
@@ -1323,7 +1332,8 @@ function laco(agora) {
     const vel = cfg.modo === "assistir" ? J.vel : 1;
     let resto = dtReal * vel;
     while (resto > 0) { const d = Math.min(resto, 1 / 30); passo(d); resto -= d; }
-    desenhar();
+    quadro++;
+    if (!cfg.leve || quadro % 2 === 0) desenhar();
     atualizarHUD();
     if (R && R.prazo) {
       const s = Math.max(0, Math.ceil((R.prazo - performance.now()) / 1000));
@@ -1604,7 +1614,7 @@ function abrirMapa() {
 const tela = $("#tela"), ctx = tela.getContext("2d");
 let DPR = 1, CW = 0, CH = 0;
 function redimensionar() {
-  DPR = Math.min(2, window.devicePixelRatio || 1);
+  DPR = cfg.leve ? 1 : Math.min(2, window.devicePixelRatio || 1);
   const r = tela.getBoundingClientRect();
   CW = r.width; CH = r.height;
   tela.width = Math.round(CW * DPR); tela.height = Math.round(CH * DPR);
@@ -1738,7 +1748,7 @@ function desenharVista(c, w, h, cx, cy, escala, obs, soVivos, k = 1) {
   c.setTransform(k * escala, 0, 0, k * escala, k * (w / 2 - cx * escala), k * (h / 2 - cy * escala));
   // neve marinha
   c.fillStyle = "rgba(160,220,230,.25)";
-  for (const n of NEVE) { const yy = (n.y + tempo * n.v) % (ALT * TILE); c.fillRect(n.x, yy, n.r, n.r); }
+  if (!cfg.leve) for (const n of NEVE) { const yy = (n.y + tempo * n.v) % (ALT * TILE); c.fillRect(n.x, yy, n.r, n.r); }
   c.drawImage(mapaPronto, 0, 0);
   // portas trancadas
   if (J.portas) {
@@ -2068,6 +2078,10 @@ function grupoOpcoes(sel, chave, aoMudar) {
 grupoOpcoes("#op-modo", "modo", () => { $("#campos-jogar").hidden = cfg.modo !== "jogar"; });
 grupoOpcoes("#op-papel", "papel");
 grupoOpcoes("#op-cerebro", "cerebro");
+document.querySelectorAll("#op-leve .opcao").forEach((b) => b.addEventListener("click", () => {
+  cfg.leve = b.dataset.v === "sim";
+  document.querySelectorAll("#op-leve .opcao").forEach((x) => x.classList.toggle("ativa", x === b));
+}));
 for (const [id, out, chave, suf] of [["#c-jog", "#o-jog", "jogadores", ""], ["#c-inf", "#o-inf", "infiltrados", ""], ["#c-cd", "#o-cd", "killCd", "s"]]) {
   const el = $(id);
   el.addEventListener("input", () => { cfg[chave] = Number(el.value); $(out).textContent = el.value + suf; });
@@ -2080,6 +2094,7 @@ try { const salvo = JSON.parse(localStorage.getItem("abissal.cfg") || "null"); i
   $("#c-nome").value = cfg.nome;
   for (const [sel, chave] of [["#op-modo", "modo"], ["#op-papel", "papel"], ["#op-cerebro", "cerebro"]]) document.querySelectorAll(`${sel} .opcao`).forEach((b) => b.classList.toggle("ativa", b.dataset.v === cfg[chave]));
   $("#campos-jogar").hidden = cfg.modo !== "jogar";
+  document.querySelectorAll("#op-leve .opcao").forEach((b) => b.classList.toggle("ativa", (b.dataset.v === "sim") === !!cfg.leve));
 })();
 
 function comecar() {
