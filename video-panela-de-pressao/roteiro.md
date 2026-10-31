@@ -2,7 +2,8 @@
 
 > **Versão:** v1 (Fase 1), 30/10/2026. **Origem:** roteiro escrito pelo agente, a pedido do usuário
 > ("faça outro vídeo"). O tema foi escolhido pelo agente, sem envolver dinheiro.
-> **Situação:** AGUARDANDO APROVAÇÃO. A implementação e a renderização ainda não começaram.
+> **Situação:** APROVADO ("Pode", 31/10/2026). Fase 2 executada; ajustes técnicos na seção 7. Texto e
+> ordem das cenas não mudaram.
 >
 > **Convenção:** MM:SS:FF a 30 fps; frames em [início, fim). Os tempos são estimativas: depois da voz
 > real, os cortes seguem a narração.
@@ -88,3 +89,14 @@ lo-fi do canal fica por baixo da voz.
 - [x] 12 cenas e 7 colunas; soma de 2700 frames; plano compilado e validado.
 - [x] 216 palavras, compatível com 90 s; sem tranco de câmera.
 - [ ] **Ainda não feito:** TTS, render e validação visual. Isso fica para a Fase 2.
+
+## 7. Ajustes técnicos da Fase 2 (sem mudança de conteúdo)
+
+- **Voz:** Piper `pt_BR-faber-medium`; fala de 70,8 s; as 216 palavras casadas com o áudio. Pausas de
+  1,3 s entre as falas.
+- **Corte da panela:** começa já na cena 2 (e não na 6), para mostrar a água fervendo e, nas cenas 4–5,
+  o vapor preso. Sai na cena 7.
+- **Manômetro:** o ponteiro gira a partir do centro (antes ele cruzava o mostrador inteiro). O
+  enquadramento da cena 7 foi ajustado para o manômetro não cortar na borda.
+- **Termômetro:** foi para a frente da panela, com a etiqueta "100 °C" à esquerda do tubo, sempre
+  dentro do quadro.

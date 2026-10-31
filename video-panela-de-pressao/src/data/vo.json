@@ -1,0 +1,1154 @@
+{
+  "s1": {
+    "text": "Você quer cozinhar o feijão do almoço bem rápido. Parece que basta deixar o fogo no máximo.",
+    "seconds": 5.822,
+    "words": [
+      {
+        "text": "Você",
+        "start": 0,
+        "end": 0.158
+      },
+      {
+        "text": "quer",
+        "start": 0.158,
+        "end": 0.378
+      },
+      {
+        "text": "cozinhar",
+        "start": 0.378,
+        "end": 0.938
+      },
+      {
+        "text": "o",
+        "start": 0.938,
+        "end": 0.998
+      },
+      {
+        "text": "feijão",
+        "start": 0.998,
+        "end": 1.358
+      },
+      {
+        "text": "do",
+        "start": 1.358,
+        "end": 1.438
+      },
+      {
+        "text": "almoço",
+        "start": 1.438,
+        "end": 1.818
+      },
+      {
+        "text": "bem",
+        "start": 1.818,
+        "end": 2.038
+      },
+      {
+        "text": "rápido.",
+        "start": 2.038,
+        "end": 2.558
+      },
+      {
+        "text": "Parece",
+        "start": 3.078,
+        "end": 3.438
+      },
+      {
+        "text": "que",
+        "start": 3.438,
+        "end": 3.718
+      },
+      {
+        "text": "basta",
+        "start": 3.718,
+        "end": 4.018
+      },
+      {
+        "text": "deixar",
+        "start": 4.018,
+        "end": 4.478
+      },
+      {
+        "text": "o",
+        "start": 4.478,
+        "end": 4.638
+      },
+      {
+        "text": "fogo",
+        "start": 4.638,
+        "end": 4.958
+      },
+      {
+        "text": "no",
+        "start": 4.958,
+        "end": 5.018
+      },
+      {
+        "text": "máximo.",
+        "start": 5.018,
+        "end": 5.458
+      }
+    ]
+  },
+  "s2": {
+    "text": "Só que a água fervendo não passa de cem graus. Fogo mais alto só faz ela evaporar mais rápido.",
+    "seconds": 6.147,
+    "words": [
+      {
+        "text": "Só",
+        "start": 0.0,
+        "end": 0.16
+      },
+      {
+        "text": "que",
+        "start": 0.16,
+        "end": 0.34
+      },
+      {
+        "text": "a",
+        "start": 0.34,
+        "end": 0.46
+      },
+      {
+        "text": "água",
+        "start": 0.46,
+        "end": 0.66
+      },
+      {
+        "text": "fervendo",
+        "start": 0.66,
+        "end": 1.08
+      },
+      {
+        "text": "não",
+        "start": 1.08,
+        "end": 1.22
+      },
+      {
+        "text": "passa",
+        "start": 1.22,
+        "end": 1.58
+      },
+      {
+        "text": "de",
+        "start": 1.58,
+        "end": 1.76
+      },
+      {
+        "text": "cem",
+        "start": 1.76,
+        "end": 1.98
+      },
+      {
+        "text": "graus.",
+        "start": 1.98,
+        "end": 2.52
+      },
+      {
+        "text": "Fogo",
+        "start": 2.86,
+        "end": 3.24
+      },
+      {
+        "text": "mais",
+        "start": 3.24,
+        "end": 3.48
+      },
+      {
+        "text": "alto",
+        "start": 3.48,
+        "end": 3.76
+      },
+      {
+        "text": "só",
+        "start": 3.76,
+        "end": 3.98
+      },
+      {
+        "text": "faz",
+        "start": 3.98,
+        "end": 4.26
+      },
+      {
+        "text": "ela",
+        "start": 4.26,
+        "end": 4.56
+      },
+      {
+        "text": "evaporar",
+        "start": 4.56,
+        "end": 5.26
+      },
+      {
+        "text": "mais",
+        "start": 5.26,
+        "end": 5.44
+      },
+      {
+        "text": "rápido.",
+        "start": 5.44,
+        "end": 5.88
+      }
+    ]
+  },
+  "s3": {
+    "text": "E o vapor carrega o calor embora. Com a panela aberta, ele escapa pelo ar da cozinha.",
+    "seconds": 5.323,
+    "words": [
+      {
+        "text": "E",
+        "start": 0,
+        "end": 0.084
+      },
+      {
+        "text": "o",
+        "start": 0.084,
+        "end": 0.164
+      },
+      {
+        "text": "vapor",
+        "start": 0.164,
+        "end": 0.324
+      },
+      {
+        "text": "carrega",
+        "start": 0.324,
+        "end": 0.964
+      },
+      {
+        "text": "o",
+        "start": 0.964,
+        "end": 0.984
+      },
+      {
+        "text": "calor",
+        "start": 0.984,
+        "end": 1.284
+      },
+      {
+        "text": "embora.",
+        "start": 1.284,
+        "end": 1.684
+      },
+      {
+        "text": "Com",
+        "start": 2.244,
+        "end": 2.464
+      },
+      {
+        "text": "a",
+        "start": 2.464,
+        "end": 2.564
+      },
+      {
+        "text": "panela",
+        "start": 2.564,
+        "end": 2.844
+      },
+      {
+        "text": "aberta,",
+        "start": 2.844,
+        "end": 3.284
+      },
+      {
+        "text": "ele",
+        "start": 3.504,
+        "end": 3.664
+      },
+      {
+        "text": "escapa",
+        "start": 3.664,
+        "end": 4.104
+      },
+      {
+        "text": "pelo",
+        "start": 4.104,
+        "end": 4.304
+      },
+      {
+        "text": "ar",
+        "start": 4.304,
+        "end": 4.464
+      },
+      {
+        "text": "da",
+        "start": 4.464,
+        "end": 4.564
+      },
+      {
+        "text": "cozinha.",
+        "start": 4.564,
+        "end": 5.124
+      }
+    ]
+  },
+  "s4": {
+    "text": "Por isso a panela de pressão tem uma tampa que trava e uma borracha que veda tudo. O vapor fica preso lá dentro.",
+    "seconds": 6.884,
+    "words": [
+      {
+        "text": "Por",
+        "start": 0,
+        "end": 0.088
+      },
+      {
+        "text": "isso",
+        "start": 0.088,
+        "end": 0.228
+      },
+      {
+        "text": "a",
+        "start": 0.228,
+        "end": 0.368
+      },
+      {
+        "text": "panela",
+        "start": 0.368,
+        "end": 0.708
+      },
+      {
+        "text": "de",
+        "start": 0.708,
+        "end": 0.848
+      },
+      {
+        "text": "pressão",
+        "start": 0.848,
+        "end": 1.308
+      },
+      {
+        "text": "tem",
+        "start": 1.308,
+        "end": 1.488
+      },
+      {
+        "text": "uma",
+        "start": 1.488,
+        "end": 1.608
+      },
+      {
+        "text": "tampa",
+        "start": 1.608,
+        "end": 1.868
+      },
+      {
+        "text": "que",
+        "start": 1.868,
+        "end": 2.068
+      },
+      {
+        "text": "trava",
+        "start": 2.068,
+        "end": 2.468
+      },
+      {
+        "text": "e",
+        "start": 2.468,
+        "end": 2.688
+      },
+      {
+        "text": "uma",
+        "start": 2.688,
+        "end": 2.888
+      },
+      {
+        "text": "borracha",
+        "start": 2.888,
+        "end": 3.408
+      },
+      {
+        "text": "que",
+        "start": 3.408,
+        "end": 3.608
+      },
+      {
+        "text": "veda",
+        "start": 3.608,
+        "end": 3.888
+      },
+      {
+        "text": "tudo.",
+        "start": 3.888,
+        "end": 4.408
+      },
+      {
+        "text": "O",
+        "start": 4.808,
+        "end": 5.068
+      },
+      {
+        "text": "vapor",
+        "start": 5.068,
+        "end": 5.268
+      },
+      {
+        "text": "fica",
+        "start": 5.268,
+        "end": 5.688
+      },
+      {
+        "text": "preso",
+        "start": 5.688,
+        "end": 6.108
+      },
+      {
+        "text": "lá",
+        "start": 6.108,
+        "end": 6.268
+      },
+      {
+        "text": "dentro.",
+        "start": 6.268,
+        "end": 6.608
+      }
+    ]
+  },
+  "s5": {
+    "text": "Preso, o vapor se acumula e aperta tudo. A pressão lá dentro sobe.",
+    "seconds": 4.813,
+    "words": [
+      {
+        "text": "Preso,",
+        "start": 0,
+        "end": 0.416
+      },
+      {
+        "text": "o",
+        "start": 0.616,
+        "end": 0.676
+      },
+      {
+        "text": "vapor",
+        "start": 0.676,
+        "end": 0.876
+      },
+      {
+        "text": "se",
+        "start": 0.876,
+        "end": 1.116
+      },
+      {
+        "text": "acumula",
+        "start": 1.116,
+        "end": 1.636
+      },
+      {
+        "text": "e",
+        "start": 1.636,
+        "end": 1.856
+      },
+      {
+        "text": "aperta",
+        "start": 1.856,
+        "end": 2.216
+      },
+      {
+        "text": "tudo.",
+        "start": 2.216,
+        "end": 2.676
+      },
+      {
+        "text": "A",
+        "start": 3.136,
+        "end": 3.336
+      },
+      {
+        "text": "pressão",
+        "start": 3.336,
+        "end": 3.656
+      },
+      {
+        "text": "lá",
+        "start": 3.656,
+        "end": 3.816
+      },
+      {
+        "text": "dentro",
+        "start": 3.816,
+        "end": 4.016
+      },
+      {
+        "text": "sobe.",
+        "start": 4.016,
+        "end": 4.656
+      }
+    ]
+  },
+  "s6": {
+    "text": "E com mais pressão, a água só ferve acima dos cem graus. Mais quente, o feijão cozinha bem mais rápido.",
+    "seconds": 6.984,
+    "words": [
+      {
+        "text": "E",
+        "start": 0,
+        "end": 0.079
+      },
+      {
+        "text": "com",
+        "start": 0.079,
+        "end": 0.199
+      },
+      {
+        "text": "mais",
+        "start": 0.199,
+        "end": 0.459
+      },
+      {
+        "text": "pressão,",
+        "start": 0.459,
+        "end": 1.059
+      },
+      {
+        "text": "a",
+        "start": 1.279,
+        "end": 1.379
+      },
+      {
+        "text": "água",
+        "start": 1.379,
+        "end": 1.559
+      },
+      {
+        "text": "só",
+        "start": 1.559,
+        "end": 1.779
+      },
+      {
+        "text": "ferve",
+        "start": 1.779,
+        "end": 2.079
+      },
+      {
+        "text": "acima",
+        "start": 2.079,
+        "end": 2.439
+      },
+      {
+        "text": "dos",
+        "start": 2.439,
+        "end": 2.559
+      },
+      {
+        "text": "cem",
+        "start": 2.559,
+        "end": 2.819
+      },
+      {
+        "text": "graus.",
+        "start": 2.819,
+        "end": 3.359
+      },
+      {
+        "text": "Mais",
+        "start": 3.799,
+        "end": 4.179
+      },
+      {
+        "text": "quente,",
+        "start": 4.179,
+        "end": 4.719
+      },
+      {
+        "text": "o",
+        "start": 4.959,
+        "end": 4.999
+      },
+      {
+        "text": "feijão",
+        "start": 4.999,
+        "end": 5.399
+      },
+      {
+        "text": "cozinha",
+        "start": 5.399,
+        "end": 5.779
+      },
+      {
+        "text": "bem",
+        "start": 5.779,
+        "end": 5.959
+      },
+      {
+        "text": "mais",
+        "start": 5.959,
+        "end": 6.299
+      },
+      {
+        "text": "rápido.",
+        "start": 6.299,
+        "end": 6.699
+      }
+    ]
+  },
+  "s7": {
+    "text": "Mas pressão demais seria perigosa. Como evitar que ela passe do ponto?",
+    "seconds": 4.535,
+    "words": [
+      {
+        "text": "Mas",
+        "start": 0,
+        "end": 0.159
+      },
+      {
+        "text": "pressão",
+        "start": 0.159,
+        "end": 0.579
+      },
+      {
+        "text": "demais",
+        "start": 0.579,
+        "end": 0.799
+      },
+      {
+        "text": "seria",
+        "start": 0.799,
+        "end": 1.099
+      },
+      {
+        "text": "perigosa.",
+        "start": 1.099,
+        "end": 1.819
+      },
+      {
+        "text": "Como",
+        "start": 2.339,
+        "end": 2.639
+      },
+      {
+        "text": "evitar",
+        "start": 2.639,
+        "end": 2.899
+      },
+      {
+        "text": "que",
+        "start": 2.899,
+        "end": 3.059
+      },
+      {
+        "text": "ela",
+        "start": 3.059,
+        "end": 3.239
+      },
+      {
+        "text": "passe",
+        "start": 3.239,
+        "end": 3.559
+      },
+      {
+        "text": "do",
+        "start": 3.559,
+        "end": 3.779
+      },
+      {
+        "text": "ponto?",
+        "start": 3.779,
+        "end": 4.159
+      }
+    ]
+  },
+  "s8": {
+    "text": "Em cima da tampa tem um pino com peso. Quando a pressão passa do limite, ele levanta e solta um pouco de vapor.",
+    "seconds": 6.78,
+    "words": [
+      {
+        "text": "Em",
+        "start": 0,
+        "end": 0.125
+      },
+      {
+        "text": "cima",
+        "start": 0.125,
+        "end": 0.365
+      },
+      {
+        "text": "da",
+        "start": 0.365,
+        "end": 0.525
+      },
+      {
+        "text": "tampa",
+        "start": 0.525,
+        "end": 0.785
+      },
+      {
+        "text": "tem",
+        "start": 0.785,
+        "end": 1.005
+      },
+      {
+        "text": "um",
+        "start": 1.005,
+        "end": 1.065
+      },
+      {
+        "text": "pino",
+        "start": 1.065,
+        "end": 1.305
+      },
+      {
+        "text": "com",
+        "start": 1.305,
+        "end": 1.465
+      },
+      {
+        "text": "peso.",
+        "start": 1.465,
+        "end": 1.905
+      },
+      {
+        "text": "Quando",
+        "start": 2.425,
+        "end": 2.725
+      },
+      {
+        "text": "a",
+        "start": 2.725,
+        "end": 2.845
+      },
+      {
+        "text": "pressão",
+        "start": 2.845,
+        "end": 3.185
+      },
+      {
+        "text": "passa",
+        "start": 3.185,
+        "end": 3.465
+      },
+      {
+        "text": "do",
+        "start": 3.465,
+        "end": 3.665
+      },
+      {
+        "text": "limite,",
+        "start": 3.665,
+        "end": 4.045
+      },
+      {
+        "text": "ele",
+        "start": 4.405,
+        "end": 4.525
+      },
+      {
+        "text": "levanta",
+        "start": 4.525,
+        "end": 5.085
+      },
+      {
+        "text": "e",
+        "start": 5.085,
+        "end": 5.225
+      },
+      {
+        "text": "solta",
+        "start": 5.225,
+        "end": 5.545
+      },
+      {
+        "text": "um",
+        "start": 5.545,
+        "end": 5.645
+      },
+      {
+        "text": "pouco",
+        "start": 5.645,
+        "end": 5.885
+      },
+      {
+        "text": "de",
+        "start": 5.885,
+        "end": 6.065
+      },
+      {
+        "text": "vapor.",
+        "start": 6.065,
+        "end": 6.365
+      }
+    ]
+  },
+  "s9": {
+    "text": "É a válvula de pressão. É por isso que a panela chia e o pino fica balançando.",
+    "seconds": 5.426,
+    "words": [
+      {
+        "text": "É",
+        "start": 0,
+        "end": 0.131
+      },
+      {
+        "text": "a",
+        "start": 0.131,
+        "end": 0.191
+      },
+      {
+        "text": "válvula",
+        "start": 0.191,
+        "end": 0.531
+      },
+      {
+        "text": "de",
+        "start": 0.531,
+        "end": 0.671
+      },
+      {
+        "text": "pressão.",
+        "start": 0.671,
+        "end": 1.271
+      },
+      {
+        "text": "É",
+        "start": 1.671,
+        "end": 1.991
+      },
+      {
+        "text": "por",
+        "start": 1.991,
+        "end": 2.151
+      },
+      {
+        "text": "isso",
+        "start": 2.151,
+        "end": 2.331
+      },
+      {
+        "text": "que",
+        "start": 2.331,
+        "end": 2.491
+      },
+      {
+        "text": "a",
+        "start": 2.491,
+        "end": 2.571
+      },
+      {
+        "text": "panela",
+        "start": 2.571,
+        "end": 2.951
+      },
+      {
+        "text": "chia",
+        "start": 2.951,
+        "end": 3.271
+      },
+      {
+        "text": "e",
+        "start": 3.271,
+        "end": 3.551
+      },
+      {
+        "text": "o",
+        "start": 3.551,
+        "end": 3.671
+      },
+      {
+        "text": "pino",
+        "start": 3.671,
+        "end": 3.951
+      },
+      {
+        "text": "fica",
+        "start": 3.951,
+        "end": 4.211
+      },
+      {
+        "text": "balançando.",
+        "start": 4.211,
+        "end": 5.171
+      }
+    ]
+  },
+  "s10": {
+    "text": "E se a válvula entupir? Ainda tem uma segunda saída de segurança, que libera o vapor antes de virar problema.",
+    "seconds": 6.722,
+    "words": [
+      {
+        "text": "E",
+        "start": 0,
+        "end": 0.12
+      },
+      {
+        "text": "se",
+        "start": 0.12,
+        "end": 0.22
+      },
+      {
+        "text": "a",
+        "start": 0.22,
+        "end": 0.28
+      },
+      {
+        "text": "válvula",
+        "start": 0.28,
+        "end": 0.68
+      },
+      {
+        "text": "entupir?",
+        "start": 0.68,
+        "end": 1.28
+      },
+      {
+        "text": "Ainda",
+        "start": 1.86,
+        "end": 2.18
+      },
+      {
+        "text": "tem",
+        "start": 2.18,
+        "end": 2.44
+      },
+      {
+        "text": "uma",
+        "start": 2.44,
+        "end": 2.56
+      },
+      {
+        "text": "segunda",
+        "start": 2.56,
+        "end": 2.88
+      },
+      {
+        "text": "saída",
+        "start": 2.88,
+        "end": 3.38
+      },
+      {
+        "text": "de",
+        "start": 3.38,
+        "end": 3.52
+      },
+      {
+        "text": "segurança,",
+        "start": 3.52,
+        "end": 4.14
+      },
+      {
+        "text": "que",
+        "start": 4.32,
+        "end": 4.44
+      },
+      {
+        "text": "libera",
+        "start": 4.44,
+        "end": 4.82
+      },
+      {
+        "text": "o",
+        "start": 4.82,
+        "end": 4.82
+      },
+      {
+        "text": "vapor",
+        "start": 4.82,
+        "end": 5.16
+      },
+      {
+        "text": "antes",
+        "start": 5.16,
+        "end": 5.46
+      },
+      {
+        "text": "de",
+        "start": 5.46,
+        "end": 5.64
+      },
+      {
+        "text": "virar",
+        "start": 5.64,
+        "end": 5.94
+      },
+      {
+        "text": "problema.",
+        "start": 5.94,
+        "end": 6.24
+      }
+    ]
+  },
+  "s11": {
+    "text": "Por isso, só abra a panela depois que todo o vapor sair e a pressão baixar.",
+    "seconds": 4.866,
+    "words": [
+      {
+        "text": "Por",
+        "start": 0,
+        "end": 0.102
+      },
+      {
+        "text": "isso,",
+        "start": 0.102,
+        "end": 0.422
+      },
+      {
+        "text": "só",
+        "start": 0.722,
+        "end": 0.882
+      },
+      {
+        "text": "abra",
+        "start": 0.882,
+        "end": 1.102
+      },
+      {
+        "text": "a",
+        "start": 1.102,
+        "end": 1.222
+      },
+      {
+        "text": "panela",
+        "start": 1.222,
+        "end": 1.542
+      },
+      {
+        "text": "depois",
+        "start": 1.542,
+        "end": 1.862
+      },
+      {
+        "text": "que",
+        "start": 1.862,
+        "end": 2.162
+      },
+      {
+        "text": "todo",
+        "start": 2.162,
+        "end": 2.402
+      },
+      {
+        "text": "o",
+        "start": 2.402,
+        "end": 2.602
+      },
+      {
+        "text": "vapor",
+        "start": 2.602,
+        "end": 2.762
+      },
+      {
+        "text": "sair",
+        "start": 2.762,
+        "end": 3.162
+      },
+      {
+        "text": "e",
+        "start": 3.162,
+        "end": 3.662
+      },
+      {
+        "text": "a",
+        "start": 3.662,
+        "end": 3.782
+      },
+      {
+        "text": "pressão",
+        "start": 3.782,
+        "end": 4.142
+      },
+      {
+        "text": "baixar.",
+        "start": 4.142,
+        "end": 4.642
+      }
+    ]
+  },
+  "s12": {
+    "text": "Pronto: a panela prende o vapor, sobe a pressão e cozinha mais quente. E o feijão sai no ponto!",
+    "seconds": 6.458,
+    "words": [
+      {
+        "text": "Pronto:",
+        "start": 0,
+        "end": 0.346
+      },
+      {
+        "text": "a",
+        "start": 0.626,
+        "end": 0.686
+      },
+      {
+        "text": "panela",
+        "start": 0.686,
+        "end": 1.006
+      },
+      {
+        "text": "prende",
+        "start": 1.006,
+        "end": 1.406
+      },
+      {
+        "text": "o",
+        "start": 1.406,
+        "end": 1.426
+      },
+      {
+        "text": "vapor,",
+        "start": 1.426,
+        "end": 1.746
+      },
+      {
+        "text": "sobe",
+        "start": 2.046,
+        "end": 2.346
+      },
+      {
+        "text": "a",
+        "start": 2.346,
+        "end": 2.366
+      },
+      {
+        "text": "pressão",
+        "start": 2.366,
+        "end": 2.826
+      },
+      {
+        "text": "e",
+        "start": 2.826,
+        "end": 2.926
+      },
+      {
+        "text": "cozinha",
+        "start": 2.926,
+        "end": 3.326
+      },
+      {
+        "text": "mais",
+        "start": 3.326,
+        "end": 3.586
+      },
+      {
+        "text": "quente.",
+        "start": 3.586,
+        "end": 4.106
+      },
+      {
+        "text": "E",
+        "start": 4.546,
+        "end": 4.866
+      },
+      {
+        "text": "o",
+        "start": 4.866,
+        "end": 4.946
+      },
+      {
+        "text": "feijão",
+        "start": 4.946,
+        "end": 5.326
+      },
+      {
+        "text": "sai",
+        "start": 5.326,
+        "end": 5.566
+      },
+      {
+        "text": "no",
+        "start": 5.566,
+        "end": 5.706
+      },
+      {
+        "text": "ponto!",
+        "start": 5.706,
+        "end": 6.146
+      }
+    ]
+  }
+}
