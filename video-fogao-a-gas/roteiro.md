@@ -1,6 +1,6 @@
 # Roteiro — Como funciona o fogão a gás?
 
-> **Versão:** v1 (Fase 1), 31/10/2026. **Origem:** roteiro escrito pelo agente, a pedido do usuário
+> **Versão:** v1.1 (Fase 1), 31/10/2026 — v1 + troca da voz para ElevenLabs. **Origem:** roteiro escrito pelo agente, a pedido do usuário
 > ("outro vídeo"). O tema foi escolhido pelo agente, sem envolver dinheiro.
 > **Situação:** AGUARDANDO APROVAÇÃO. A implementação e a renderização ainda não começaram.
 >
@@ -14,8 +14,11 @@
   chama. Em muitos fogões, um sensor de calor fecha o gás se a chama apagar. O gás de cozinha recebe
   um cheiro de propósito, para que vazamentos sejam percebidos.
 - **Personagem:** o garçom do canal "Explica Aí", que quer esquentar uma sopa.
-- **Formato:** 90 s, 1080 × 1920, 30 fps, em português do Brasil, para **YouTube Shorts**. A voz é a do
-  canal (Piper `faber`).
+- **Formato:** 90 s, 1080 × 1920, 30 fps, em português do Brasil, para **YouTube Shorts**.
+- **Voz (v1.1):** **ElevenLabs**, voz **Marcos Alves** (`vg59CKS3V0y1IGGzYVgn`, brasileira, conversacional,
+  indicada para conteúdo educativo e redes sociais), modelo `eleven_multilingual_v2`. Pedido do usuário:
+  "Use a voz do eleven labs a partir de agora". Custo estimado: ~1.000 créditos (≈ US$ 0,10) por
+  versão da narração inteira. Os tempos por palavra virão do alinhamento automático, como antes.
 - **Arte:** low-poly do canal. O fogão aparece **em corte lateral**, mostrando o botão, a válvula, o
   injetor, o tubo misturador com entrada de ar, o queimador com furinhos, o acendedor e o sensor. O gás
   é representado por partículas amarelo-claras, o ar por partículas azul-claras e a chama em amarelo
@@ -50,7 +53,7 @@ timeline foi validada. Tudo é calculado a partir do frame. Não há tranco de c
 
 ## 4. Áudio
 
-**Narração** (200 palavras, ~73 s na voz do canal):
+**Narração** (200 palavras; duração final depende da voz ElevenLabs, ajustada às cenas pela voz real):
 
 > Você quer acender a boca do fogão pra esquentar a sopa. Parece que basta abrir o gás. Só que o gás
 > sozinho não pega fogo. Ele precisa de uma faísca pra começar a queimar. Por isso o fogão tem um
