@@ -40,7 +40,7 @@ if (SIMULAR) {
 // ---------- WhatsApp ----------
 const pino = require('pino');
 const QRCode = require('qrcode');
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, Browsers } = require('@whiskeysockets/baileys');
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, Browsers, downloadMediaMessage } = require('@whiskeysockets/baileys');
 
 const PASTA_LOGIN = path.join(r.PASTA_DADOS, 'login-whatsapp');
 let sock = null;
@@ -230,6 +230,8 @@ async function relogio() {
 // ---------- comandos (mande no "Conversar comigo" do seu WhatsApp) ----------
 const AJUDA = `🤖 *Comandos do bot de achadinhos*
 
+🛍️ *Jeito mais fácil de cadastrar Shein:* no app da Shein, toque em *Compartilhar* no produto e mande para este chat (ou cole o seu link de afiliado aqui). Ele vira post como seu afiliado ⭐
+
 *!grupos* — lista seus grupos numerados
 *!usargrupo 2* — escolhe o grupo nº 2 como seu grupo de achadinhos
 *!vitrine https://...* — salva seu link de afiliado/vitrine da Shein
@@ -246,12 +248,46 @@ const AJUDA = `🤖 *Comandos do bot de achadinhos*
 *!lista shein* (ou ml / shopee) — produtos cadastrados
 *!add shein link | título | preço | preço antigo | cupom* — cadastra produto
 *!addafiliado link | título | preço | preço antigo* — produto Shein com SEU link de afiliado
+*!editar shein 3 título | preço | preço antigo* — corrige um produto
 *!remover shein 3* — remove o produto nº 3 da lista
 *!foto shein 3 https://link-da-imagem* — coloca foto no produto nº 3`;
 
 function textoDaMensagem(m) {
   const x = m.message || {};
-  return x.conversation || x.extendedTextMessage?.text || x.ephemeralMessage?.message?.extendedTextMessage?.text || '';
+  return x.conversation || x.extendedTextMessage?.text || x.imageMessage?.caption || x.ephemeralMessage?.message?.extendedTextMessage?.text || '';
+}
+
+// Você compartilha um produto do app da Shein para o "Conversar comigo" e ele vira um post (como seu afiliado).
+// Aceita o texto do compartilhamento, um link solto ou uma foto com o link na legenda.
+const ACHA_PRECO = /R\$\s?(\d{1,3}(?:\.\d{3})*(?:,\d{2})?|\d+(?:[.,]\d{2})?)/g;
+async function adicionarSheinCompartilhado(m, texto, link) {
+  const produtos = r.lerProdutos();
+  const responder = (t) => sock.sendMessage(m.key.remoteJid, { text: t });
+  const n = produtos.shein.findIndex((p) => p.link === link);
+  if (n >= 0) return responder(`Esse produto já está cadastrado (Shein nº ${n + 1}).`);
+  const precos = [...texto.matchAll(ACHA_PRECO)].map((x) => r.numero(x[1])).filter(Boolean).sort((a, b) => a - b);
+  const titulo = texto.replace(link, ' ').replace(ACHA_PRECO, ' ')
+    .split('\n').map((l) => l.replace(/https?:\/\/\S+/g, '').replace(/[|•]+/g, ' ').trim())
+    .filter((l) => l.length > 3 && !/^(achei|olha|confira|veja|compre|encontrei).*(shein|app)|baixe o app|copie|abra o link/i.test(l))[0] || 'Achadinho SHEIN';
+  const novo = {
+    titulo: titulo.slice(0, 120),
+    preco: precos[0] ? precos[0].toFixed(2).replace('.', ',') : '',
+    precoAntigo: precos.length > 1 ? precos[precos.length - 1].toFixed(2).replace('.', ',') : '',
+    link, imagem: '', cupom: '', afiliado: true,
+  };
+  if (m.message?.imageMessage) {
+    try {
+      const pasta = path.join(r.PASTA_DADOS, 'fotos');
+      fs.mkdirSync(pasta, { recursive: true });
+      const arq = path.join(pasta, `${Date.now()}.jpg`);
+      fs.writeFileSync(arq, await downloadMediaMessage(m, 'buffer', {}));
+      novo.imagem = arq;
+    } catch (e) { log('Não consegui salvar a foto:', e.message); }
+  }
+  produtos.shein.push(novo);
+  r.salvarProdutos(produtos);
+  const nº = produtos.shein.length;
+  return responder(`✅ *Shein ⭐ nº ${nº} adicionado*\n${novo.titulo}\n${novo.preco ? `Por R$ ${novo.preco}` : 'Sem preço'}${novo.precoAntigo ? ` (de R$ ${novo.precoAntigo})` : ''}${novo.imagem ? '\n🖼️ com foto' : ''}\n\nPara corrigir: !editar shein ${nº} título | preço | preço antigo`);
 }
 
 const base = (jid) => String(jid || '').split('@')[0].split(':')[0];
@@ -266,8 +302,12 @@ function ehDono(m) {
 
 async function tratarComando(m) {
   const texto = textoDaMensagem(m).trim();
-  if (!texto.startsWith('!') || Number(m.messageTimestamp) < iniciadoEm - 5) return;
+  if (!texto || Number(m.messageTimestamp) < iniciadoEm - 5) return;
   if (String(m.key.remoteJid).endsWith('@g.us') || !ehDono(m)) return;
+  if (!texto.startsWith('!')) {
+    const link = (texto.match(/https?:\/\/\S*shein\S*/i) || [])[0];
+    return link ? adicionarSheinCompartilhado(m, texto, link.replace(/[).,!]+$/, '')) : undefined;
+  }
   const responder = (t) => sock.sendMessage(m.key.remoteJid, { text: t });
   const [cmd, ...resto] = texto.slice(1).split(/\s+/);
   const args = resto.join(' ');
@@ -370,6 +410,19 @@ async function tratarComando(m) {
       produtos[loja].push(novo);
       r.salvarProdutos(produtos);
       return responder(`✅ Adicionado na ${r.LOJAS[loja].nome}${afiliado ? ' como seu afiliado ⭐' : ''} (nº ${produtos[loja].length}).`);
+    }
+    case 'editar': {
+      const [apelido, num] = resto;
+      const loja = r.lojaPorApelido(apelido);
+      const produtos = loja && r.lerProdutos();
+      const p = produtos?.[loja]?.[Number(num) - 1];
+      if (!p) return responder('Use: !editar shein 3 título | preço | preço antigo (veja os números com !lista)');
+      const [titulo, preco, precoAntigo] = resto.slice(2).join(' ').split('|').map((x) => x.trim());
+      if (titulo) p.titulo = titulo;
+      if (preco !== undefined) p.preco = preco;
+      if (precoAntigo !== undefined) p.precoAntigo = precoAntigo;
+      r.salvarProdutos(produtos);
+      return responder(`✏️ Atualizado: ${p.titulo} — R$ ${p.preco || '?'}${p.precoAntigo ? ` (de R$ ${p.precoAntigo})` : ''}`);
     }
     case 'remover': case 'foto': {
       const [apelido, num, url] = resto;

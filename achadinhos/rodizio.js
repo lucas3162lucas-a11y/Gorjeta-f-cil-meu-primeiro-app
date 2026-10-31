@@ -19,9 +19,8 @@ const lojaPorApelido = (txt) => APELIDOS[String(txt || '').toLowerCase().replace
 
 // Na primeira vez, cria config.json e produtos.json a partir dos exemplos.
 function garantirArquivos() {
-  for (const [arq, ex] of [[ARQ_CONFIG, 'config.exemplo.json'], [ARQ_PRODUTOS, 'produtos.exemplo.json']]) {
-    if (!fs.existsSync(arq)) fs.copyFileSync(path.join(PASTA, ex), arq);
-  }
+  if (!fs.existsSync(ARQ_CONFIG)) fs.copyFileSync(path.join(PASTA, 'config.exemplo.json'), ARQ_CONFIG);
+  if (!fs.existsSync(ARQ_PRODUTOS)) salvarJson(ARQ_PRODUTOS, { shein: [], mercadolivre: [], shopee: [] });
   fs.mkdirSync(PASTA_DADOS, { recursive: true });
 }
 

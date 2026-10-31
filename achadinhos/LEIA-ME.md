@@ -9,6 +9,14 @@ Ele faz tudo sozinho no seu WhatsApp:
 - Só posta no horário que você escolher (padrão 8h às 22h), com intervalo um pouco variado para não parecer robô.
 - Não repete o mesmo produto enquanto tiver outro da loja que ainda não saiu.
 
+## 🛍️ Cadastrar produto da Shein em 2 toques
+
+No **app da Shein**, abra o produto → **Compartilhar** → escolha o WhatsApp → **Conversar comigo** (o chat com você mesmo).
+O bot pega o link, o nome e o preço da mensagem e cadastra como **seu afiliado ⭐**. Também funciona colando só o seu link de afiliado, ou mandando uma **foto do produto com o link na legenda** (a foto vai junto no post).
+Se o nome ou o preço vier errado: `!editar shein 4 Nome certo | 59,90 | 119,90`.
+
+> A Shein bloqueia busca automática de produtos (pede captcha), então não dá para o bot procurar sozinho na Shein.
+
 ## 🔎 Busca automática de ofertas (Shopee)
 
 O bot busca sozinho os produtos mais vendidos e com desconto na **Shopee**, pela API oficial de afiliados, e os links **já saem com a sua comissão**. Quando as ofertas não postadas estão acabando, ele busca mais.
@@ -90,6 +98,7 @@ Mande no **"Conversar comigo"** (o chat com você mesmo) do número conectado:
 | `!buscar shopee` / `!buscar shopee fone` | Busca ofertas na Shopee agora |
 | `!palavras fone, maquiagem` | O que buscar na Shopee |
 | `!foto shopee 2 https://link-da-foto` | Coloca foto no produto nº 2 |
+| `!editar shein 4 título \| preço \| preço antigo` | Corrige um produto |
 | `!remover ml 3` | Remove o produto nº 3 |
 
 Exemplo: `!addafiliado https://onelink.shein.com/abc | Vestido floral | 59,90 | 119,90`
