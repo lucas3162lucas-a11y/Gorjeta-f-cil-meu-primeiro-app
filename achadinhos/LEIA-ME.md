@@ -9,6 +9,21 @@ Ele faz tudo sozinho no seu WhatsApp:
 - Só posta no horário que você escolher (padrão 8h às 22h), com intervalo um pouco variado para não parecer robô.
 - Não repete o mesmo produto enquanto tiver outro da loja que ainda não saiu.
 
+## 🔎 Busca automática de ofertas (Shopee)
+
+O bot busca sozinho os produtos mais vendidos e com desconto na **Shopee**, pela API oficial de afiliados, e os links **já saem com a sua comissão**. Quando as ofertas não postadas estão acabando, ele busca mais.
+
+1. Entre em **affiliate.shopee.com.br** → menu **Open API** → peça acesso (a Shopee precisa aprovar).
+2. Quando aprovar, copie o **App ID** e a **Senha (Secret)**.
+3. Mande no "Conversar comigo": `!shopeechave APPID SENHA` — ele já testa e busca as primeiras ofertas.
+4. Escolha o que buscar: `!palavras fone bluetooth, maquiagem, cozinha, organizador`.
+
+| Loja | Como os produtos entram |
+|---|---|
+| Shopee | **Automático** (API oficial de afiliados) |
+| Shein | Você manda os seus links de afiliado (`!addafiliado`). A Shein não tem API aberta para buscar produtos |
+| Mercado Livre | Você manda os links (`!add ml`). O Mercado Livre não tem API de afiliados aberta e bloqueia buscas automáticas |
+
 ## Como ligar
 
 ```bash
@@ -71,6 +86,9 @@ Mande no **"Conversar comigo"** (o chat com você mesmo) do número conectado:
 | `!lista shein` | Produtos cadastrados (⭐ = seu afiliado) |
 | `!addafiliado link \| título \| preço \| preço antigo` | Cadastra produto da Shein com SEU link de afiliado |
 | `!add shopee link \| título \| preço \| preço antigo \| cupom` | Cadastra produto (shein, ml ou shopee) |
+| `!shopeechave APPID SENHA` | Liga a busca automática da Shopee |
+| `!buscar shopee` / `!buscar shopee fone` | Busca ofertas na Shopee agora |
+| `!palavras fone, maquiagem` | O que buscar na Shopee |
 | `!foto shopee 2 https://link-da-foto` | Coloca foto no produto nº 2 |
 | `!remover ml 3` | Remove o produto nº 3 |
 

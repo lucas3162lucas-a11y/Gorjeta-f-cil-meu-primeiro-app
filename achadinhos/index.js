@@ -5,6 +5,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const r = require('./rodizio');
+const busca = require('./buscar');
 
 const SIMULAR = process.argv.includes('--simular');
 const MIN = 60 * 1000;
@@ -171,6 +172,7 @@ async function postar(forcarLoja) {
 // Manda o convite do seu grupo nos grupos de divulgação, um de cada vez, com pausa entre eles.
 async function divulgar() {
   const config = r.lerConfig();
+  if (!r.linkReal(config.linkConviteGrupo)) return 'Falta o link de convite do grupo. Use !usargrupo (sendo admin) ou !convite https://chat.whatsapp.com/...';
   const grupos = await acharGrupos(config.divulgacao?.grupos || []);
   const estado = r.lerEstado();
   estado.ultimaDivulgacao = Date.now();
@@ -187,12 +189,30 @@ async function divulgar() {
   return `Divulgação enviada em ${ok} de ${grupos.length} grupo(s).`;
 }
 
+// Busca ofertas novas na Shopee quando estão acabando as que ainda não foram postadas.
+let ultimaBuscaShopee = 0;
+async function buscarShopee(palavra, manual) {
+  const config = r.lerConfig();
+  ultimaBuscaShopee = Date.now();
+  const { termo, produtos } = await busca.buscarShopee(config, palavra);
+  const novos = busca.adicionarNovos('shopee', produtos, r.lerEstado());
+  log(`🔎 Shopee "${termo}": ${produtos.length} ofertas, ${novos} novas${manual ? ' (manual)' : ''}`);
+  return `🔎 Busquei *${termo}* na Shopee: ${produtos.length} ofertas, *${novos} novas* adicionadas (já com seu link de afiliado).`;
+}
+
+async function reabastecer(config, estado) {
+  if (!config.shopee?.appId || !config.shopee?.secret) return;
+  if (busca.naoPostados('shopee', estado) >= 5 || Date.now() - ultimaBuscaShopee < 15 * MIN) return;
+  await buscarShopee().catch((e) => log('⚠️', e.message));
+}
+
 // Relógio do bot: confere a cada 30 s se já é hora de postar ou divulgar.
 async function relogio() {
   try {
     const config = r.lerConfig();
     const estado = r.lerEstado();
     if (!conectado || estado.pausado || !r.dentroDoHorario(config)) return;
+    await reabastecer(config, estado);
     if (Date.now() >= proximoPostEm && !enviando) {
       proximoPostEm = Date.now() + variar(Number(config.intervaloMinutos || 30) * MIN);
       const msg = await postar();
@@ -215,6 +235,9 @@ const AJUDA = `🤖 *Comandos do bot de achadinhos*
 *!vitrine https://...* — salva seu link de afiliado/vitrine da Shein
 *!convite https://chat.whatsapp.com/...* — salva o link de convite do grupo
 *!intervalo 30* — posta a cada 30 minutos
+*!shopeechave APPID SENHA* — liga a busca automática da Shopee
+*!buscar shopee* (ou *!buscar shopee fone*) — busca ofertas agora
+*!palavras fone, maquiagem, cozinha* — o que buscar na Shopee
 *!status* — como o bot está
 *!enviar* — posta o próximo produto agora
 *!enviar shein* (ou ml / shopee) — posta dessa loja agora
@@ -296,6 +319,26 @@ async function tratarComando(m) {
       else c.linkConviteGrupo = args.trim();
       r.salvarConfig(c);
       return responder(cmd.toLowerCase() === 'vitrine' ? '✅ Link da sua vitrine Shein salvo.' : '✅ Link de convite do grupo salvo.');
+    }
+    case 'shopeechave': {
+      const [appId, secret] = resto;
+      if (!appId || !secret) return responder('Use: !shopeechave APPID SENHA (pegue em affiliate.shopee.com.br → Open API)');
+      const c = r.lerConfig(); c.shopee = { ...(c.shopee || {}), appId, secret }; r.salvarConfig(c);
+      try { return responder('✅ Chave da Shopee salva. Testando...\n\n' + (await buscarShopee(undefined, true))); }
+      catch (e) { return responder('Salvei a chave, mas a busca falhou:\n' + e.message); }
+    }
+    case 'buscar': {
+      const [apelido, ...palavra] = resto;
+      if (r.lojaPorApelido(apelido) !== 'shopee') return responder('Por enquanto a busca automática é só na Shopee: !buscar shopee (ou !buscar shopee fone bluetooth)');
+      try { return responder(await buscarShopee(palavra.join(' ') || undefined, true)); }
+      catch (e) { return responder(e.message); }
+    }
+    case 'palavras': {
+      const lista = args.split(',').map((x) => x.trim()).filter(Boolean);
+      const c = r.lerConfig();
+      if (!lista.length) return responder(`🔎 Palavras de busca na Shopee:\n${(c.shopee?.palavrasChave?.length ? c.shopee.palavrasChave : busca.PALAVRAS_PADRAO).join(', ')}\n\nPara trocar: !palavras fone bluetooth, maquiagem, cozinha`);
+      c.shopee = { ...(c.shopee || {}), palavrasChave: lista }; r.salvarConfig(c);
+      return responder(`✅ Vou buscar na Shopee: ${lista.join(', ')}`);
     }
     case 'intervalo': {
       const min = Number(args);

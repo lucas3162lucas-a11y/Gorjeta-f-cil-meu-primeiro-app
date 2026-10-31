@@ -130,6 +130,8 @@ function textoProduto(loja, p) {
   return linhas.join('\n').replace(/\n{3,}/g, '\n\n');
 }
 
+// Links de exemplo do config ("COLE-...") nunca vão para o grupo.
+const linkReal = (l) => /^https?:\/\//.test(l || '') && !/COLE-/.test(l);
 const preencher = (modelo, link) => String(modelo).replaceAll('{link}', link || '');
 
 // Mensagens extras que entram entre os produtos: vitrine da Shein e convite do grupo.
@@ -138,12 +140,12 @@ function extrasDepoisDoPost(config, estado) {
   estado.postsSemVitrine++;
   estado.postsSemConvite++;
   const aCadaVitrine = Number(config.shein?.enviarVitrineACada || 0);
-  if (aCadaVitrine > 0 && config.shein?.linkVitrine && estado.postsSemVitrine >= aCadaVitrine && config.shein?.mensagensVitrine?.length) {
+  if (aCadaVitrine > 0 && linkReal(config.shein?.linkVitrine) && estado.postsSemVitrine >= aCadaVitrine && config.shein?.mensagensVitrine?.length) {
     extras.push(preencher(sortear(config.shein.mensagensVitrine), config.shein.linkVitrine));
     estado.postsSemVitrine = 0;
   }
   const aCadaConvite = Number(config.convidarNoGrupoACada || 0);
-  if (aCadaConvite > 0 && config.linkConviteGrupo && estado.postsSemConvite >= aCadaConvite && config.mensagensConvite?.length) {
+  if (aCadaConvite > 0 && linkReal(config.linkConviteGrupo) && estado.postsSemConvite >= aCadaConvite && config.mensagensConvite?.length) {
     extras.push(preencher(sortear(config.mensagensConvite), config.linkConviteGrupo));
     estado.postsSemConvite = 0;
   }
@@ -169,5 +171,5 @@ function dentroDoHorario(config) {
 module.exports = {
   LOJAS, ARQ_CONFIG, ARQ_PRODUTOS, PASTA_DADOS,
   lojaPorApelido, garantirArquivos, lerConfig, salvarConfig, lerProdutos, salvarProdutos, lerEstado, salvarEstado,
-  proximoProduto, registrarEnvio, textoProduto, extrasDepoisDoPost, textoDivulgacao, dentroDoHorario, numero, ativos,
+  proximoProduto, registrarEnvio, textoProduto, extrasDepoisDoPost, linkReal, textoDivulgacao, dentroDoHorario, numero, ativos,
 };

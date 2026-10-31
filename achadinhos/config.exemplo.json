@@ -27,6 +27,14 @@
     "🔥 Chama os amigos pro grupo de achadinhos! Todo dia oferta nova da Shein, Shopee e Mercado Livre:\n👉 {link}"
   ],
 
+  "shopee": {
+    "appId": "",
+    "secret": "",
+    "palavrasChave": ["achadinhos casa", "organizador", "cozinha utilidades", "fone bluetooth", "maquiagem", "skincare", "acessórios celular", "decoração quarto"],
+    "descontoMinimo": 20,
+    "vendasMinimas": 50
+  },
+
   "divulgacao": {
     "ativo": false,
     "grupos": ["Nome do grupo de divulgação 1", "Nome do grupo de divulgação 2"],
