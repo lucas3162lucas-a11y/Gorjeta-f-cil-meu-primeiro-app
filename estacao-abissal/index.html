@@ -1,0 +1,2068 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body><title>Estação Abissal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: jogo em tela cheia (canvas) com painéis flutuantes de estação submarina; tema escuro único de propósito. */
+:root {
+  --abismo: #04131b;
+  --casco: #0b2733;
+  --casco-2: #123846;
+  --linha: #1f5a6b;
+  --bio: #3ee6c4;
+  --ambar: #ffb02e;
+  --alarme: #ff4b5c;
+  --texto: #d7f2ee;
+  --suave: #8db5b3;
+  --f-display: "Saira Stencil One", "Arial Black", Impact, sans-serif;
+  --f-corpo: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+[hidden] { display: none !important; }
+body {
+  margin: 0; overflow: hidden; background: var(--abismo); color: var(--texto);
+  font: 15px/1.4 var(--f-corpo); touch-action: none; -webkit-user-select: none; user-select: none;
+}
+button { font: inherit; color: inherit; }
+#app { position: relative; height: 100%; overflow: hidden; }
+#tela { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+/* ---------- HUD ---------- */
+.hud { position: absolute; z-index: 3; }
+#topo {
+  top: 0; left: 0; right: 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  padding: 10px max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px));
+  pointer-events: none;
+}
+#topo > * { pointer-events: auto; }
+.barra-tarefas {
+  flex: 1 1 200px; min-width: 0; background: rgba(4, 19, 27, .82); border: 1px solid var(--linha);
+  border-radius: 10px; padding: 6px 10px; display: flex; gap: 10px; align-items: center;
+}
+.barra-tarefas .rotulo { font: 700 11px var(--f-mono); letter-spacing: .08em; color: var(--suave); white-space: nowrap; }
+.trilho { flex: 1; height: 8px; background: var(--casco-2); border-radius: 6px; overflow: hidden; }
+.trilho i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--bio), #8cf5de); transition: width .4s; }
+.pilula {
+  background: rgba(4, 19, 27, .82); border: 1px solid var(--linha); border-radius: 999px; padding: 6px 12px;
+  font: 700 12px var(--f-mono); letter-spacing: .04em; cursor: pointer; white-space: nowrap;
+}
+.pilula.ativa { border-color: var(--bio); color: var(--bio); }
+#alerta {
+  position: absolute; z-index: 4; left: 50%; bottom: calc(172px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  background: rgba(70, 8, 16, .92); border: 2px solid var(--alarme); color: #ffd9dd; border-radius: 12px;
+  padding: 8px 16px; font: 700 14px var(--f-mono); text-align: center; max-width: calc(100% - 32px);
+  animation: pulsar 1s infinite alternate;
+}
+#app.assistindo #alerta { bottom: calc(62px + env(safe-area-inset-bottom, 0px)); }
+#alerta.leve { background: rgba(60, 40, 4, .92); border-color: var(--ambar); color: #ffe8bd; animation: none; }
+@keyframes pulsar { to { box-shadow: 0 0 28px rgba(255, 75, 92, .7); } }
+
+#seguir {
+  left: 0; right: 0; bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none;
+  padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px));
+}
+.chip {
+  flex: none; display: flex; align-items: center; gap: 6px; background: rgba(4, 19, 27, .86); border: 1px solid var(--linha);
+  border-radius: 999px; padding: 5px 10px 5px 6px; font-size: 13px; cursor: pointer;
+}
+.chip.ativa { border-color: var(--bio); }
+.chip.morto { opacity: .5; text-decoration: line-through; }
+.ponto { width: 14px; height: 14px; border-radius: 50%; flex: none; box-shadow: inset 0 -3px 0 rgba(0,0,0,.25); }
+.tag-inf { font: 700 10px var(--f-mono); color: var(--alarme); }
+
+#lateral {
+  right: max(16px, env(safe-area-inset-right, 0px)); top: 96px; width: min(320px, calc(100% - 32px));
+  max-height: calc(100% - 170px); overflow-y: auto; background: rgba(4, 19, 27, .86); border: 1px solid var(--linha);
+  border-radius: 12px; padding: 10px 12px; font-size: 13px;
+}
+#lateral h3 { margin: 0 0 6px; font: 700 11px var(--f-mono); letter-spacing: .1em; color: var(--suave); text-transform: uppercase; }
+.evento { padding: 4px 0; border-bottom: 1px dashed rgba(141, 181, 179, .18); }
+.evento b { font-weight: 700; }
+.pensa { font-style: italic; color: #bfe7e1; }
+.pensa .quem { font-style: normal; font-weight: 700; }
+
+#minhas-tarefas {
+  left: max(16px, env(safe-area-inset-left, 0px)); top: 96px; max-width: min(240px, 60%);
+  background: rgba(4, 19, 27, .8); border: 1px solid var(--linha); border-radius: 12px; padding: 8px 10px; font-size: 12.5px;
+}
+#tarefas-toggle { background: none; border: 0; padding: 0; cursor: pointer; font: 700 12px var(--f-mono); letter-spacing: .06em; color: var(--suave); display: flex; gap: 6px; align-items: center; }
+#minhas-tarefas:not(.aberta) ul { display: none; }
+#minhas-tarefas.aberta ul { margin-top: 6px; }
+#minhas-tarefas li { list-style: none; margin: 2px 0; }
+#minhas-tarefas ul { margin: 0; padding: 0; }
+#minhas-tarefas .feita { color: var(--bio); text-decoration: line-through; opacity: .8; }
+#papel-selo { font: 700 12px var(--f-mono); letter-spacing: .06em; }
+
+/* controles de toque */
+#joystick {
+  left: calc(max(16px, env(safe-area-inset-left, 0px)) + 4px); bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  width: 132px; height: 132px; border-radius: 50%; background: rgba(62, 230, 196, .07); border: 2px solid rgba(62, 230, 196, .3);
+  touch-action: none;
+}
+#joystick i {
+  position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; margin: -27px 0 0 -27px; border-radius: 50%;
+  background: rgba(62, 230, 196, .35); border: 2px solid var(--bio);
+}
+#acoes {
+  right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  display: grid; grid-template-columns: repeat(3, 66px); gap: 8px; direction: rtl;
+}
+.acao {
+  direction: ltr; width: 66px; height: 66px; border-radius: 16px; border: 2px solid var(--linha); background: rgba(11, 39, 51, .9);
+  font: 700 11px var(--f-mono); letter-spacing: .04em; cursor: pointer; position: relative; display: grid; place-items: center; text-align: center;
+  padding: 2px; line-height: 1.1;
+}
+.acao:disabled { opacity: .35; }
+.acao.usar:not(:disabled) { border-color: var(--bio); color: var(--bio); }
+.acao.matar:not(:disabled) { border-color: var(--alarme); color: #ffb3bb; }
+.acao.reportar:not(:disabled) { border-color: var(--ambar); color: var(--ambar); }
+.acao .cd { position: absolute; inset: 0; display: grid; place-items: center; font-size: 22px; color: var(--texto); background: rgba(4,19,27,.92); border-radius: 14px; }
+#tubos { left: 50%; bottom: calc(240px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: calc(100% - 32px); }
+
+/* ---------- telas ---------- */
+.tela-cheia {
+  position: absolute; inset: 0; z-index: 10; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding-block: 18px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  touch-action: pan-y; -webkit-user-select: text; user-select: text;
+}
+#lobby { background: radial-gradient(120% 70% at 50% 0%, #0c3443 0%, var(--abismo) 70%); }
+.lobby-miolo { max-width: 620px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.marca { text-align: center; padding-top: 8px; }
+.marca h1 { font: 400 clamp(38px, 11vw, 68px)/0.95 var(--f-display); margin: 0; letter-spacing: .02em; color: var(--bio); text-shadow: 0 0 30px rgba(62, 230, 196, .35); text-wrap: balance; }
+.marca p { margin: 8px auto 0; color: var(--suave); max-width: 46ch; }
+.profundidade { font: 700 11px var(--f-mono); color: var(--ambar); letter-spacing: .14em; }
+.cartao { background: rgba(11, 39, 51, .78); border: 1px solid var(--linha); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.cartao h2 { margin: 0; font: 700 12px var(--f-mono); letter-spacing: .12em; color: var(--suave); text-transform: uppercase; }
+.opcoes { display: flex; gap: 8px; flex-wrap: wrap; }
+.opcao {
+  flex: 1 1 130px; background: var(--casco); border: 2px solid var(--linha); border-radius: 12px; padding: 10px 12px; cursor: pointer; text-align: left;
+}
+.opcao b { display: block; font-size: 15px; }
+.opcao span { font-size: 12.5px; color: var(--suave); }
+.opcao.ativa { border-color: var(--bio); background: #0d3b43; }
+.linha-campo { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.linha-campo label { min-width: 110px; color: var(--suave); font-size: 13.5px; }
+.linha-campo output { font: 700 14px var(--f-mono); min-width: 2ch; color: var(--bio); }
+input[type="range"] { flex: 1; accent-color: var(--bio); min-width: 120px; }
+input[type="text"] {
+  flex: 1; min-width: 0; background: var(--abismo); color: var(--texto); border: 1px solid var(--linha); border-radius: 10px;
+  padding: 9px 11px; font: inherit;
+}
+input:focus-visible, button:focus-visible { outline: 2px solid var(--bio); outline-offset: 2px; }
+.botao-grande {
+  background: var(--bio); color: #02241d; border: 0; border-radius: 14px; padding: 15px; font: 400 22px var(--f-display);
+  letter-spacing: .04em; cursor: pointer; box-shadow: 0 0 24px rgba(62, 230, 196, .3);
+}
+.botao { background: var(--casco-2); border: 1px solid var(--linha); border-radius: 10px; padding: 9px 14px; cursor: pointer; font-weight: 700; }
+.botao.claro { background: var(--bio); color: #02241d; border-color: var(--bio); }
+.regras { margin: 0; padding-left: 18px; color: var(--suave); font-size: 13.5px; display: grid; gap: 3px; }
+.regras b { color: var(--texto); }
+#status-ia { font-size: 13px; color: var(--suave); }
+#status-ia.ok { color: var(--bio); }
+#status-ia.ruim { color: var(--ambar); }
+
+/* reunião */
+#reuniao { background: rgba(2, 10, 15, .94); display: flex; flex-direction: column; }
+.reuniao-miolo { max-width: 860px; width: 100%; margin: 0 auto; display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); flex: 1; min-height: 0; }
+@media (min-width: 760px) { .reuniao-miolo { grid-template-columns: 300px minmax(0, 1fr); } }
+.reuniao-topo { max-width: 860px; width: 100%; margin: 0 auto 12px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.reuniao-topo h2 { margin: 0; font: 400 28px var(--f-display); color: var(--ambar); }
+.reuniao-topo .motivo { color: var(--texto); flex: 1 1 200px; }
+.reuniao-topo .relogio { font: 700 18px var(--f-mono); color: var(--bio); }
+#votantes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; align-content: start; }
+.votante {
+  display: flex; align-items: center; gap: 8px; background: var(--casco); border: 1px solid var(--linha); border-radius: 10px; padding: 7px 8px;
+  min-width: 0; cursor: default; text-align: left;
+}
+.votante.pode { cursor: pointer; }
+.votante.pode:hover { border-color: var(--bio); }
+.votante.escolhido { border-color: var(--ambar); background: #3a2c08; }
+.votante.morto { opacity: .4; }
+.votante .nome { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; font-size: 13.5px; }
+.votante .marca-voto { font: 700 10px var(--f-mono); color: var(--bio); }
+.votante .votos { display: flex; gap: 2px; flex-wrap: wrap; }
+.votante .votos i { width: 9px; height: 9px; border-radius: 50%; display: block; }
+#pular { grid-column: 1 / -1; }
+.chat-caixa { display: flex; flex-direction: column; min-height: 0; background: var(--casco); border: 1px solid var(--linha); border-radius: 12px; }
+#chat { flex: 1; min-height: 220px; max-height: 52vh; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+@media (min-width: 760px) { #chat { max-height: none; } }
+.msg { display: flex; gap: 8px; align-items: flex-start; }
+.msg .corpo { min-width: 0; }
+.msg .quem { font-weight: 700; font-size: 13px; }
+.msg .texto { overflow-wrap: anywhere; }
+.msg.sistema { color: var(--ambar); font: 700 12.5px var(--f-mono); justify-content: center; text-align: center; }
+.msg .pensa { font-size: 12.5px; margin-top: 2px; }
+.digitando { color: var(--suave); font-size: 12.5px; padding: 0 10px 6px; min-height: 1.3em; }
+.chat-envio { display: flex; gap: 8px; padding: 8px; border-top: 1px solid var(--linha); }
+
+/* ejeção, fim, tarefa, câmeras */
+#ejecao { background: #01080c; display: grid; place-items: center; text-align: center; z-index: 12; }
+#ejecao h2 { font: 400 clamp(26px, 7vw, 46px)/1.1 var(--f-display); margin: 0 0 10px; color: var(--texto); text-wrap: balance; }
+#ejecao p { font-size: 18px; color: var(--suave); margin: 0; }
+#fim { background: radial-gradient(100% 70% at 50% 10%, #10303b, #01080c 75%); z-index: 13; }
+.fim-miolo { max-width: 620px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; text-align: center; padding-top: 6vh; }
+.fim-miolo h2 { font: 400 clamp(32px, 9vw, 58px)/1 var(--f-display); margin: 0; text-wrap: balance; }
+.fim-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; text-align: left; }
+.fim-lista div { background: var(--casco); border: 1px solid var(--linha); border-radius: 10px; padding: 8px; display: flex; gap: 8px; align-items: center; font-size: 13.5px; }
+.modal-fundo { position: absolute; inset: 0; z-index: 9; background: rgba(1, 8, 12, .72); display: grid; place-items: center; padding: 16px; }
+.modal {
+  width: min(420px, 100%); background: var(--casco); border: 2px solid var(--linha); border-radius: 18px; padding: 16px;
+  display: flex; flex-direction: column; gap: 12px; max-height: 100%; overflow-y: auto;
+}
+.modal h3 { margin: 0; font: 400 22px var(--f-display); color: var(--bio); }
+.modal .dica { color: var(--suave); font-size: 13.5px; margin: 0; }
+.fios { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 60px; position: relative; }
+.fio { height: 40px; border-radius: 8px; border: 3px solid transparent; cursor: pointer; }
+.fio.sel { border-color: #fff; }
+.fio.ok { opacity: .35; cursor: default; }
+.medidor { height: 46px; position: relative; background: var(--abismo); border-radius: 10px; overflow: hidden; border: 1px solid var(--linha); }
+.medidor .zona { position: absolute; top: 0; bottom: 0; background: rgba(62, 230, 196, .3); border-left: 2px solid var(--bio); border-right: 2px solid var(--bio); }
+.medidor .agulha { position: absolute; top: 0; bottom: 0; width: 4px; background: var(--ambar); }
+.teclado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.teclado button { padding: 14px 0; border-radius: 10px; border: 1px solid var(--linha); background: var(--casco-2); font: 700 18px var(--f-mono); cursor: pointer; }
+.visor { font: 700 26px var(--f-mono); letter-spacing: .3em; text-align: center; background: var(--abismo); border-radius: 10px; padding: 10px; color: var(--bio); }
+.caixa-sujeira { position: relative; height: 220px; background: #0a3a33; border-radius: 12px; overflow: hidden; border: 1px solid var(--linha); }
+.sujeira { position: absolute; width: 38px; height: 38px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #7d6a3a, #3d2f12); cursor: pointer; border: 0; }
+.segurar { padding: 26px; border-radius: 16px; border: 2px solid var(--bio); background: rgba(62, 230, 196, .08); font: 700 16px var(--f-mono); cursor: pointer; touch-action: none; }
+.progresso { height: 12px; background: var(--abismo); border-radius: 8px; overflow: hidden; }
+.progresso i { display: block; height: 100%; width: 0; background: var(--bio); }
+.chaves { display: flex; gap: 8px; justify-content: center; }
+.chave { width: 46px; height: 90px; border-radius: 10px; border: 2px solid var(--linha); background: var(--abismo); position: relative; cursor: pointer; }
+.chave i { position: absolute; left: 6px; right: 6px; height: 36px; border-radius: 7px; background: var(--alarme); bottom: 6px; transition: .15s; }
+.chave.on i { bottom: 46px; background: var(--bio); }
+.cameras { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cameras figure { margin: 0; position: relative; }
+.cameras canvas { width: 100%; aspect-ratio: 4 / 3; display: block; border-radius: 10px; background: #000; border: 1px solid var(--linha); }
+.cameras figcaption { position: absolute; left: 6px; top: 4px; font: 700 10px var(--f-mono); color: var(--alarme); }
+#mapa-canvas { width: 100%; height: auto; border-radius: 10px; background: #000; }
+#aviso {
+  position: absolute; z-index: 20; left: 50%; top: 40%; transform: translate(-50%, -50%); pointer-events: none;
+  font: 400 clamp(26px, 8vw, 48px) var(--f-display); color: var(--texto); text-shadow: 0 0 20px #000, 0 0 40px #000; text-align: center;
+  opacity: 0; transition: opacity .3s; width: calc(100% - 32px);
+}
+#aviso.visivel { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { #alerta { animation: none; } .trilho i { transition: none; } }
+</style>
+
+<div id="app">
+  <canvas id="tela" aria-label="Mapa da estação"></canvas>
+
+  <div id="topo" class="hud" hidden>
+    <div class="barra-tarefas"><span class="rotulo">TAREFAS</span><div class="trilho"><i id="barra"></i></div><span class="rotulo" id="barra-num">0%</span></div>
+    <button class="pilula" id="b-mapa">MAPA</button>
+    <button class="pilula" id="b-vel" hidden>1×</button>
+    <button class="pilula ativa" id="b-papeis" hidden>PAPÉIS</button>
+    <button class="pilula" id="b-painel" hidden>PAINEL</button>
+    <button class="pilula" id="b-sair">SAIR</button>
+  </div>
+  <div id="alerta" hidden></div>
+  <div id="lateral" class="hud" hidden>
+    <h3>Pensamentos das IAs</h3><div id="pensamentos"></div>
+    <h3 style="margin-top:10px">Acontecimentos</h3><div id="eventos"></div>
+  </div>
+  <div id="minhas-tarefas" class="hud" hidden><button id="tarefas-toggle" aria-expanded="false"><span id="papel-selo"></span> <span id="tarefas-cont"></span> <span aria-hidden="true">▾</span></button><ul id="lista-tarefas"></ul></div>
+  <div id="seguir" class="hud" hidden></div>
+
+  <div id="joystick" class="hud" hidden><i></i></div>
+  <div id="tubos" class="hud" hidden></div>
+  <div id="acoes" class="hud" hidden>
+    <button class="acao usar" id="a-usar">USAR</button>
+    <button class="acao reportar" id="a-reportar">REPOR&shy;TAR</button>
+    <button class="acao matar" id="a-matar" hidden>MATAR</button>
+    <button class="acao" id="a-tubo" hidden>TUBO</button>
+    <button class="acao" id="a-sabotar" hidden>SABO&shy;TAR</button>
+  </div>
+
+  <!-- LOBBY -->
+  <section id="lobby" class="tela-cheia">
+    <div class="lobby-miolo">
+      <div class="marca">
+        <div class="profundidade">PROFUNDIDADE 3.812 M · ALGUÉM AQUI ESTÁ MENTINDO</div>
+        <h1>Estação Abissal</h1>
+        <p>Jogo de dedução social no fundo do mar. Infiltrados matam, sabotam e mentem. As IAs pensam, conversam e votam sozinhas.</p>
+      </div>
+
+      <div class="cartao">
+        <h2>Modo</h2>
+        <div class="opcoes" id="op-modo">
+          <button class="opcao ativa" data-v="assistir"><b>Assistir</b><span>Só IAs jogando. Você vê os papéis e os pensamentos.</span></button>
+          <button class="opcao" data-v="jogar"><b>Jogar</b><span>Você entra na estação junto com as IAs.</span></button>
+        </div>
+      </div>
+
+      <div class="cartao">
+        <h2>Partida</h2>
+        <div class="linha-campo"><label for="c-jog">Jogadores</label><input type="range" id="c-jog" min="5" max="10" value="8"><output id="o-jog">8</output></div>
+        <div class="linha-campo"><label for="c-inf">Infiltrados</label><input type="range" id="c-inf" min="1" max="3" value="2"><output id="o-inf">2</output></div>
+        <div class="linha-campo"><label for="c-cd">Tempo p/ matar</label><input type="range" id="c-cd" min="15" max="45" step="5" value="30"><output id="o-cd">30s</output></div>
+        <div id="campos-jogar" hidden>
+          <div class="linha-campo"><label for="c-nome">Seu nome</label><input type="text" id="c-nome" maxlength="12" value="Jogador"></div>
+          <div class="linha-campo" style="margin-top:8px"><label>Seu papel</label>
+            <div class="opcoes" id="op-papel" style="flex:1">
+              <button class="opcao ativa" data-v="aleatorio" style="flex-basis:80px"><b>Sorteio</b></button>
+              <button class="opcao" data-v="tripulante" style="flex-basis:80px"><b>Tripulante</b></button>
+              <button class="opcao" data-v="infiltrado" style="flex-basis:80px"><b>Infiltrado</b></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cartao">
+        <h2>Cérebro das IAs</h2>
+        <div class="opcoes" id="op-cerebro">
+          <button class="opcao ativa" data-v="ia"><b>IA de verdade (LLM)</b><span>Claude pensa, fala e vota por cada boneco. Usa o seu Claude.</span></button>
+          <button class="opcao" data-v="simples"><b>Bots simples</b><span>Regras prontas. Rápido e não gasta nada.</span></button>
+        </div>
+        <div id="status-ia">Verificando a IA…</div>
+      </div>
+
+      <button class="botao-grande" id="b-comecar">Descer para a estação</button>
+
+      <div class="cartao">
+        <h2>Como funciona</h2>
+        <ul class="regras">
+          <li><b>Tripulantes</b> fazem tarefas pela estação. Terminou tudo, ganham.</li>
+          <li><b>Infiltrados</b> eliminam, viajam pelos <b>tubos</b> e <b>sabotam</b>: apagão, portas, comunicações, oxigênio e brecha no casco.</li>
+          <li>Oxigênio e brecha têm contagem regressiva. Se ninguém consertar, os infiltrados ganham.</li>
+          <li>Achou um corpo? <b>Reporte</b>. Desconfiou? Toque o <b>sino de emergência</b> no Átrio.</li>
+          <li>Na <b>reunião</b> todo mundo conversa e vota. O mais votado é expelido pela câmara de descompressão.</li>
+          <li>Quem morre vira fantasma e continua fazendo tarefas.</li>
+          <li>No celular: joystick à esquerda, ações à direita. No PC: WASD/setas, E usar, Q matar, R reportar, V tubo, X sabotar, M mapa.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- REUNIÃO -->
+  <section id="reuniao" class="tela-cheia" hidden>
+    <div class="reuniao-topo"><h2>Reunião</h2><span class="motivo" id="r-motivo"></span><span class="relogio" id="r-relogio"></span></div>
+    <div class="reuniao-miolo">
+      <div>
+        <div id="votantes"></div>
+        <div class="linha-campo" style="margin-top:8px"><button class="botao" id="r-pensamentos" hidden>Mostrar pensamentos</button><button class="botao" id="r-encerrar" hidden>Encerrar votação</button></div>
+      </div>
+      <div class="chat-caixa">
+        <div id="chat" aria-live="polite"></div>
+        <div class="digitando" id="digitando"></div>
+        <form class="chat-envio" id="r-form" hidden><input type="text" id="r-msg" maxlength="160" placeholder="Fale com a tripulação…" autocomplete="off"><button class="botao claro">Enviar</button></form>
+      </div>
+    </div>
+  </section>
+
+  <section id="ejecao" class="tela-cheia" hidden><div><h2 id="e-titulo"></h2><p id="e-sub"></p></div></section>
+
+  <section id="fim" class="tela-cheia" hidden>
+    <div class="fim-miolo">
+      <div class="profundidade" id="f-motivo"></div>
+      <h2 id="f-titulo"></h2>
+      <div class="fim-lista" id="f-lista"></div>
+      <div class="linha-campo" style="justify-content:center"><button class="botao claro" id="f-denovo">Jogar de novo</button><button class="botao" id="f-menu">Menu</button></div>
+    </div>
+  </section>
+
+  <div id="modal" class="modal-fundo" hidden><div class="modal" id="modal-corpo"></div></div>
+  <div id="aviso"></div>
+</div>
+
+<script>
+"use strict";
+// =====================================================================
+//  ESTAÇÃO ABISSAL — jogo de dedução social com jogadores controlados por IA
+// =====================================================================
+
+const $ = (s) => document.querySelector(s);
+const TILE = 32, LARG = 64, ALT = 44;
+const rnd = (a, b) => a + Math.random() * (b - a);
+const escolha = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const embaralhar = (arr) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+const semAcento = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+
+// ---------------- MAPA ----------------
+const SALAS = [
+  { id: "estufa", nome: "Estufa de Algas", x: 4, y: 3, w: 12, h: 9, piso: "#0e3a2c" },
+  { id: "sonar", nome: "Sonar", x: 26, y: 2, w: 12, h: 8, piso: "#0e2f3d" },
+  { id: "lab", nome: "Laboratório", x: 48, y: 3, w: 12, h: 9, piso: "#1a2e44" },
+  { id: "gerador", nome: "Gerador", x: 4, y: 18, w: 11, h: 9, piso: "#33290f" },
+  { id: "atrio", nome: "Átrio", x: 26, y: 17, w: 12, h: 10, piso: "#123848" },
+  { id: "bombas", nome: "Casa de Bombas", x: 49, y: 18, w: 11, h: 9, piso: "#2b2032" },
+  { id: "enfermaria", nome: "Enfermaria", x: 4, y: 33, w: 12, h: 8, piso: "#173a3a" },
+  { id: "doca", nome: "Doca do Submarino", x: 26, y: 33, w: 12, h: 9, piso: "#1c2c35" },
+  { id: "seguranca", nome: "Segurança", x: 48, y: 33, w: 12, h: 8, piso: "#2c1d22" },
+];
+const CORREDORES = [[16, 6, 10, 3], [38, 5, 10, 3], [31, 10, 3, 7], [9, 12, 3, 6], [53, 12, 3, 6], [15, 21, 11, 3], [38, 21, 11, 3], [9, 27, 3, 6], [53, 27, 3, 6], [31, 27, 3, 6], [16, 36, 10, 3], [38, 36, 10, 3]];
+const grade = Array.from({ length: ALT }, () => new Uint8Array(LARG));
+const salaDoTile = Array.from({ length: ALT }, () => new Int8Array(LARG).fill(-1));
+SALAS.forEach((s, i) => { for (let y = s.y; y < s.y + s.h; y++) for (let x = s.x; x < s.x + s.w; x++) { grade[y][x] = 1; salaDoTile[y][x] = i; } });
+for (const [x0, y0, w, h] of CORREDORES) for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) grade[y][x] = 1;
+// Portas: tiles de corredor colados em cada sala.
+SALAS.forEach((s) => {
+  s.portas = [];
+  for (let y = s.y - 1; y <= s.y + s.h; y++) for (let x = s.x - 1; x <= s.x + s.w; x++) {
+    if (x < 0 || y < 0 || x >= LARG || y >= ALT) continue;
+    const dentro = x >= s.x && x < s.x + s.w && y >= s.y && y < s.y + s.h;
+    if (dentro || !grade[y][x] || salaDoTile[y][x] !== -1) continue;
+    const viz = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => salaDoTile[y + dy]?.[x + dx] === SALAS.indexOf(s));
+    if (viz) s.portas.push([x, y]);
+  }
+  s.cx = (s.x + s.w / 2) * TILE; s.cy = (s.y + s.h / 2) * TILE;
+});
+const centro = (tx, ty) => ({ x: (tx + 0.5) * TILE, y: (ty + 0.5) * TILE });
+
+const TAREFAS = [
+  { id: "fios_gerador", nome: "Religar fios", tipo: "fios", t: [12, 19], dur: 4 },
+  { id: "abastecer", nome: "Abastecer gerador", tipo: "segurar", t: [5, 25], dur: 4 },
+  { id: "fios_sonar", nome: "Religar fios", tipo: "fios", t: [27, 3], dur: 4 },
+  { id: "calibrar", nome: "Calibrar sonar", tipo: "agulha", t: [35, 3], dur: 5 },
+  { id: "algas", nome: "Colher algas", tipo: "segurar", t: [13, 5], dur: 4 },
+  { id: "codigo_lab", nome: "Inserir código da amostra", tipo: "codigo", t: [50, 5], dur: 4 },
+  { id: "analisar", nome: "Analisar amostra", tipo: "segurar", t: [57, 4], dur: 6 },
+  { id: "filtro", nome: "Limpar filtro", tipo: "limpar", t: [51, 20], dur: 5 },
+  { id: "escanear", nome: "Escaneamento médico", tipo: "escanear", t: [8, 35], dur: 7, visual: true },
+  { id: "carga", nome: "Carregar suprimentos", tipo: "segurar", t: [28, 35], dur: 4 },
+  { id: "motor", nome: "Ajustar motor do submarino", tipo: "agulha", t: [35, 38], dur: 5 },
+  { id: "registros", nome: "Baixar registros", tipo: "segurar", t: [50, 35], dur: 5 },
+  { id: "lixo", nome: "Esvaziar lixo", tipo: "limpar", t: [36, 25], dur: 4 },
+  { id: "cultura", nome: "Medir cultura de bactérias", tipo: "codigo", t: [13, 38], dur: 4 },
+];
+TAREFAS.forEach((t) => Object.assign(t, centro(...t.t)));
+
+const SINO = centro(32, 21);
+const CAMERAS_CONSOLE = centro(56, 38);
+const CAMERAS = [
+  { nome: "ÁTRIO", x: 32 * TILE, y: 22 * TILE },
+  { nome: "SONAR", x: 32 * TILE, y: 6 * TILE },
+  { nome: "DOCA", x: 32 * TILE, y: 37 * TILE },
+  { nome: "CORREDOR LESTE", x: 44 * TILE, y: 22.5 * TILE },
+];
+const TUBOS = [
+  { id: 0, t: [6, 10], rede: "a" }, { id: 1, t: [6, 25], rede: "a" }, { id: 2, t: [6, 39], rede: "a" },
+  { id: 3, t: [58, 10], rede: "b" }, { id: 4, t: [58, 25], rede: "b" }, { id: 5, t: [58, 39], rede: "b" },
+  { id: 6, t: [36, 4], rede: "c" }, { id: 7, t: [28, 25], rede: "c" }, { id: 8, t: [36, 40], rede: "c" },
+];
+TUBOS.forEach((v) => Object.assign(v, centro(...v.t)));
+const ligacoesTubo = (v) => TUBOS.filter((o) => o.rede === v.rede && o.id !== v.id);
+
+const ESTACOES = {
+  luzes: { nome: "Disjuntor", ...centro(8, 19), req: 2 },
+  comms: { nome: "Antena do sonar", ...centro(30, 8), req: 3 },
+  o2: { nome: "Filtro de O₂", ...centro(5, 4), req: 3 },
+  valvA: { nome: "Válvula A", ...centro(57, 20), req: 2.5 },
+  valvB: { nome: "Válvula B", ...centro(30, 40), req: 2.5 },
+};
+const SABOTAGENS = {
+  luzes: { nome: "Apagão", estacoes: ["luzes"], critica: false, texto: "APAGÃO — religue o disjuntor no Gerador" },
+  comms: { nome: "Comunicações", estacoes: ["comms"], critica: false, texto: "COMUNICAÇÕES CORTADAS — conserte a antena no Sonar" },
+  o2: { nome: "Oxigênio", estacoes: ["o2"], critica: true, texto: "FALHA DE OXIGÊNIO — Estufa de Algas" },
+  brecha: { nome: "Brecha no casco", estacoes: ["valvA", "valvB"], critica: true, texto: "BRECHA NO CASCO — feche as válvulas A (Bombas) e B (Doca)" },
+};
+
+function salaEm(x, y) {
+  const i = salaDoTile[Math.floor(y / TILE)]?.[Math.floor(x / TILE)];
+  return i >= 0 ? SALAS[i] : null;
+}
+const nomeLugar = (x, y) => salaEm(x, y)?.nome ?? "um corredor";
+
+// ---------------- ESTADO ----------------
+const NOMES = ["Ana", "Bruno", "Carla", "Davi", "Elisa", "Fábio", "Gabi", "Heitor", "Iara", "Júlio", "Kátia"];
+const CORES = ["#e8524a", "#3b82f6", "#22c55e", "#f59e0b", "#a855f7", "#ec4899", "#14b8a6", "#f97316", "#e5e7eb", "#8b5a2b", "#facc15"];
+const PERSONALIDADES = [
+  "desconfiada e direta, acusa rápido", "brincalhão, faz piada até em reunião", "calado, fala pouco e curto",
+  "líder, tenta organizar a votação", "nervoso, se defende demais", "analítica, cita horários e lugares",
+  "dramática, exagera tudo", "teimoso, não muda de opinião fácil", "gentil, defende quem parece inocente", "sarcástica",
+];
+
+const cfg = { modo: "assistir", jogadores: 8, infiltrados: 2, killCd: 30, nome: "Jogador", papel: "aleatorio", cerebro: "ia" };
+let J = null; // estado da partida
+
+function novaPartida() {
+  const n = cfg.jogadores;
+  const nomes = embaralhar(NOMES).slice(0, n);
+  const pers = embaralhar(PERSONALIDADES);
+  const jog = [];
+  for (let i = 0; i < n; i++) {
+    jog.push({
+      id: i, nome: nomes[i], cor: CORES[i], bot: true, papel: "tripulante", vivo: true, x: 0, y: 0, dir: 1, passo: 0, andando: false,
+      personalidade: pers[i % pers.length], tarefas: [], killCd: 12, emergencias: 1, memoria: [], segredos: [], visto: {}, viuCorpo: new Set(),
+      confia: new Set(), suspeita: {}, caminho: null, fazendo: null, escaneando: false, emTubo: null, plano: {}, decisaoT: 0, espera: 0,
+      alvoReport: null, chamarSino: false, vistoEm: {}, consertar: null, presoT: 0, ultimoXY: { x: 0, y: 0 }, pensamento: "",
+    });
+  }
+  let humano = null;
+  if (cfg.modo === "jogar") {
+    humano = jog[0];
+    humano.bot = false;
+    humano.nome = (cfg.nome || "Jogador").slice(0, 12);
+    if (jog.slice(1).some((p) => semAcento(p.nome) === semAcento(humano.nome))) humano.nome += "*";
+  }
+  // sorteio dos infiltrados
+  let candidatos = embaralhar(jog.map((p) => p.id));
+  if (humano && cfg.papel === "infiltrado") candidatos = [humano.id, ...candidatos.filter((id) => id !== humano.id)];
+  if (humano && cfg.papel === "tripulante") candidatos = candidatos.filter((id) => id !== humano.id);
+  const ninf = Math.min(cfg.infiltrados, Math.max(1, Math.floor((n - 1) / 2)));
+  candidatos.slice(0, ninf).forEach((id) => (jog[id].papel = "infiltrado"));
+  // tarefas
+  for (const p of jog) {
+    p.tarefas = embaralhar(TAREFAS).slice(0, 6).map((t) => ({ ...t, feita: false }));
+    p.killCd = 18;
+  }
+  posicionarNaMesa(jog);
+  J = {
+    jog, humano, T: 0, corpos: [], sab: null, sabCd: 20, portas: null, portasCd: 15, estado: "jogando", reunioes: 0, historico: [],
+    eventos: [], pensamentos: [], seguindo: humano ? humano.id : jog.find((p) => p.papel === "tripulante").id, vel: 1, verPapeis: cfg.modo === "assistir",
+    verMapa: false, vencedor: null, idCorpo: 0, abort: new AbortController(), cameraXY: { x: SINO.x, y: SINO.y },
+  };
+  for (const p of jog) p.ultimoXY = { x: p.x, y: p.y };
+  iniciarHUD();
+  evento(`A estação foi lacrada. ${ninf} infiltrado${ninf > 1 ? "s" : ""} entre ${n} pessoas.`);
+  if (humano) {
+    const inf = humano.papel === "infiltrado";
+    const parceiros = jog.filter((p) => p.papel === "infiltrado" && p !== humano).map((p) => p.nome);
+    aviso(inf ? `Você é INFILTRADO${parceiros.length ? `<br><small>parceiro: ${parceiros.join(", ")}</small>` : ""}` : "Você é TRIPULANTE", 2600, inf ? "#ff4b5c" : "#3ee6c4");
+  }
+}
+
+function posicionarNaMesa(lista) {
+  const vivos = lista.filter((p) => p.vivo);
+  vivos.forEach((p, i) => {
+    const a = (i / vivos.length) * Math.PI * 2 - Math.PI / 2;
+    p.x = SINO.x + Math.cos(a) * TILE * 2.6;
+    p.y = SINO.y + 18 + Math.sin(a) * TILE * 2.2;
+    p.caminho = null; p.fazendo = null; p.escaneando = false; p.emTubo = null;
+  });
+  lista.filter((p) => !p.vivo).forEach((p) => { p.caminho = null; p.fazendo = null; });
+}
+
+// ---------------- COLISÃO, VISÃO, CAMINHOS ----------------
+function portaTrancada(tx, ty) {
+  if (!J?.portas) return false;
+  return J.portas.sala.portas.some(([x, y]) => x === tx && y === ty);
+}
+function bloqueado(tx, ty, fantasma) {
+  if (tx < 0 || ty < 0 || tx >= LARG || ty >= ALT) return true;
+  if (!grade[ty][tx]) return true;
+  return !fantasma && portaTrancada(tx, ty);
+}
+function colide(x, y, r, fantasma) {
+  return bloqueado(Math.floor((x - r) / TILE), Math.floor((y - r) / TILE), fantasma) || bloqueado(Math.floor((x + r) / TILE), Math.floor((y - r) / TILE), fantasma) ||
+    bloqueado(Math.floor((x - r) / TILE), Math.floor((y + r) / TILE), fantasma) || bloqueado(Math.floor((x + r) / TILE), Math.floor((y + r) / TILE), fantasma);
+}
+function linhaLivre(a, b) {
+  const d = Math.hypot(b.x - a.x, b.y - a.y);
+  const passos = Math.ceil(d / 10);
+  for (let i = 1; i < passos; i++) {
+    const x = a.x + ((b.x - a.x) * i) / passos, y = a.y + ((b.y - a.y) * i) / passos;
+    if (bloqueado(Math.floor(x / TILE), Math.floor(y / TILE), false)) return false;
+  }
+  return true;
+}
+function raioVisao(p) {
+  if (!p.vivo) return 99 * TILE;
+  if (p.papel === "infiltrado") return 8 * TILE;
+  return (J.sab?.tipo === "luzes" ? 2.3 : 6.5) * TILE;
+}
+function ve(obs, alvo) {
+  if (obs === alvo) return true;
+  if (alvo.emTubo != null) return false;
+  if (alvo.vivo === false && obs.vivo && alvo.id !== undefined && alvo.fantasma !== false) return false; // vivos não veem fantasmas
+  return dist(obs, alvo) <= raioVisao(obs) && linhaLivre(obs, alvo);
+}
+const veCorpo = (obs, c) => dist(obs, c) <= raioVisao(obs) && linhaLivre(obs, c);
+
+const VIS = new Int32Array(LARG * ALT);
+function bfs(de, para, fantasma) {
+  const sx = Math.floor(de.x / TILE), sy = Math.floor(de.y / TILE), ex = Math.floor(para.x / TILE), ey = Math.floor(para.y / TILE);
+  if (bloqueado(ex, ey, fantasma)) return null;
+  VIS.fill(-1);
+  const fila = new Int32Array(LARG * ALT);
+  let ini = 0, fim = 0;
+  const s = sy * LARG + sx;
+  VIS[s] = s; fila[fim++] = s;
+  const alvo = ey * LARG + ex;
+  while (ini < fim) {
+    const c = fila[ini++];
+    if (c === alvo) break;
+    const cx = c % LARG, cy = (c / LARG) | 0;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const nx = cx + dx, ny = cy + dy;
+      if (bloqueado(nx, ny, fantasma)) continue;
+      const k = ny * LARG + nx;
+      if (VIS[k] !== -1) continue;
+      VIS[k] = c; fila[fim++] = k;
+    }
+  }
+  if (VIS[alvo] === -1) return null;
+  const pts = [];
+  for (let c = alvo; c !== s; c = VIS[c]) pts.push(centro(c % LARG, (c / LARG) | 0));
+  pts.reverse();
+  // suaviza: remove pontos alinhados
+  const lisos = [];
+  for (let i = 0; i < pts.length; i++) {
+    const a = lisos[lisos.length - 1] ?? de, b = pts[i], c = pts[i + 1];
+    if (c && ((a.x === b.x && b.x === c.x) || (a.y === b.y && b.y === c.y))) continue;
+    lisos.push(b);
+  }
+  lisos.push({ x: para.x, y: para.y });
+  return lisos;
+}
+function irPara(p, alvo) {
+  const c = bfs(p, alvo, !p.vivo);
+  p.caminho = c; p.destino = { x: alvo.x, y: alvo.y };
+  return !!c;
+}
+function velocidade(p) { return (p.vivo ? 128 : 150); }
+function andar(p, dt) {
+  if (!p.caminho || !p.caminho.length) { p.andando = false; return true; }
+  const alvo = p.caminho[0];
+  if (p.vivo && bloqueado(Math.floor(alvo.x / TILE), Math.floor(alvo.y / TILE), false)) { p.caminho = null; p.andando = false; p.espera = 0.6; return false; }
+  const dx = alvo.x - p.x, dy = alvo.y - p.y, d = Math.hypot(dx, dy), v = velocidade(p) * dt;
+  if (d <= v) { p.x = alvo.x; p.y = alvo.y; p.caminho.shift(); } else { p.x += (dx / d) * v; p.y += (dy / d) * v; }
+  if (Math.abs(dx) > 1) p.dir = dx < 0 ? -1 : 1;
+  p.andando = true; p.passo += dt * 9;
+  return !p.caminho.length;
+}
+
+// ---------------- EVENTOS, MEMÓRIA ----------------
+function lembrar(p, txt, forte, dados) {
+  const ult = p.memoria[p.memoria.length - 1];
+  if (ult && ult.txt === txt) return;
+  p.memoria.push({ t: J.T, txt, forte: !!forte, ...dados });
+  if (p.memoria.length > 60) p.memoria.splice(p.memoria.findIndex((m) => !m.forte), 1);
+}
+function evento(txt) {
+  J.eventos.unshift({ t: J.T, txt });
+  J.eventos.length = Math.min(J.eventos.length, 40);
+  painelSujo = true;
+}
+function pensamento(p, txt) {
+  if (!txt) return;
+  p.pensamento = txt;
+  J.pensamentos.unshift({ id: p.id, txt, t: J.T });
+  J.pensamentos.length = Math.min(J.pensamentos.length, 30);
+  painelSujo = true;
+}
+const tripulantes = () => J.jog.filter((p) => p.papel === "tripulante");
+const vivos = () => J.jog.filter((p) => p.vivo);
+const infiltradosVivos = () => J.jog.filter((p) => p.vivo && p.papel === "infiltrado");
+
+function progressoTarefas() {
+  let tot = 0, feitas = 0;
+  for (const p of tripulantes()) for (const t of p.tarefas) { tot++; if (t.feita) feitas++; }
+  return tot ? feitas / tot : 0;
+}
+
+// ---------------- AÇÕES DO JOGO ----------------
+function matar(assassino, vitima) {
+  if (!assassino.vivo || !vitima.vivo || J.estado !== "jogando") return;
+  const sala = nomeLugar(vitima.x, vitima.y);
+  const testemunhas = J.jog.filter((o) => o.vivo && o !== assassino && o !== vitima && ve(o, assassino));
+  vitima.vivo = false; vitima.fazendo = null; vitima.escaneando = false; vitima.caminho = null; vitima.alvoReport = null; vitima.consertar = null;
+  const corpo = { id: ++J.idCorpo, vitima: vitima.id, nome: vitima.nome, cor: vitima.cor, x: vitima.x, y: vitima.y, sala, t: J.T };
+  J.corpos.push(corpo);
+  assassino.x = vitima.x; assassino.y = vitima.y;
+  assassino.killCd = cfg.killCd;
+  assassino.segredos.push({ t: J.T, txt: `matei ${vitima.nome} em ${sala}` });
+  for (const w of testemunhas) {
+    lembrar(w, `VI ${assassino.nome} MATAR ${vitima.nome} em ${sala}!`, true);
+    w.suspeita[assassino.id] = (w.suspeita[assassino.id] || 0) + 100;
+    w.testemunha = { assassino: assassino.id, vitima: vitima.id, sala };
+    if (w.bot) w.alvoReport = corpo.id;
+  }
+  evento(`<b style="color:${assassino.cor}">${esc(assassino.nome)}</b> eliminou <b style="color:${vitima.cor}">${esc(vitima.nome)}</b> em ${sala}${testemunhas.length ? ` (testemunha: ${testemunhas.map((t) => esc(t.nome)).join(", ")})` : ""}.`);
+  som("matar");
+  if (vitima === J.humano) aviso("Você foi eliminado<br><small>Agora é fantasma: continue as tarefas</small>", 2600, "#ff4b5c");
+  verificarVitoria();
+}
+
+function entrarTubo(p, tubo) {
+  if (p.emTubo != null) return;
+  for (const o of J.jog) if (o.vivo && o !== p && o.papel === "tripulante" && ve(o, p)) {
+    lembrar(o, `VI ${p.nome} ENTRAR num tubo em ${nomeLugar(tubo.x, tubo.y)}!`, true);
+    o.suspeita[p.id] = (o.suspeita[p.id] || 0) + 80; o.viuTubo = p.id;
+    if (o.bot && o.emergencias > 0) o.chamarSino = true;
+  }
+  p.emTubo = tubo.id; p.x = tubo.x; p.y = tubo.y; p.caminho = null; p.fazendo = null;
+  p.segredos.push({ t: J.T, txt: `usei o tubo em ${nomeLugar(tubo.x, tubo.y)}` });
+  som("tubo");
+}
+function moverNoTubo(p, destino) { if (p.emTubo == null) return; p.emTubo = destino.id; p.x = destino.x; p.y = destino.y; som("tubo"); }
+function sairTubo(p) {
+  if (p.emTubo == null) return;
+  const t = TUBOS[p.emTubo];
+  p.emTubo = null; p.x = t.x; p.y = t.y;
+  for (const o of J.jog) if (o.vivo && o !== p && o.papel === "tripulante" && ve(o, p)) {
+    lembrar(o, `VI ${p.nome} SAIR de um tubo em ${nomeLugar(t.x, t.y)}!`, true);
+    o.suspeita[p.id] = (o.suspeita[p.id] || 0) + 80; o.viuTubo = p.id;
+    if (o.bot && o.emergencias > 0) o.chamarSino = true;
+  }
+  som("tubo");
+}
+
+function sabotar(tipo, por) {
+  if (J.estado !== "jogando") return false;
+  if (tipo === "portas") return trancarPortas(null, por);
+  if (J.sab || J.sabCd > 0) return false;
+  const s = SABOTAGENS[tipo];
+  J.sab = { tipo, fim: s.critica ? J.T + 40 : null, est: Object.fromEntries(s.estacoes.map((e) => [e, { prog: 0, ok: false }])) };
+  J.sabCd = 35;
+  if (por) por.segredos.push({ t: J.T, txt: `sabotei: ${s.nome}` });
+  evento(`Sabotagem: <b style="color:#ff4b5c">${s.nome}</b>${por && J.verPapeis ? ` (por ${esc(por.nome)})` : ""}.`);
+  som("alarme");
+  // os tripulantes mais próximos vão consertar
+  for (const e of s.estacoes) {
+    const st = ESTACOES[e];
+    const perto = J.jog.filter((p) => p.vivo && p.bot && p.papel === "tripulante" && !p.alvoReport).sort((a, b) => dist(a, st) - dist(b, st)).slice(0, s.critica ? 2 : 1);
+    for (const p of perto) { p.consertar = e; p.caminho = null; p.fazendo = null; }
+  }
+  return true;
+}
+function trancarPortas(sala, por) {
+  if (J.portas || J.portasCd > 0) return false;
+  sala = sala ?? escolha(SALAS.filter((s) => s.id !== "atrio"));
+  J.portas = { sala, ate: J.T + 10 };
+  J.portasCd = 28;
+  for (const p of J.jog) if (p.vivo && portaTrancada(Math.floor(p.x / TILE), Math.floor(p.y / TILE))) {
+    // empurra pra dentro da sala
+    p.x = sala.cx; p.y = sala.cy; p.caminho = null;
+  }
+  if (por) por.segredos.push({ t: J.T, txt: `tranquei as portas de ${sala.nome}` });
+  evento(`Portas de <b>${sala.nome}</b> trancadas por 10s.`);
+  for (const p of J.jog) if (p.caminho) p.caminho = null;
+  som("porta");
+  return true;
+}
+function progredirConserto(e, dt) {
+  const st = J.sab?.est[e];
+  if (!st || st.ok) return;
+  st.prog += dt;
+  if (st.prog >= ESTACOES[e].req) {
+    st.ok = true;
+    if (Object.values(J.sab.est).every((x) => x.ok)) {
+      evento(`${SABOTAGENS[J.sab.tipo].nome} consertado.`);
+      J.sab = null; J.sabCd = 25;
+      for (const p of J.jog) p.consertar = null;
+    }
+  }
+}
+
+function concluirTarefa(p, tarefa) {
+  if (tarefa.feita) return;
+  tarefa.feita = true;
+  if (p.papel === "tripulante") lembrar(p, `fiz a tarefa "${tarefa.nome}" em ${nomeLugar(tarefa.x, tarefa.y)}`);
+  verificarVitoria();
+}
+
+// ---------------- IA DOS BONECOS (movimento) ----------------
+function proximaTarefa(p) {
+  const pend = p.tarefas.filter((t) => !t.feita);
+  if (!pend.length) return null;
+  const amigo = p.plano?.seguir != null ? J.jog[p.plano.seguir] : null;
+  const ref = amigo && amigo.vivo && p.vivo ? amigo : p;
+  return pend.sort((a, b) => dist(a, ref) - dist(b, ref))[0];
+}
+function lugarAleatorio() { const s = escolha(SALAS); return { x: (s.x + rnd(1.5, s.w - 1.5)) * TILE, y: (s.y + rnd(1.5, s.h - 1.5)) * TILE }; }
+
+function atualizarBot(p, dt) {
+  if (p.espera > 0) { p.espera -= dt; p.andando = false; return; }
+  if (p.emTubo != null) { botNoTubo(p, dt); return; }
+  // preso? recalcula
+  if (p.andando && dist(p, p.ultimoXY) < 2) { p.presoT += dt; if (p.presoT > 1.5) { p.caminho = null; p.presoT = 0; } } else p.presoT = 0;
+  p.ultimoXY = { x: p.x, y: p.y };
+
+  if (p.fazendo) {
+    p.andando = false;
+    p.fazendo.t -= dt;
+    p.escaneando = p.fazendo.tarefa?.visual && p.papel === "tripulante";
+    if (p.fazendo.t <= 0) {
+      if (p.fazendo.tarefa && p.papel === "tripulante") concluirTarefa(p, p.fazendo.tarefa);
+      p.fazendo = null; p.escaneando = false;
+    }
+    if (!(p.vivo && (p.alvoReport || p.consertar || (p.papel === "infiltrado" && p.killCd <= 0)))) return;
+    p.fazendo = null; p.escaneando = false;
+  }
+
+  if (p.papel === "infiltrado" && p.vivo) return botInfiltrado(p, dt);
+  return botTripulante(p, dt);
+}
+
+function botTripulante(p, dt) {
+  // 1. reportar corpo
+  if (p.vivo && p.alvoReport) {
+    const c = J.corpos.find((k) => k.id === p.alvoReport);
+    if (!c) { p.alvoReport = null; }
+    else {
+      if (dist(p, c) < TILE * 2) { reportar(p, c); return; }
+      if (!p.caminho) irPara(p, c) || (p.espera = 0.5);
+      andar(p, dt); return;
+    }
+  }
+  // 2. tocar o sino
+  if (p.vivo && p.chamarSino && p.emergencias > 0 && !J.sab?.fim) {
+    if (dist(p, SINO) < TILE * 1.4) { p.chamarSino = false; emergencia(p); return; }
+    if (!p.caminho) irPara(p, SINO) || (p.espera = 0.5);
+    andar(p, dt); return;
+  }
+  // 3. consertar sabotagem
+  if (p.vivo && p.consertar && J.sab?.est[p.consertar] && !J.sab.est[p.consertar].ok) {
+    const st = ESTACOES[p.consertar];
+    if (dist(p, st) < TILE * 0.8) { p.andando = false; progredirConserto(p.consertar, dt); return; }
+    if (!p.caminho) irPara(p, st) || (p.espera = 0.5);
+    andar(p, dt); return;
+  } else p.consertar = null;
+  // 4. evitar suspeito
+  if (p.vivo && p.plano?.evitar != null) {
+    const ev = J.jog[p.plano.evitar];
+    if (ev?.vivo && dist(p, ev) < 4 * TILE && ve(p, ev) && !J.jog.some((o) => o.vivo && o !== p && o !== ev && dist(o, p) < 5 * TILE)) {
+      if (!p.fugindoAte || p.fugindoAte < J.T) { p.fugindoAte = J.T + 4; irPara(p, lugarAleatorio()); }
+    }
+  }
+  // 5. tarefas
+  if (p.caminho && p.caminho.length) { andar(p, dt); return; }
+  if (p.destinoTarefa && dist(p, p.destinoTarefa) < TILE * 0.6) {
+    p.fazendo = { tarefa: p.destinoTarefa, t: p.destinoTarefa.dur * rnd(1.6, 2.4) };
+    p.destinoTarefa = null; p.esperaDepois = rnd(0.8, 3); return;
+  }
+  if (p.esperaDepois) { p.espera = p.esperaDepois; p.esperaDepois = 0; return; }
+  const t = proximaTarefa(p);
+  if (t) { p.destinoTarefa = t; irPara(p, t) || (p.espera = 0.5); return; }
+  // 6. sem tarefas: anda pela estação ou acompanha alguém de confiança
+  p.destinoTarefa = null;
+  const amigo = p.plano?.seguir != null ? J.jog[p.plano.seguir] : null;
+  if (amigo?.vivo && p.vivo) irPara(p, { x: amigo.x + rnd(-30, 30), y: amigo.y + rnd(-30, 30) });
+  else irPara(p, lugarAleatorio());
+  p.espera = rnd(0.5, 2.5);
+}
+
+function seguro(assassino, vitima) {
+  return !J.jog.some((o) => o.vivo && o !== assassino && o !== vitima && o.papel === "tripulante" && (ve(o, assassino) || ve(o, vitima)));
+}
+
+function botInfiltrado(p, dt) {
+  const estilo = p.plano?.estilo === "agressivo" ? 1.6 : p.plano?.estilo === "cauteloso" ? 0.6 : 1;
+  // sabotar
+  if (!J.sab && J.sabCd <= 0 && J.T > 25 && Math.random() < dt * 0.045 * estilo) {
+    let tipo = p.plano?.sabotagem && SABOTAGENS[p.plano.sabotagem] ? p.plano.sabotagem : null;
+    if (!tipo || Math.random() < 0.4) tipo = escolha(["luzes", "luzes", "luzes", "comms", "o2", "brecha"]);
+    if (sabotar(tipo, p)) { p.plano.sabotagem = null; }
+  } else if (!J.portas && J.portasCd <= 0 && Math.random() < dt * 0.02 * estilo) {
+    const alvo = J.jog.find((o) => o.vivo && o.papel === "tripulante" && dist(o, p) < 6 * TILE);
+    const sala = alvo ? salaEm(alvo.x, alvo.y) : null;
+    if (sala && sala.id !== "atrio") trancarPortas(sala, p);
+  }
+  // fuga depois de matar
+  if (p.fugir) {
+    const tubo = p.fugir.tubo;
+    if (tubo) {
+      if (dist(p, tubo) < TILE * 0.7) { entrarTubo(p, tubo); p.tuboT = rnd(1.5, 3.5); p.fugir = null; return; }
+      if (!p.caminho) irPara(p, tubo) || (p.fugir = null);
+    } else if (!p.caminho) { p.fugir = null; }
+    andar(p, dt); return;
+  }
+  // caçar (com uma pausa aleatória antes, para não ser uma máquina de matar)
+  if (p.killCd > 0) p.cacaLiberada = null;
+  else if (p.cacaLiberada == null) p.cacaLiberada = J.T + rnd(4, 20) / estilo;
+  if (p.killCd <= 0 && J.T >= p.cacaLiberada) {
+    const preferido = p.plano?.alvo != null ? J.jog[p.plano.alvo] : null;
+    const candidatos = J.jog.filter((o) => o.vivo && o.papel === "tripulante" && dist(o, p) < 7 * TILE && ve(p, o));
+    let alvo = candidatos.find((o) => o === preferido) ?? candidatos.sort((a, b) => dist(a, p) - dist(b, p))[0];
+    if (alvo && (seguro(p, alvo) || (J.sab?.tipo === "luzes" && Math.random() < dt * 2))) {
+      if (dist(p, alvo) < TILE * 1.3) {
+        matar(p, alvo);
+        const sala = salaEm(p.x, p.y);
+        const tubo = TUBOS.filter((t) => dist(t, p) < 7 * TILE && linhaLivre(p, t)).sort((a, b) => dist(a, p) - dist(b, p))[0];
+        p.fugir = { tubo: Math.random() < 0.85 ? tubo : null };
+        if (!p.fugir.tubo) { irPara(p, lugarAleatorio()); p.fugir = { tubo: null }; }
+        else irPara(p, tubo);
+        return;
+      }
+      if (!p.cacandoT || p.cacandoT < J.T) { p.cacandoT = J.T + 0.4; irPara(p, alvo); }
+      andar(p, dt); return;
+    }
+    // persegue de longe quem está sozinho
+    if (!p.caminho && Math.random() < 0.5) {
+      const sozinho = J.jog.filter((o) => o.vivo && o.papel === "tripulante").find((o) => !J.jog.some((x) => x.vivo && x !== o && x.papel === "tripulante" && dist(x, o) < 6 * TILE));
+      if (sozinho) { irPara(p, sozinho); }
+    }
+  }
+  // reportar o próprio corpo às vezes, para parecer inocente
+  for (const c of J.corpos) {
+    if (!p.viuCorpo.has(c.id) && veCorpo(p, c)) {
+      p.viuCorpo.add(c.id);
+      const meu = p.segredos.some((s) => s.txt.includes(`matei ${c.nome}`));
+      if (Math.random() < (meu ? 0.12 : 0.35) && J.T - c.t > 4) { p.alvoReportFalso = c.id; }
+    }
+  }
+  if (p.alvoReportFalso) {
+    const c = J.corpos.find((k) => k.id === p.alvoReportFalso);
+    if (!c) p.alvoReportFalso = null;
+    else { if (dist(p, c) < TILE * 2) { p.alvoReportFalso = null; reportar(p, c); return; } if (!p.caminho) irPara(p, c); andar(p, dt); return; }
+  }
+  // fingir tarefas
+  if (p.caminho && p.caminho.length) { andar(p, dt); return; }
+  if (p.destinoTarefa && dist(p, p.destinoTarefa) < TILE * 0.7) { p.fazendo = { tarefa: null, t: rnd(2.5, 5) }; p.destinoTarefa = null; return; }
+  const t = escolha(p.tarefas);
+  p.destinoTarefa = t; irPara(p, t) || (p.espera = 0.5);
+}
+
+function botNoTubo(p, dt) {
+  p.tuboT = (p.tuboT ?? 1.5) - dt;
+  if (p.tuboT > 0) return;
+  const atual = TUBOS[p.emTubo];
+  const opcoes = ligacoesTubo(atual);
+  if (!p.tuboPulos) p.tuboPulos = 0;
+  if (p.tuboPulos < 1 && Math.random() < 0.7) { moverNoTubo(p, escolha(opcoes)); p.tuboPulos++; p.tuboT = rnd(0.6, 1.4); return; }
+  // sai quando ninguém está olhando
+  const vista = J.jog.some((o) => o.vivo && o.papel === "tripulante" && dist(o, atual) < raioVisao(o) && linhaLivre(o, atual));
+  p.tuboEspera = (p.tuboEspera || 0) + 0.5;
+  if (vista && p.tuboEspera < 6) { p.tuboT = 0.5; return; }
+  p.tuboPulos = 0; p.tuboEspera = 0; sairTubo(p);
+}
+
+// observações (o que cada um vê — vira memória para a IA)
+function observar(p) {
+  if (!p.vivo) return;
+  const lugar = nomeLugar(p.x, p.y);
+  if (p.ultimoLugar !== lugar) { p.ultimoLugar = lugar; lembrar(p, `fui para ${lugar}`); }
+  for (const o of J.jog) {
+    if (o === p || !o.vivo || o.emTubo != null) continue;
+    if (!ve(p, o)) continue;
+    const l = nomeLugar(o.x, o.y);
+    if (p.visto[o.id] !== l) { p.visto[o.id] = l; lembrar(p, `vi ${o.nome} em ${l}`, false, { quem: o.id, lugar: l }); }
+    p.vistoEm[o.id] = { t: J.T, lugar: l };
+    if (o.escaneando && !p.confia.has(o.id)) { p.confia.add(o.id); lembrar(p, `vi ${o.nome} fazer o escaneamento médico (só tripulante consegue)`, true); p.suspeita[o.id] = (p.suspeita[o.id] || 0) - 100; }
+  }
+  for (const c of J.corpos) {
+    if (p.viuCorpo.has(c.id) || !veCorpo(p, c)) continue;
+    p.viuCorpo.add(c.id);
+    lembrar(p, `encontrei o corpo de ${c.nome} em ${c.sala}`, true);
+    if (p.bot && p.papel === "tripulante") p.alvoReport = c.id;
+    // quem estava perto do corpo (agora ou pouco antes) fica suspeito
+    for (const o of J.jog) {
+      if (!o.vivo || o === p) continue;
+      const v = p.vistoEm[o.id];
+      const recente = v && v.lugar === c.sala && J.T - v.t < 25 && v.t >= c.t - 20;
+      if ((dist(o, c) < 4 * TILE && ve(p, o)) || recente) {
+        p.suspeita[o.id] = (p.suspeita[o.id] || 0) + 40;
+        lembrar(p, `${o.nome} estava perto de onde achei o corpo (${c.sala})`, true);
+      }
+    }
+  }
+}
+
+// ---------------- REUNIÕES ----------------
+function reportar(p, corpo) {
+  if (J.estado !== "jogando" || !p.vivo) return;
+  iniciarReuniao({ tipo: "corpo", por: p, corpo, motivo: `${p.nome} encontrou o corpo de ${corpo.nome} em ${corpo.sala}.` });
+}
+function emergencia(p) {
+  if (J.estado !== "jogando" || !p.vivo || p.emergencias <= 0 || J.sab?.fim) return;
+  p.emergencias--;
+  iniciarReuniao({ tipo: "sino", por: p, motivo: `${p.nome} tocou o sino de emergência.` });
+}
+
+let R = null; // reunião em andamento
+async function iniciarReuniao(info) {
+  J.estado = "reuniao"; J.reunioes++;
+  fecharModal();
+  som("reuniao");
+  J.sab = null; J.portas = null;
+  for (const p of J.jog) { p.consertar = null; p.alvoReport = null; p.alvoReportFalso = null; p.fugir = null; if (p.emTubo != null) sairTubo(p); p.fazendo = null; p.escaneando = false; }
+  const corposAntes = J.corpos.map((c) => c.nome);
+  J.corpos = [];
+  R = { num: J.reunioes, motivo: info.motivo, info, chat: [], votos: {}, fim: false, ctl: new AbortController(), mostrarPensa: J.verPapeis, mortosAgora: corposAntes };
+  for (const p of J.jog) if (p.vivo) lembrar(p, `reunião: ${info.motivo}`);
+  aviso(info.tipo === "corpo" ? "CORPO ENCONTRADO" : "REUNIÃO DE EMERGÊNCIA", 1500, "#ffb02e");
+  await esperar(1500);
+  if (!J || J.estado !== "reuniao") return;
+  const RR = R;
+  mostrarReuniao();
+  msgSistema(info.motivo + (corposAntes.length > 1 ? ` Corpos encontrados: ${corposAntes.join(", ")}.` : ""));
+
+  const bots = vivos().filter((p) => p.bot);
+  const humanoVivo = J.humano?.vivo;
+  const tempoMax = humanoVivo ? 110 : 0;
+  R.prazo = humanoVivo ? performance.now() + tempoMax * 1000 : null;
+
+  // quem chamou fala primeiro
+  const ordem = [...bots].sort((a, b) => (a === info.por ? -1 : b === info.por ? 1 : Math.random() - 0.5));
+  await rodadaFalas(ordem, 1);
+  if (R !== RR || RR.fim) return;
+  await rodadaFalas(embaralhar(bots), 2);
+  if (R !== RR || RR.fim) return;
+  R.botsTerminaram = true;
+  atualizarVotantes();
+  if (!humanoVivo) { await esperar(1800); if (R === RR) encerrarVotacao(); }
+  else if (R.votos[J.humano.id] !== undefined) { await esperar(1200); if (R === RR) encerrarVotacao(); }
+  else $("#digitando").textContent = "Todos já votaram. Falta você.";
+}
+
+async function rodadaFalas(bots, rodada) {
+  const RR = R;
+  const usarIA = iaUsavel();
+  const pendentes = new Set(bots.map((b) => b.id));
+  const mostrarDigitando = () => {
+    const nomes = [...pendentes].map((id) => J.jog[id].nome);
+    $("#digitando").textContent = nomes.length ? `${nomes.slice(0, 4).join(", ")}${nomes.length > 4 ? "…" : ""} ${nomes.length > 1 ? "estão" : "está"} pensando…` : "";
+  };
+  mostrarDigitando();
+  const tarefas = bots.map(async (b, i) => {
+    let r = null;
+    if (usarIA) {
+      try { r = await perguntarIA(promptReuniao(b, rodada), RR.ctl.signal); } catch (e) { tratarErroIA(e); }
+    } else {
+      await esperar(400 + i * rnd(350, 750));
+    }
+    if (R !== RR || RR.fim) return;
+    const resp = normalizarResposta(b, r, rodada);
+    pendentes.delete(b.id);
+    mostrarDigitando();
+    if (resp.pensamento) pensamento(b, resp.pensamento);
+    if (resp.fala) msgJogador(b, resp.fala, resp.pensamento);
+    if (rodada === 2) {
+      registrarVoto(b, resp.voto);
+      b.plano = resp.plano;
+    }
+  });
+  await Promise.all(tarefas);
+}
+
+function nomeParaId(nome, excluir) {
+  if (!nome) return null;
+  const n = semAcento(nome).replace(/[^a-z0-9*]/g, "");
+  const p = J.jog.find((x) => x.vivo && semAcento(x.nome).replace(/[^a-z0-9*]/g, "") === n && x.id !== excluir);
+  return p ? p.id : null;
+}
+function normalizarResposta(b, r, rodada) {
+  const out = { fala: "", pensamento: "", voto: "pular", plano: {} };
+  if (r && typeof r === "object") {
+    out.fala = String(r.fala ?? "").replace(/\s+/g, " ").trim().slice(0, 200);
+    out.pensamento = String(r.pensamento ?? "").trim().slice(0, 220);
+    if (rodada === 2) {
+      const v = nomeParaId(r.voto, b.id);
+      out.voto = v ?? "pular";
+      const pl = r.plano && typeof r.plano === "object" ? r.plano : {};
+      if (b.papel === "infiltrado") {
+        const alvo = nomeParaId(pl.alvo);
+        out.plano = { alvo: alvo != null && J.jog[alvo].papel === "tripulante" ? alvo : null, sabotagem: mapaSabotagem(pl.sabotagem), estilo: pl.estilo === "agressivo" || pl.estilo === "cauteloso" ? pl.estilo : "normal" };
+      } else {
+        out.plano = { seguir: nomeParaId(pl.seguir, b.id), evitar: nomeParaId(pl.evitar, b.id) };
+      }
+    }
+    if (out.fala || rodada === 2) return out;
+  }
+  return heuristica(b, rodada);
+}
+function mapaSabotagem(s) {
+  const k = semAcento(s ?? "");
+  if (k.startsWith("luz")) return "luzes";
+  if (k.startsWith("comu")) return "comms";
+  if (k.startsWith("oxi") || k === "o2") return "o2";
+  if (k.startsWith("bre")) return "brecha";
+  return null;
+}
+
+// Falas e votos sem IA (também usados quando a IA falha)
+function heuristica(b, rodada) {
+  const info = R.info;
+  const vivosOutros = vivos().filter((o) => o !== b);
+  const out = { fala: "", pensamento: "", voto: "pular", plano: {} };
+  const lugarRecente = b.memoria.slice().reverse().find((m) => m.txt.startsWith("fui para"))?.txt.replace("fui para ", "") ?? "minhas tarefas";
+  if (b.papel === "infiltrado") {
+    const parceiros = new Set(infiltradosVivos().map((p) => p.id));
+    const acusavel = vivosOutros.filter((o) => !parceiros.has(o.id));
+    const bode = acusavel.sort((x, y) => (contaAcusacoes(y) - contaAcusacoes(x)) || Math.random() - 0.5)[0];
+    const lugarFalso = escolha(SALAS).nome;
+    out.pensamento = bode ? `Preciso jogar a culpa em ${bode.nome} sem parecer forçado.` : "Fico quieto e sigo o grupo.";
+    if (rodada === 1) out.fala = escolha([`Eu tava em ${lugarFalso} fazendo tarefa, não vi nada.`, bode ? `Achei o ${bode.nome} meio estranho, andando sozinho.` : "Não vi nada, gente.", `Vim de ${lugarFalso}. Quem tava perto de ${info.corpo?.sala ?? "lá"}?`]);
+    else { out.fala = bode && Math.random() < 0.6 ? `Voto no ${bode.nome}, tá muito quieto.` : ""; out.voto = bode && Math.random() < 0.75 ? bode.id : "pular"; }
+    out.plano = { alvo: acusavel.filter((o) => o.papel === "tripulante")[0]?.id ?? null, sabotagem: null, estilo: "normal" };
+    return out;
+  }
+  // tripulante
+  const t = b.testemunha && J.jog[b.testemunha.assassino]?.vivo ? b.testemunha : null;
+  const tubo = b.viuTubo != null && J.jog[b.viuTubo].vivo ? J.jog[b.viuTubo] : null;
+  const ranking = vivosOutros.map((o) => ({ o, s: (b.suspeita[o.id] || 0) + contaAcusacoes(o) * 8 })).sort((x, y) => y.s - x.s);
+  if (t) {
+    const a = J.jog[t.assassino];
+    out.fala = rodada === 1 ? `EU VI! Foi ${a.nome}, matou ${J.jog[t.vitima].nome} em ${t.sala}!` : `Votem no ${a.nome}, eu vi com meus olhos.`;
+    out.voto = a.id; out.pensamento = `Eu vi ${a.nome} matar.`;
+  } else if (tubo) {
+    out.fala = rodada === 1 ? `${tubo.nome} usou um tubo! Tripulante não faz isso.` : `É o ${tubo.nome}, vi ele no tubo.`;
+    out.voto = tubo.id; out.pensamento = `${tubo.nome} usou tubo: é infiltrado.`;
+  } else {
+    const top = ranking[0];
+    if (rodada === 1) out.fala = escolha([`Eu tava em ${lugarRecente}.`, `Tava em ${lugarRecente}, não vi nada estranho.`, top && top.s > 20 ? `Vi ${top.o.nome} perto do corpo.` : `Alguém viu alguma coisa?`]);
+    else out.fala = top && top.s > 35 ? `Acho que é ${top.o.nome}.` : escolha(["Sem provas, vou pular.", "", "Pulo dessa vez."]);
+    out.voto = top && top.s > 35 ? top.o.id : "pular";
+    out.pensamento = top && top.s > 35 ? `Desconfio de ${top.o.nome}.` : "Não tenho prova de nada.";
+  }
+  const confio = vivosOutros.find((o) => b.confia.has(o.id));
+  out.plano = { seguir: confio?.id ?? null, evitar: ranking[0]?.s > 30 ? ranking[0].o.id : null };
+  return out;
+}
+function contaAcusacoes(p) {
+  const n = semAcento(p.nome);
+  return R.chat.filter((m) => m.id !== p.id && semAcento(m.texto).includes(n)).length;
+}
+
+function promptReuniao(b, rodada) {
+  const vivosN = vivos().map((p) => p.nome).join(", ");
+  const mortosN = J.jog.filter((p) => !p.vivo).map((p) => p.nome).join(", ") || "ninguém";
+  const parceiros = J.jog.filter((p) => p.papel === "infiltrado" && p !== b).map((p) => `${p.nome}${p.vivo ? "" : " (morto)"}`).join(", ") || "nenhum";
+  const papel = b.papel === "infiltrado"
+    ? `INFILTRADO. Parceiro(s) infiltrado(s): ${parceiros}. Objetivo: não ser descoberto e eliminar a tripulação. Minta com naturalidade, invente álibis coerentes com as salas do mapa, desvie a suspeita para inocentes (sem exagerar) e proteja seu parceiro sem deixar óbvio. Nunca admita ser infiltrado.`
+    : `TRIPULANTE. Objetivo: descobrir quem são os infiltrados e votar para expulsá-los. Use o que você viu de verdade e cruze as falas: infiltrados mentem. Se não tiver prova, pular o voto é aceitável.`;
+  const mem = b.memoria.slice(-24).map((m) => `- [${Math.round(m.t)}s] ${m.txt}`).join("\n") || "- (nada de importante)";
+  const segredos = b.papel === "infiltrado" ? `\nO que você fez de verdade (SEGREDO, não conte):\n${b.segredos.slice(-8).map((s) => `- [${Math.round(s.t)}s] ${s.txt}`).join("\n") || "- nada ainda"}` : "";
+  const hist = J.historico.length ? J.historico.join(" ") : "nenhuma";
+  const chat = R.chat.filter((m) => !m.sistema).map((m) => `${m.nome}: ${m.texto}`).join("\n") || "(ninguém falou ainda)";
+  const formato = rodada === 1
+    ? `Agora é sua vez de falar no chat. Responda só com JSON, sem mais nada:\n{"pensamento":"seu raciocínio secreto em 1 frase","fala":"sua mensagem no chat: até 160 caracteres, português do Brasil, informal como num jogo online"}`
+    : `Última chance de falar antes da votação. Responda só com JSON, sem mais nada:\n{"pensamento":"seu raciocínio secreto em 1 frase","fala":"mensagem curta no chat (pode ser vazia)","voto":"nome exato de um jogador vivo, ou pular",${b.papel === "infiltrado" ? `"plano":{"alvo":"tripulante que você quer eliminar depois","sabotagem":"luzes, comunicacoes, oxigenio ou brecha","estilo":"agressivo, normal ou cauteloso"}` : `"plano":{"seguir":"jogador vivo em quem você confia para andar junto, ou vazio","evitar":"jogador vivo de quem você quer distância, ou vazio"}`}}`;
+  return `Você é ${b.nome}, jogador(a) de "Estação Abissal", um jogo de dedução social numa estação de pesquisa no fundo do mar. Salas: ${SALAS.map((s) => s.nome).join(", ")}. Infiltrados podem matar, usar tubos de ventilação entre salas e sabotar; tripulantes fazem tarefas. Escaneamento médico só tripulante consegue fazer.
+Seu papel secreto: ${papel}
+Sua personalidade: ${b.personalidade}.
+Tempo de jogo: ${Math.round(J.T)}s. Reunião nº ${R.num}: ${R.motivo}
+Vivos: ${vivosN}. Mortos: ${mortosN}.
+Expulsões anteriores: ${hist}
+Sua memória (o que você viu de verdade, do mais antigo pro mais recente):
+${mem}${segredos}
+
+Conversa da reunião até agora:
+${chat}
+
+${formato}`;
+}
+
+function registrarVoto(p, alvo) {
+  if (!R || R.fim || !p.vivo || R.votos[p.id] !== undefined) return;
+  R.votos[p.id] = alvo;
+  atualizarVotantes();
+}
+function encerrarVotacao() {
+  if (!R || R.fim) return;
+  R.fim = true;
+  R.ctl.abort();
+  for (const p of vivos()) if (R.votos[p.id] === undefined) R.votos[p.id] = "pular";
+  const contagem = {};
+  for (const v of Object.values(R.votos)) contagem[v] = (contagem[v] || 0) + 1;
+  R.mostrarVotos = true;
+  atualizarVotantes();
+  $("#digitando").textContent = "";
+  let max = 0, quem = null, empate = false;
+  for (const [k, n] of Object.entries(contagem)) {
+    if (n > max) { max = n; quem = k; empate = false; } else if (n === max) empate = true;
+  }
+  const expulso = !empate && quem !== "pular" && quem != null ? J.jog[Number(quem)] : null;
+  setTimeout(() => mostrarEjecao(expulso, empate), 2600);
+}
+async function mostrarEjecao(expulso, empate) {
+  $("#reuniao").hidden = true;
+  const tela = $("#ejecao");
+  tela.hidden = false;
+  if (expulso) {
+    expulso.vivo = false; expulso.fazendo = null;
+    $("#e-titulo").textContent = `${expulso.nome} foi expelido pela câmara de descompressão.`;
+    $("#e-sub").textContent = expulso.papel === "infiltrado" ? `${expulso.nome} era um Infiltrado.` : `${expulso.nome} não era um Infiltrado.`;
+    J.historico.push(`${expulso.nome} foi expulso e ${expulso.papel === "infiltrado" ? "ERA" : "NÃO era"} infiltrado.`);
+    evento(`<b style="color:${expulso.cor}">${esc(expulso.nome)}</b> foi expulso (${expulso.papel === "infiltrado" ? "era infiltrado" : "inocente"}).`);
+    for (const p of J.jog) lembrar(p, `${expulso.nome} foi expulso e ${expulso.papel === "infiltrado" ? "era" : "não era"} infiltrado`, true);
+  } else {
+    $("#e-titulo").textContent = empate ? "Empate. Ninguém foi expelido." : "Ninguém foi expelido.";
+    $("#e-sub").textContent = `${infiltradosVivos().length} infiltrado${infiltradosVivos().length === 1 ? "" : "s"} ainda na estação.`;
+    J.historico.push(`Reunião ${R.num}: ninguém foi expulso.`);
+  }
+  som("ejecao");
+  await esperar(3600);
+  tela.hidden = true;
+  if (!J) return;
+  R = null;
+  if (verificarVitoria()) return;
+  posicionarNaMesa(J.jog);
+  for (const p of J.jog) { if (p.papel === "infiltrado") p.killCd = Math.max(15, cfg.killCd * 0.8); p.testemunha = null; p.viuTubo = null; p.chamarSino = false; p.destinoTarefa = null; p.espera = rnd(0, 1); }
+  J.sabCd = 15; J.portasCd = 10;
+  J.estado = "jogando";
+}
+
+function verificarVitoria() {
+  if (!J || J.vencedor) return true;
+  const inf = infiltradosVivos().length;
+  const trip = J.jog.filter((p) => p.vivo && p.papel === "tripulante").length;
+  if (inf === 0) return fimDeJogo("tripulantes", "Todos os infiltrados foram expulsos.");
+  if (inf >= trip) return fimDeJogo("infiltrados", "Os infiltrados ficaram em maior número.");
+  if (progressoTarefas() >= 1) return fimDeJogo("tripulantes", "Todas as tarefas foram concluídas.");
+  return false;
+}
+function fimDeJogo(quem, motivo) {
+  J.vencedor = quem; J.estado = "fim";
+  if (R) { R.fim = true; R.ctl.abort(); }
+  fecharModal();
+  setTimeout(() => {
+    $("#reuniao").hidden = true; $("#ejecao").hidden = true;
+    $("#fim").hidden = false;
+    $("#f-motivo").textContent = motivo.toUpperCase();
+    const venceu = J.humano ? (J.humano.papel === "infiltrado") === (quem === "infiltrados") : null;
+    $("#f-titulo").innerHTML = `${quem === "tripulantes" ? "Tripulação vence" : "Infiltrados vencem"}${venceu === null ? "" : `<br><small style="font-size:.45em;color:${venceu ? "#3ee6c4" : "#ff4b5c"}">${venceu ? "Você ganhou" : "Você perdeu"}</small>`}`;
+    $("#f-titulo").style.color = quem === "tripulantes" ? "var(--bio)" : "var(--alarme)";
+    $("#f-lista").replaceChildren(...J.jog.map((p) => {
+      const d = document.createElement("div");
+      d.innerHTML = `<span class="ponto" style="background:${p.cor}"></span><span><b>${esc(p.nome)}</b>${p === J.humano ? " (você)" : ""}<br><small style="color:${p.papel === "infiltrado" ? "#ff4b5c" : "#8db5b3"}">${p.papel === "infiltrado" ? "Infiltrado" : "Tripulante"}${p.vivo ? "" : " · morto"}</small></span>`;
+      return d;
+    }));
+  }, 900);
+  return true;
+}
+
+// ---------------- IA (Claude) ----------------
+const IA = { sample: null, pronta: false, perm: true, ateQuando: 0, ativos: 0, fila: [] };
+function iaUsavel() { return cfg.cerebro === "ia" && IA.sample && IA.perm && Date.now() > IA.ateQuando; }
+function perguntarIA(prompt, signal) {
+  return new Promise((res, rej) => { IA.fila.push({ prompt, signal, res, rej }); bombear(); });
+}
+function bombear() {
+  while (IA.ativos < 2 && IA.fila.length) {
+    const j = IA.fila.shift();
+    if (j.signal?.aborted) { j.rej({ code: "cancelled" }); continue; }
+    IA.ativos++;
+    IA.sample.json(j.prompt, { modelTier: "quick", cache: false, signal: j.signal })
+      .then(j.res, j.rej)
+      .finally(() => { IA.ativos--; bombear(); });
+  }
+}
+function tratarErroIA(e) {
+  const c = e?.code;
+  if (["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed"].includes(c)) {
+    IA.perm = false;
+    statusIA("A IA não foi liberada nesta página. Seguindo com bots simples.", "ruim");
+    evento("IA indisponível: seguindo com bots simples.");
+  } else if (c === "rate_limited") {
+    IA.ateQuando = Date.now() + 60000;
+    evento("A IA pediu uma pausa (limite de uso). Bots simples por 1 minuto.");
+  }
+}
+function statusIA(txt, cls) { const el = $("#status-ia"); el.textContent = txt; el.className = cls || ""; }
+(function prepararIA() {
+  const c = window.claude;
+  if (!c?.use) { statusIA("IA indisponível fora do Claude. Os bots simples vão jogar.", "ruim"); return; }
+  c.use("sample").then((s) => {
+    IA.sample = s; IA.pronta = true;
+    if (s) statusIA("IA pronta. Na primeira reunião o Claude vai pedir sua permissão.", "ok");
+    else statusIA("IA indisponível aqui. Os bots simples vão jogar.", "ruim");
+  }).catch(() => statusIA("IA indisponível aqui. Os bots simples vão jogar.", "ruim"));
+})();
+
+// ---------------- LAÇO PRINCIPAL ----------------
+let ultimo = performance.now(), acumObs = 0, painelSujo = true;
+function passo(dt) {
+  if (!J || J.estado !== "jogando") return;
+  J.T += dt;
+  J.sabCd = Math.max(0, J.sabCd - dt);
+  J.portasCd = Math.max(0, J.portasCd - dt);
+  if (J.portas && J.T >= J.portas.ate) { J.portas = null; for (const p of J.jog) p.caminho = null; }
+  if (J.sab?.fim && J.T >= J.sab.fim) {
+    fimDeJogo("infiltrados", J.sab.tipo === "o2" ? "O oxigênio da estação acabou." : "A pressão do oceano esmagou a estação.");
+    return;
+  }
+  for (const p of J.jog) {
+    if (p.papel === "infiltrado" && p.vivo) p.killCd = Math.max(0, p.killCd - dt);
+    if (p.bot) atualizarBot(p, dt);
+  }
+  if (J.humano) atualizarHumano(dt);
+  acumObs += dt;
+  if (acumObs > 0.25) { acumObs = 0; for (const p of J.jog) observar(p); }
+}
+function laco(agora) {
+  const dtReal = Math.min(0.1, (agora - ultimo) / 1000);
+  ultimo = agora;
+  if (J) {
+    const vel = cfg.modo === "assistir" ? J.vel : 1;
+    let resto = dtReal * vel;
+    while (resto > 0) { const d = Math.min(resto, 1 / 30); passo(d); resto -= d; }
+    desenhar();
+    atualizarHUD();
+    if (R && R.prazo) {
+      const s = Math.max(0, Math.ceil((R.prazo - performance.now()) / 1000));
+      $("#r-relogio").textContent = `${s}s`;
+      if (s <= 0 && !R.fim) encerrarVotacao();
+    }
+  }
+  requestAnimationFrame(laco);
+}
+
+// ---------------- JOGADOR HUMANO ----------------
+const entrada = { x: 0, y: 0, teclas: new Set() };
+function atualizarHumano(dt) {
+  const h = J.humano;
+  if (!$("#modal").hidden || h.emTubo != null) { h.andando = false; return; }
+  let ix = entrada.x, iy = entrada.y;
+  const k = entrada.teclas;
+  if (k.has("arrowleft") || k.has("a")) ix -= 1;
+  if (k.has("arrowright") || k.has("d")) ix += 1;
+  if (k.has("arrowup") || k.has("w")) iy -= 1;
+  if (k.has("arrowdown") || k.has("s")) iy += 1;
+  const m = Math.hypot(ix, iy);
+  if (m > 0.15) {
+    const v = velocidade(h) * dt * Math.min(1, m) / m;
+    const dx = ix * v, dy = iy * v;
+    if (!colide(h.x + dx, h.y, 10, !h.vivo)) h.x += dx;
+    if (!colide(h.x, h.y + dy, 10, !h.vivo)) h.y += dy;
+    if (Math.abs(ix) > 0.1) h.dir = ix < 0 ? -1 : 1;
+    h.andando = true; h.passo += dt * 9;
+  } else h.andando = false;
+}
+
+function contextoUsar() {
+  const h = J.humano;
+  if (!h || J.estado !== "jogando") return null;
+  if (h.emTubo != null) return null;
+  if (J.sab && h.vivo) for (const e of Object.keys(J.sab.est)) if (!J.sab.est[e].ok && dist(h, ESTACOES[e]) < TILE * 1.4) return { tipo: "consertar", e };
+  const t = h.tarefas.find((t) => !t.feita && dist(h, t) < TILE * 1.3);
+  if (t) return { tipo: "tarefa", t };
+  if (h.vivo && dist(h, SINO) < TILE * 1.6) return { tipo: "sino" };
+  if (h.vivo && dist(h, CAMERAS_CONSOLE) < TILE * 1.4) return { tipo: "cameras" };
+  return null;
+}
+function corpoPerto() {
+  const h = J.humano;
+  if (!h?.vivo || J.estado !== "jogando") return null;
+  return J.corpos.find((c) => dist(h, c) < TILE * 2.3 && linhaLivre(h, c)) ?? null;
+}
+function vitimaPerto() {
+  const h = J.humano;
+  if (!h?.vivo || h.papel !== "infiltrado" || h.emTubo != null) return null;
+  return J.jog.filter((o) => o.vivo && o.papel === "tripulante" && dist(o, h) < TILE * 1.5 && linhaLivre(h, o)).sort((a, b) => dist(a, h) - dist(b, h))[0] ?? null;
+}
+function tuboPerto() {
+  const h = J.humano;
+  if (!h?.vivo || h.papel !== "infiltrado") return null;
+  return TUBOS.find((t) => dist(t, h) < TILE * 1.2) ?? null;
+}
+
+function acaoUsar() {
+  const c = contextoUsar();
+  if (!c) return;
+  if (c.tipo === "tarefa") {
+    if (J.humano.papel === "infiltrado") { toastJogo("Você finge fazer a tarefa…"); return; }
+    abrirTarefa(c.t);
+  } else if (c.tipo === "consertar") abrirConserto(c.e);
+  else if (c.tipo === "sino") {
+    if (J.humano.emergencias <= 0) toastJogo("Você já usou seu sino de emergência.");
+    else if (J.sab?.fim) toastJogo("Não dá para chamar reunião durante uma crise.");
+    else emergencia(J.humano);
+  } else if (c.tipo === "cameras") abrirCameras();
+}
+function acaoReportar() { const c = corpoPerto(); if (c) reportar(J.humano, c); }
+function acaoMatar() { const v = vitimaPerto(); if (v && J.humano.killCd <= 0) matar(J.humano, v); }
+function acaoTubo() {
+  const h = J.humano;
+  if (h.emTubo != null) { sairTubo(h); return; }
+  const t = tuboPerto(); if (t) entrarTubo(h, t);
+}
+function acaoSabotar() {
+  const h = J.humano;
+  if (h.papel !== "infiltrado" || J.estado !== "jogando") return;
+  const corpo = $("#modal-corpo");
+  corpo.innerHTML = `<h3>Sabotar</h3><p class="dica">${J.sab ? "Já tem uma sabotagem ativa." : J.sabCd > 0 ? `Sabotagens prontas em ${Math.ceil(J.sabCd)}s.` : "Escolha o que quebrar."}</p>`;
+  const lista = document.createElement("div"); lista.className = "opcoes";
+  for (const [k, s] of Object.entries(SABOTAGENS)) {
+    const b = document.createElement("button"); b.className = "opcao"; b.disabled = !!J.sab || J.sabCd > 0;
+    b.innerHTML = `<b>${s.nome}</b><span>${s.critica ? "crítica: 40s para consertarem" : "atrapalha a tripulação"}</span>`;
+    b.onclick = () => { sabotar(k, h); fecharModal(); };
+    lista.append(b);
+  }
+  corpo.append(lista);
+  const portas = document.createElement("div"); portas.className = "opcoes";
+  portas.innerHTML = `<p class="dica" style="width:100%">Trancar portas por 10s ${J.portasCd > 0 ? `(pronto em ${Math.ceil(J.portasCd)}s)` : ""}:</p>`;
+  for (const s of SALAS.filter((s) => s.id !== "atrio")) {
+    const b = document.createElement("button"); b.className = "botao"; b.textContent = s.nome; b.disabled = !!J.portas || J.portasCd > 0;
+    b.onclick = () => { trancarPortas(s, h); fecharModal(); };
+    portas.append(b);
+  }
+  corpo.append(portas, botaoFechar());
+  abrirModal();
+}
+
+// ---------------- MINIJOGOS ----------------
+function abrirModal() { $("#modal").hidden = false; }
+function fecharModal() {
+  $("#modal").hidden = true; $("#modal-corpo").innerHTML = "";
+  if (J?.humano) J.humano.escaneando = false;
+  cancelAnimationFrame(animModal); camerasAbertas = false;
+}
+function botaoFechar(txt = "Fechar") { const b = document.createElement("button"); b.className = "botao"; b.textContent = txt; b.onclick = fecharModal; return b; }
+let animModal = 0;
+
+function abrirTarefa(t) {
+  const corpo = $("#modal-corpo");
+  corpo.innerHTML = `<h3>${t.nome}</h3>`;
+  const terminar = () => { concluirTarefa(J.humano, t); som("ok"); setTimeout(fecharModal, 350); };
+  const dica = (s) => { const p = document.createElement("p"); p.className = "dica"; p.textContent = s; corpo.append(p); };
+  if (t.tipo === "fios") {
+    dica("Toque um fio da esquerda e depois o da mesma cor na direita.");
+    const cores = ["#ff4b5c", "#3b82f6", "#facc15", "#d946ef"];
+    const box = document.createElement("div"); box.className = "fios";
+    const esq = embaralhar(cores), dir = embaralhar(cores);
+    let sel = null, feitos = 0;
+    const els = { e: [], d: [] };
+    for (let i = 0; i < 4; i++) {
+      const a = document.createElement("button"); a.className = "fio"; a.style.background = esq[i]; a.setAttribute("aria-label", "fio esquerdo");
+      const b = document.createElement("button"); b.className = "fio"; b.style.background = dir[i]; b.setAttribute("aria-label", "fio direito");
+      a.onclick = () => { if (a.classList.contains("ok")) return; els.e.forEach((x) => x.classList.remove("sel")); a.classList.add("sel"); sel = { el: a, cor: esq[i] }; };
+      b.onclick = () => {
+        if (!sel || b.classList.contains("ok")) return;
+        if (sel.cor === dir[i]) { sel.el.classList.add("ok"); b.classList.add("ok"); sel.el.classList.remove("sel"); sel = null; if (++feitos === 4) terminar(); }
+        else { sel.el.classList.remove("sel"); sel = null; }
+      };
+      els.e.push(a); els.d.push(b); box.append(a, b);
+    }
+    corpo.append(box);
+  } else if (t.tipo === "agulha") {
+    dica("Pare a agulha dentro da faixa verde 3 vezes.");
+    const med = document.createElement("div"); med.className = "medidor";
+    const zona = document.createElement("div"); zona.className = "zona";
+    const ag = document.createElement("div"); ag.className = "agulha";
+    med.append(zona, ag);
+    const btn = document.createElement("button"); btn.className = "botao claro"; btn.textContent = "PARAR (0/3)";
+    let acertos = 0, pos = 0, v = 0.9, zIni = 0;
+    const novaZona = () => { zIni = rnd(0.1, 0.72); zona.style.left = `${zIni * 100}%`; zona.style.width = "18%"; };
+    novaZona();
+    let ant = performance.now();
+    const anim = (agora) => { const d = (agora - ant) / 1000; ant = agora; pos += v * d; if (pos > 1) { pos = 1; v = -v; } if (pos < 0) { pos = 0; v = -v; } ag.style.left = `calc(${pos * 100}% - 2px)`; animModal = requestAnimationFrame(anim); };
+    animModal = requestAnimationFrame(anim);
+    btn.onclick = () => {
+      if (pos >= zIni && pos <= zIni + 0.18) { acertos++; som("ok"); v *= 1.25; novaZona(); } else som("erro");
+      btn.textContent = `PARAR (${acertos}/3)`;
+      if (acertos >= 3) { cancelAnimationFrame(animModal); terminar(); }
+    };
+    corpo.append(med, btn);
+  } else if (t.tipo === "codigo") {
+    const codigo = String(Math.floor(rnd(10000, 99999)));
+    dica(`Digite o código da etiqueta: ${codigo}`);
+    const visor = document.createElement("div"); visor.className = "visor"; visor.textContent = "·····";
+    const tec = document.createElement("div"); tec.className = "teclado";
+    let dig = "";
+    for (const k of ["1", "2", "3", "4", "5", "6", "7", "8", "9", "⌫", "0", "OK"]) {
+      const b = document.createElement("button"); b.textContent = k;
+      b.onclick = () => {
+        if (k === "⌫") dig = dig.slice(0, -1);
+        else if (k === "OK") { if (dig === codigo) return terminar(); som("erro"); dig = ""; }
+        else if (dig.length < 5) dig += k;
+        visor.textContent = dig.padEnd(5, "·");
+      };
+      tec.append(b);
+    }
+    corpo.append(visor, tec);
+  } else if (t.tipo === "limpar") {
+    dica("Toque em toda a sujeira para limpar.");
+    const caixa = document.createElement("div"); caixa.className = "caixa-sujeira";
+    let resta = 8;
+    for (let i = 0; i < 8; i++) {
+      const s = document.createElement("button"); s.className = "sujeira"; s.setAttribute("aria-label", "sujeira");
+      s.style.left = `${rnd(4, 82)}%`; s.style.top = `${rnd(4, 78)}%`;
+      s.onclick = () => { s.remove(); som("ok"); if (--resta === 0) terminar(); };
+      caixa.append(s);
+    }
+    corpo.append(caixa);
+  } else if (t.tipo === "segurar" || t.tipo === "escanear") {
+    dica(t.tipo === "escanear" ? "Segure o botão e fique parado. Quem estiver por perto vai ver o scanner (prova que você é tripulante)." : "Segure o botão até a barra encher.");
+    holdUI(corpo, t.dur * 0.8, terminar, t.tipo === "escanear");
+  }
+  corpo.append(botaoFechar("Sair"));
+  abrirModal();
+}
+function holdUI(corpo, segundos, aoTerminar, escanear, aoProgresso) {
+  const prog = document.createElement("div"); prog.className = "progresso"; const barra = document.createElement("i"); prog.append(barra);
+  const btn = document.createElement("button"); btn.className = "segurar"; btn.textContent = "SEGURE AQUI";
+  let segurando = false, valor = 0, ant = performance.now();
+  const anim = (agora) => {
+    const d = (agora - ant) / 1000; ant = agora;
+    if (segurando) { valor += d; aoProgresso?.(d); } else if (!aoProgresso) valor = Math.max(0, valor - d * 0.5);
+    barra.style.width = `${Math.min(100, (valor / segundos) * 100)}%`;
+    if (J?.humano) J.humano.escaneando = escanear && segurando;
+    if (valor >= segundos) { if (J?.humano) J.humano.escaneando = false; aoTerminar(); return; }
+    animModal = requestAnimationFrame(anim);
+  };
+  animModal = requestAnimationFrame(anim);
+  const on = (e) => { e.preventDefault(); segurando = true; }, off = () => { segurando = false; };
+  btn.addEventListener("pointerdown", on); btn.addEventListener("pointerup", off); btn.addEventListener("pointerleave", off); btn.addEventListener("pointercancel", off);
+  corpo.append(prog, btn);
+}
+function abrirConserto(e) {
+  const corpo = $("#modal-corpo");
+  const st = ESTACOES[e];
+  corpo.innerHTML = `<h3>${st.nome}</h3>`;
+  if (e === "luzes") {
+    const p = document.createElement("p"); p.className = "dica"; p.textContent = "Ligue todas as chaves (verde em cima)."; corpo.append(p);
+    const box = document.createElement("div"); box.className = "chaves";
+    const estados = Array.from({ length: 5 }, () => Math.random() < 0.4);
+    if (estados.every(Boolean)) estados[2] = false;
+    estados.forEach((on, i) => {
+      const c = document.createElement("button"); c.className = "chave" + (on ? " on" : ""); c.setAttribute("aria-label", `chave ${i + 1}`); c.innerHTML = "<i></i>";
+      c.onclick = () => {
+        estados[i] = !estados[i]; c.classList.toggle("on", estados[i]);
+        if (estados.every(Boolean) && J.sab?.est.luzes) { progredirConserto("luzes", 99); som("ok"); setTimeout(fecharModal, 300); }
+      };
+      box.append(c);
+    });
+    corpo.append(box);
+  } else {
+    const p = document.createElement("p"); p.className = "dica";
+    p.textContent = e.startsWith("valv") ? "Segure para fechar a válvula. As duas válvulas precisam ser fechadas." : "Segure até religar.";
+    corpo.append(p);
+    holdUI(corpo, st.req, () => { som("ok"); setTimeout(fecharModal, 300); }, false, (d) => progredirConserto(e, d));
+  }
+  corpo.append(botaoFechar());
+  abrirModal();
+}
+
+let camerasAbertas = false;
+function abrirCameras() {
+  const corpo = $("#modal-corpo");
+  corpo.innerHTML = `<h3>Câmeras</h3>`;
+  if (J.sab?.tipo === "comms") { corpo.innerHTML += `<p class="dica">Sem sinal: as comunicações foram sabotadas.</p>`; corpo.append(botaoFechar()); abrirModal(); return; }
+  const g = document.createElement("div"); g.className = "cameras";
+  const canvases = CAMERAS.map((c) => { const f = document.createElement("figure"); const cv = document.createElement("canvas"); cv.width = 320; cv.height = 240; f.innerHTML = `<figcaption>● ${c.nome}</figcaption>`; f.prepend(cv); g.append(f); return cv; });
+  corpo.append(g, botaoFechar());
+  abrirModal();
+  camerasAbertas = true;
+  const desenhaCams = () => {
+    if (!camerasAbertas) return;
+    canvases.forEach((cv, i) => desenharVista(cv.getContext("2d"), cv.width, cv.height, CAMERAS[i].x, CAMERAS[i].y, 0.42, null, true));
+    animModal = requestAnimationFrame(desenhaCams);
+  };
+  desenhaCams();
+}
+function abrirMapa() {
+  const corpo = $("#modal-corpo");
+  corpo.innerHTML = `<h3>Mapa da estação</h3>`;
+  const cv = document.createElement("canvas"); cv.id = "mapa-canvas"; cv.width = LARG * 10; cv.height = ALT * 10;
+  corpo.append(cv, botaoFechar());
+  abrirModal();
+  const ctx = cv.getContext("2d");
+  const s = 10 / TILE;
+  const desenha = () => {
+    ctx.fillStyle = "#020b10"; ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.save(); ctx.scale(s, s); ctx.drawImage(mapaPronto, 0, 0); ctx.restore();
+    const h = J.humano;
+    const semComms = J.sab?.tipo === "comms" && h && h.papel === "tripulante";
+    if (h && !semComms) for (const t of h.tarefas) if (!t.feita) { ctx.fillStyle = "#ffb02e"; ctx.beginPath(); ctx.arc(t.x * s, t.y * s, 5, 0, 7); ctx.fill(); }
+    if (J.sab) for (const [e, st] of Object.entries(J.sab.est)) if (!st.ok) { ctx.fillStyle = "#ff4b5c"; ctx.beginPath(); ctx.arc(ESTACOES[e].x * s, ESTACOES[e].y * s, 7, 0, 7); ctx.fill(); }
+    if (h?.papel === "infiltrado") for (const t of TUBOS) { ctx.strokeStyle = "#ff4b5c"; ctx.strokeRect(t.x * s - 4, t.y * s - 4, 8, 8); }
+    const lista = cfg.modo === "assistir" ? J.jog.filter((p) => p.vivo) : h ? [h] : [];
+    for (const p of lista) { ctx.fillStyle = p.cor; ctx.beginPath(); ctx.arc(p.x * s, p.y * s, 6, 0, 7); ctx.fill(); ctx.strokeStyle = "#fff"; ctx.stroke(); }
+    if (!$("#modal").hidden && corpo.contains(cv)) animModal = requestAnimationFrame(desenha);
+  };
+  desenha();
+}
+
+// ---------------- DESENHO ----------------
+const tela = $("#tela"), ctx = tela.getContext("2d");
+let DPR = 1, CW = 0, CH = 0;
+function redimensionar() {
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  const r = tela.getBoundingClientRect();
+  CW = r.width; CH = r.height;
+  tela.width = Math.round(CW * DPR); tela.height = Math.round(CH * DPR);
+}
+window.addEventListener("resize", redimensionar);
+
+// mapa pré-desenhado
+const mapaPronto = document.createElement("canvas");
+mapaPronto.width = LARG * TILE; mapaPronto.height = ALT * TILE;
+(function desenharMapa() {
+  const c = mapaPronto.getContext("2d");
+  c.fillStyle = "#03101a"; c.fillRect(0, 0, mapaPronto.width, mapaPronto.height);
+  // pisos
+  for (let y = 0; y < ALT; y++) for (let x = 0; x < LARG; x++) {
+    if (!grade[y][x]) continue;
+    const s = salaDoTile[y][x] >= 0 ? SALAS[salaDoTile[y][x]] : null;
+    c.fillStyle = s ? s.piso : "#16313b";
+    c.fillRect(x * TILE, y * TILE, TILE, TILE);
+    c.strokeStyle = "rgba(255,255,255,0.035)"; c.strokeRect(x * TILE + 0.5, y * TILE + 0.5, TILE - 1, TILE - 1);
+    if (!s && (x + y) % 2 === 0) { c.fillStyle = "rgba(255,255,255,0.025)"; c.fillRect(x * TILE + 6, y * TILE + 14, TILE - 12, 4); }
+  }
+  // paredes (bordas)
+  for (let y = 0; y < ALT; y++) for (let x = 0; x < LARG; x++) {
+    if (grade[y][x]) continue;
+    const vizinho = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]].some(([dx, dy]) => grade[y + dy]?.[x + dx]);
+    if (!vizinho) continue;
+    c.fillStyle = "#0a2530"; c.fillRect(x * TILE, y * TILE, TILE, TILE);
+    c.fillStyle = "#1c4c5a";
+    if (grade[y + 1]?.[x]) c.fillRect(x * TILE, y * TILE + TILE - 7, TILE, 7);
+    if (grade[y - 1]?.[x]) c.fillRect(x * TILE, y * TILE, TILE, 3);
+    if (grade[y]?.[x + 1]) c.fillRect(x * TILE + TILE - 3, y * TILE, 3, TILE);
+    if (grade[y]?.[x - 1]) c.fillRect(x * TILE, y * TILE, 3, TILE);
+    // rebites
+    c.fillStyle = "#2a6575"; if ((x * 7 + y * 3) % 5 === 0) c.fillRect(x * TILE + 14, y * TILE + 10, 3, 3);
+  }
+  // escotilhas com o oceano nas salas grandes
+  for (const s of SALAS) {
+    c.save();
+    c.fillStyle = "rgba(255,255,255,.55)"; c.font = "700 15px JetBrains Mono, monospace"; c.textAlign = "center";
+    c.fillText(s.nome.toUpperCase(), s.cx, s.y * TILE + 22);
+    c.restore();
+  }
+  // tarefas
+  for (const t of TAREFAS) {
+    c.fillStyle = "#0b2d36"; c.strokeStyle = "#3ee6c4"; c.lineWidth = 2;
+    c.beginPath(); c.roundRect(t.x - 12, t.y - 12, 24, 24, 5); c.fill(); c.stroke();
+    c.fillStyle = "rgba(62,230,196,.6)"; c.fillRect(t.x - 7, t.y - 6, 14, 4); c.fillRect(t.x - 7, t.y + 1, 9, 3);
+  }
+  // consoles de conserto
+  for (const e of Object.values(ESTACOES)) {
+    c.fillStyle = "#2a1a10"; c.strokeStyle = "#ffb02e"; c.lineWidth = 2;
+    c.beginPath(); c.roundRect(e.x - 13, e.y - 13, 26, 26, 4); c.fill(); c.stroke();
+    c.fillStyle = "#ffb02e"; c.beginPath(); c.arc(e.x, e.y, 5, 0, 7); c.fill();
+  }
+  // câmeras
+  c.fillStyle = "#1b1b2a"; c.strokeStyle = "#ff4b5c"; c.lineWidth = 2;
+  c.beginPath(); c.roundRect(CAMERAS_CONSOLE.x - 22, CAMERAS_CONSOLE.y - 14, 44, 28, 5); c.fill(); c.stroke();
+  for (let i = 0; i < 4; i++) { c.fillStyle = "#24424d"; c.fillRect(CAMERAS_CONSOLE.x - 18 + (i % 2) * 19, CAMERAS_CONSOLE.y - 10 + Math.floor(i / 2) * 11, 16, 9); }
+  // tubos
+  for (const t of TUBOS) {
+    c.fillStyle = "#081a20"; c.strokeStyle = "#4a6d76"; c.lineWidth = 3;
+    c.beginPath(); c.arc(t.x, t.y, 13, 0, 7); c.fill(); c.stroke();
+    c.strokeStyle = "#2c4a52"; c.lineWidth = 2;
+    for (let i = -8; i <= 8; i += 4) { c.beginPath(); c.moveTo(t.x + i, t.y - 10); c.lineTo(t.x + i, t.y + 10); c.stroke(); }
+  }
+  // mesa do sino
+  c.fillStyle = "#0d4757"; c.beginPath(); c.arc(SINO.x, SINO.y + 18, 46, 0, 7); c.fill();
+  c.strokeStyle = "#1d6a7d"; c.lineWidth = 3; c.stroke();
+  c.fillStyle = "#b88a2e"; c.beginPath(); c.arc(SINO.x, SINO.y, 13, 0, 7); c.fill();
+  c.fillStyle = "#e9c25a"; c.beginPath(); c.arc(SINO.x - 3, SINO.y - 3, 5, 0, 7); c.fill();
+})();
+
+// neve marinha (partículas) fora das paredes
+const NEVE = Array.from({ length: 120 }, () => ({ x: Math.random() * LARG * TILE, y: Math.random() * ALT * TILE, v: rnd(4, 14), r: rnd(0.6, 2) }));
+
+function desenharMergulhador(c, p, tempo, alpha = 1) {
+  const x = p.x, y = p.y;
+  const balanco = p.andando ? Math.sin(p.passo) * 2 : 0;
+  c.save();
+  c.globalAlpha = alpha;
+  c.translate(x, y);
+  // sombra
+  c.fillStyle = "rgba(0,0,0,.3)"; c.beginPath(); c.ellipse(0, 15, 12, 4, 0, 0, 7); c.fill();
+  // pés
+  c.fillStyle = shade(p.cor, -45);
+  const pe = p.andando ? Math.sin(p.passo) * 3 : 0;
+  c.beginPath(); c.roundRect(-9, 9 + pe, 7, 6, 2); c.fill();
+  c.beginPath(); c.roundRect(2, 9 - pe, 7, 6, 2); c.fill();
+  // tanque nas costas
+  c.fillStyle = "#9aa7ad"; c.beginPath(); c.roundRect(-p.dir * 13 - 4, -6 + balanco, 8, 16, 3); c.fill();
+  // corpo
+  c.fillStyle = p.cor; c.beginPath(); c.roundRect(-10, -4 + balanco, 20, 17, 6); c.fill();
+  c.fillStyle = shade(p.cor, -25); c.fillRect(-10, 6 + balanco, 20, 3);
+  // capacete de latão
+  c.fillStyle = "#c7953a"; c.beginPath(); c.arc(0, -11 + balanco, 12, 0, 7); c.fill();
+  c.fillStyle = "#8a6420"; c.beginPath(); c.arc(0, -11 + balanco, 12, 0.2, Math.PI - 0.2); c.fill();
+  // escotilha (vidro)
+  c.fillStyle = "#0f2b36"; c.beginPath(); c.arc(p.dir * 3, -12 + balanco, 7, 0, 7); c.fill();
+  c.fillStyle = "#7fdcf0"; c.beginPath(); c.arc(p.dir * 3, -12 + balanco, 5.5, 0, 7); c.fill();
+  c.fillStyle = "rgba(255,255,255,.8)"; c.beginPath(); c.arc(p.dir * 3 - 2, -14 + balanco, 1.8, 0, 7); c.fill();
+  // parafusos
+  c.fillStyle = "#e9c25a"; for (const a of [0.6, 2.5, 4.2]) { c.beginPath(); c.arc(Math.cos(a) * 10, -11 + balanco + Math.sin(a) * 10, 1.4, 0, 7); c.fill(); }
+  c.restore();
+}
+function desenharCorpo(c, k) {
+  c.save(); c.translate(k.x, k.y);
+  c.fillStyle = "rgba(0,0,0,.35)"; c.beginPath(); c.ellipse(0, 6, 18, 6, 0, 0, 7); c.fill();
+  c.fillStyle = k.cor; c.beginPath(); c.roundRect(-16, -4, 22, 14, 6); c.fill();
+  c.fillStyle = shade(k.cor, -40); c.beginPath(); c.roundRect(4, 0, 10, 6, 2); c.fill();
+  // capacete solto, rachado
+  c.fillStyle = "#c7953a"; c.beginPath(); c.arc(16, -6, 9, 0, 7); c.fill();
+  c.fillStyle = "#0f2b36"; c.beginPath(); c.arc(16, -6, 5, 0, 7); c.fill();
+  c.strokeStyle = "#7fdcf0"; c.lineWidth = 1.5; c.beginPath(); c.moveTo(13, -9); c.lineTo(17, -5); c.lineTo(15, -2); c.stroke();
+  // bolhas
+  const t = performance.now() / 1000;
+  c.fillStyle = "rgba(127,220,240,.5)";
+  for (let i = 0; i < 3; i++) { const yy = -10 - ((t * 18 + i * 13) % 34); c.beginPath(); c.arc(16 + Math.sin(t * 2 + i) * 3, yy, 2 - i * 0.4, 0, 7); c.fill(); }
+  c.restore();
+}
+function shade(hex, q) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.max(0, Math.min(255, (n >> 16) + q)), g = Math.max(0, Math.min(255, ((n >> 8) & 255) + q)), b = Math.max(0, Math.min(255, (n & 255) + q));
+  return `rgb(${r},${g},${b})`;
+}
+
+// Desenha uma vista do mundo (tela principal, câmeras). obs = jogador cuja visão filtra o que aparece (null = vê tudo)
+function desenharVista(c, w, h, cx, cy, escala, obs, soVivos, k = 1) {
+  const tempo = performance.now() / 1000;
+  c.setTransform(k, 0, 0, k, 0, 0);
+  c.fillStyle = "#020b10"; c.fillRect(0, 0, w, h);
+  c.setTransform(k * escala, 0, 0, k * escala, k * (w / 2 - cx * escala), k * (h / 2 - cy * escala));
+  // neve marinha
+  c.fillStyle = "rgba(160,220,230,.25)";
+  for (const n of NEVE) { const yy = (n.y + tempo * n.v) % (ALT * TILE); c.fillRect(n.x, yy, n.r, n.r); }
+  c.drawImage(mapaPronto, 0, 0);
+  // portas trancadas
+  if (J.portas) {
+    c.fillStyle = "rgba(255,75,92,.85)";
+    for (const [x, y] of J.portas.sala.portas) { c.fillRect(x * TILE + 4, y * TILE + 4, TILE - 8, TILE - 8); }
+  }
+  // destaques: minhas tarefas, estações de sabotagem
+  const h0 = J.humano;
+  if (obs && h0 && h0 === obs && !(J.sab?.tipo === "comms" && h0.papel === "tripulante")) {
+    for (const t of h0.tarefas) if (!t.feita) { c.strokeStyle = `rgba(255,176,46,${0.5 + Math.sin(tempo * 4) * 0.4})`; c.lineWidth = 3; c.beginPath(); c.roundRect(t.x - 16, t.y - 16, 32, 32, 7); c.stroke(); }
+  }
+  if (J.sab) for (const [e, st] of Object.entries(J.sab.est)) if (!st.ok) {
+    const s = ESTACOES[e]; c.strokeStyle = `rgba(255,75,92,${0.5 + Math.sin(tempo * 6) * 0.5})`; c.lineWidth = 4;
+    c.beginPath(); c.arc(s.x, s.y, 22, 0, 7); c.stroke();
+  }
+  // corpos
+  for (const k of J.corpos) if (!obs || !obs.vivo || veCorpo(obs, k)) desenharCorpo(c, k);
+  // jogadores (ordenados por y)
+  const lista = J.jog.slice().sort((a, b) => a.y - b.y);
+  for (const p of lista) {
+    if (p.emTubo != null && !(cfg.modo === "assistir" || p === obs)) continue;
+    if (p.emTubo != null) { c.save(); c.globalAlpha = 0.5; c.strokeStyle = p.cor; c.lineWidth = 3; c.beginPath(); c.arc(p.x, p.y, 16, 0, 7); c.stroke(); c.restore(); continue; }
+    if (!p.vivo) {
+      // fantasma: só fantasmas e espectadores veem
+      if ((obs && obs.vivo) || soVivos) continue;
+      desenharMergulhador(c, { ...p, y: p.y + Math.sin(tempo * 2 + p.id) * 3 }, tempo, 0.4);
+      continue;
+    }
+    if (obs && obs.vivo && p !== obs && !ve(obs, p)) continue;
+    if (p.escaneando) {
+      c.save(); c.strokeStyle = "rgba(62,230,196,.8)"; c.lineWidth = 2;
+      const yy = p.y - 22 + ((tempo * 40) % 40);
+      c.beginPath(); c.ellipse(p.x, yy, 16, 5, 0, 0, 7); c.stroke(); c.restore();
+    }
+    desenharMergulhador(c, p, tempo);
+  }
+  // nomes
+  c.font = "700 11px Atkinson Hyperlegible, system-ui, sans-serif"; c.textAlign = "center";
+  for (const p of lista) {
+    if (p.emTubo != null) continue;
+    if (!p.vivo && ((obs && obs.vivo) || soVivos)) continue;
+    if (p.vivo && obs && obs.vivo && p !== obs && !ve(obs, p)) continue;
+    const inf = p.papel === "infiltrado" && (J.verPapeis || (h0 && h0.papel === "infiltrado"));
+    c.fillStyle = "rgba(0,0,0,.55)";
+    const txt = p.nome + (p.fazendo && cfg.modo === "assistir" ? " ⋯" : "");
+    const tw = c.measureText(txt).width;
+    c.fillRect(p.x - tw / 2 - 4, p.y - 41, tw + 8, 15);
+    c.fillStyle = inf ? "#ff8a96" : p.vivo ? "#fff" : "rgba(255,255,255,.55)";
+    c.fillText(txt, p.x, p.y - 30);
+  }
+  // escuridão (visão do jogador)
+  c.setTransform(k, 0, 0, k, 0, 0);
+  if (obs && obs.vivo) {
+    const r = raioVisao(obs) * escala;
+    const sx = w / 2 + (obs.x - cx) * escala, sy = h / 2 + (obs.y - cy) * escala;
+    const g = c.createRadialGradient(sx, sy, r * 0.65, sx, sy, r);
+    g.addColorStop(0, "rgba(2,11,16,0)"); g.addColorStop(1, "rgba(2,11,16,.94)");
+    c.fillStyle = g; c.fillRect(0, 0, w, h);
+  } else if (J.sab?.tipo === "luzes") {
+    c.fillStyle = "rgba(2,11,16,.45)"; c.fillRect(0, 0, w, h);
+  }
+  if (J.sab?.fim) { c.fillStyle = `rgba(255,30,50,${0.08 + Math.sin(tempo * 6) * 0.06})`; c.fillRect(0, 0, w, h); }
+}
+
+function desenhar() {
+  if (!CW) redimensionar();
+  const alvo = J.humano ?? J.jog[J.seguindo];
+  let escala = Math.max(0.55, Math.min(1.25, Math.min(CW / (15 * TILE), CH / (12 * TILE))));
+  let cx = alvo.x, cy = alvo.y;
+  if (J.verMapa) { escala = Math.min(CW / (LARG * TILE), (CH - 60) / (ALT * TILE)); cx = LARG * TILE / 2; cy = ALT * TILE / 2 + 20 / escala; }
+  else { J.cameraXY.x += (cx - J.cameraXY.x) * 0.15; J.cameraXY.y += (cy - J.cameraXY.y) * 0.15; cx = J.cameraXY.x; cy = J.cameraXY.y; }
+  const obs = J.humano && !J.verMapa ? J.humano : null;
+  desenharVista(ctx, CW, CH, cx, cy, escala, obs, false, DPR);
+}
+
+// ---------------- HUD ----------------
+function iniciarHUD() {
+  const assistir = cfg.modo === "assistir";
+  $("#app").classList.toggle("assistindo", assistir);
+  $("#topo").hidden = false;
+  $("#b-vel").hidden = !assistir; $("#b-papeis").hidden = !assistir; $("#b-painel").hidden = !assistir;
+  $("#b-papeis").classList.toggle("ativa", J.verPapeis);
+  $("#b-vel").textContent = "1×";
+  $("#seguir").hidden = !assistir;
+  $("#lateral").hidden = !assistir || CW < 700;
+  $("#b-painel").classList.toggle("ativa", !$("#lateral").hidden);
+  $("#minhas-tarefas").hidden = assistir;
+  $("#joystick").hidden = assistir; $("#acoes").hidden = assistir;
+  const inf = J.humano?.papel === "infiltrado";
+  $("#a-matar").hidden = !inf; $("#a-tubo").hidden = !inf; $("#a-sabotar").hidden = !inf;
+  $("#minhas-tarefas").classList.toggle("aberta", CW >= 700);
+  $("#tarefas-toggle").setAttribute("aria-expanded", String(CW >= 700));
+  if (J.humano) { $("#papel-selo").textContent = inf ? "INFILTRADO" : "TRIPULANTE"; $("#papel-selo").style.color = inf ? "var(--alarme)" : "var(--bio)"; }
+  desenharChips();
+  painelSujo = true;
+}
+function desenharChips() {
+  if (cfg.modo !== "assistir") return;
+  $("#seguir").replaceChildren(...J.jog.map((p) => {
+    const b = document.createElement("button");
+    b.className = "chip" + (J.seguindo === p.id ? " ativa" : "") + (p.vivo ? "" : " morto");
+    b.innerHTML = `<span class="ponto" style="background:${p.cor}"></span>${esc(p.nome)}${J.verPapeis && p.papel === "infiltrado" ? ' <span class="tag-inf">INF</span>' : ""}`;
+    b.onclick = () => { J.seguindo = p.id; J.verMapa = false; $("#b-mapa").classList.remove("ativa"); desenharChips(); };
+    return b;
+  }));
+}
+let hudT = 0, ultimoChips = "";
+function atualizarHUD() {
+  const agora = performance.now();
+  if (agora - hudT < 120) return;
+  hudT = agora;
+  const h = J.humano;
+  const semComms = J.sab?.tipo === "comms";
+  const prog = progressoTarefas();
+  $("#barra").style.width = semComms && h?.papel === "tripulante" ? "0%" : `${prog * 100}%`;
+  $("#barra-num").textContent = semComms && h?.papel === "tripulante" ? "--" : `${Math.round(prog * 100)}%`;
+  // alerta
+  const al = $("#alerta");
+  if (J.estado === "jogando" && J.sab) {
+    const s = SABOTAGENS[J.sab.tipo];
+    al.hidden = false; al.className = s.critica ? "" : "leve";
+    let txt = s.texto;
+    if (s.critica) txt += ` · ${Math.max(0, Math.ceil(J.sab.fim - J.T))}s`;
+    if (J.sab.tipo === "brecha") txt += ` (${Object.values(J.sab.est).filter((x) => x.ok).length}/2)`;
+    al.textContent = txt;
+  } else if (J.estado === "jogando" && J.portas) { al.hidden = false; al.className = "leve"; al.textContent = `PORTAS TRANCADAS: ${J.portas.sala.nome} · ${Math.ceil(J.portas.ate - J.T)}s`; }
+  else al.hidden = true;
+  // chips (mortos)
+  const chave = J.jog.map((p) => +p.vivo).join("") + J.seguindo + J.verPapeis;
+  if (chave !== ultimoChips) { ultimoChips = chave; desenharChips(); }
+  // painel lateral
+  if (painelSujo && !$("#lateral").hidden) {
+    painelSujo = false;
+    $("#pensamentos").innerHTML = J.pensamentos.slice(0, 10).map((x) => {
+      const p = J.jog[x.id];
+      return `<div class="evento pensa"><span class="quem" style="color:${p.cor}">${esc(p.nome)}${J.verPapeis && p.papel === "infiltrado" ? " (inf.)" : ""}:</span> ${esc(x.txt)}</div>`;
+    }).join("") || `<div class="evento" style="color:var(--suave)">Os pensamentos aparecem nas reuniões.</div>`;
+    $("#eventos").innerHTML = J.eventos.slice(0, 14).map((e) => `<div class="evento"><span style="color:var(--suave);font-family:var(--f-mono);font-size:11px">${Math.round(e.t)}s</span> ${e.txt}</div>`).join("");
+  }
+  // tarefas e botões do humano
+  if (h) {
+    const ul = $("#lista-tarefas");
+    $("#tarefas-cont").textContent = h.papel === "infiltrado" ? "· tarefas falsas" : `· ${h.tarefas.filter((t) => t.feita).length}/${h.tarefas.length} tarefas`;
+    if (semComms && h.papel === "tripulante") ul.innerHTML = `<li style="color:var(--alarme)">Comunicações cortadas</li>`;
+    else ul.innerHTML = h.tarefas.map((t) => `<li class="${t.feita ? "feita" : ""}">${h.papel === "infiltrado" ? "(fingir) " : ""}${esc(nomeLugar(t.x, t.y))}: ${esc(t.nome)}</li>`).join("");
+    const ctxU = contextoUsar();
+    const bU = $("#a-usar");
+    bU.disabled = !ctxU;
+    bU.textContent = !ctxU ? "USAR" : ctxU.tipo === "sino" ? "SINO" : ctxU.tipo === "cameras" ? "CÂMERAS" : ctxU.tipo === "consertar" ? "CONSERTAR" : "USAR";
+    $("#a-reportar").disabled = !corpoPerto();
+    if (h.papel === "infiltrado") {
+      const bM = $("#a-matar");
+      bM.disabled = !vitimaPerto() || h.killCd > 0;
+      bM.innerHTML = h.killCd > 0 && h.vivo ? `MATAR<span class="cd">${Math.ceil(h.killCd)}</span>` : "MATAR";
+      const bT = $("#a-tubo");
+      bT.disabled = !(tuboPerto() || h.emTubo != null);
+      bT.textContent = h.emTubo != null ? "SAIR" : "TUBO";
+      $("#a-sabotar").disabled = J.estado !== "jogando";
+      // destinos de tubo
+      const tb = $("#tubos");
+      if (h.emTubo != null) {
+        tb.hidden = false;
+        const k = "t" + h.emTubo;
+        if (tb.dataset.k !== k) {
+          tb.dataset.k = k;
+          tb.replaceChildren(...ligacoesTubo(TUBOS[h.emTubo]).map((d) => { const b = document.createElement("button"); b.className = "pilula"; b.textContent = `→ ${nomeLugar(d.x, d.y)}`; b.onclick = () => moverNoTubo(h, d); return b; }));
+        }
+      } else { tb.hidden = true; tb.dataset.k = ""; }
+    }
+  }
+}
+
+// reunião (interface)
+function mostrarReuniao() {
+  $("#reuniao").hidden = false;
+  $("#r-motivo").textContent = R.motivo;
+  $("#r-relogio").textContent = "";
+  $("#chat").innerHTML = "";
+  const h = J.humano;
+  $("#r-form").hidden = !(h && h.vivo);
+  $("#r-pensamentos").hidden = cfg.modo !== "assistir";
+  $("#r-pensamentos").textContent = R.mostrarPensa ? "Esconder pensamentos" : "Mostrar pensamentos";
+  $("#r-encerrar").hidden = !(h && h.vivo);
+  atualizarVotantes();
+}
+function atualizarVotantes() {
+  if (!R) return;
+  const h = J.humano;
+  const podeVotar = h && h.vivo && R.votos[h.id] === undefined && !R.fim;
+  const contagem = {};
+  if (R.mostrarVotos) for (const [quem, v] of Object.entries(R.votos)) (contagem[v] ||= []).push(J.jog[quem]);
+  const els = J.jog.map((p) => {
+    const b = document.createElement("button");
+    b.className = "votante" + (p.vivo ? "" : " morto") + (podeVotar && p.vivo ? " pode" : "") + (h && R.votos[h.id] === p.id ? " escolhido" : "");
+    b.disabled = !(podeVotar && p.vivo);
+    const votou = p.vivo && R.votos[p.id] !== undefined;
+    const tagInf = J.verPapeis && p.papel === "infiltrado" ? '<span class="tag-inf">INF </span>' : "";
+    b.innerHTML = `<span class="ponto" style="background:${p.cor}"></span><span class="nome">${tagInf}${esc(p.nome)}${p === h ? " (você)" : ""}</span>${votou && !R.mostrarVotos ? '<span class="marca-voto">VOTOU</span>' : ""}${!p.vivo ? '<span class="marca-voto" style="color:var(--alarme)">MORTO</span>' : ""}<span class="votos">${(contagem[p.id] || []).map((v) => `<i style="background:${v.cor}" title="${esc(v.nome)}"></i>`).join("")}</span>`;
+    b.onclick = () => { if (podeVotar && p.vivo) votoHumano(p.id); };
+    return b;
+  });
+  const pular = document.createElement("button");
+  pular.id = "pular"; pular.className = "votante" + (podeVotar ? " pode" : "") + (h && R.votos[h.id] === "pular" ? " escolhido" : "");
+  pular.disabled = !podeVotar;
+  pular.innerHTML = `<span class="nome">Pular voto</span><span class="votos">${(contagem.pular || []).map((v) => `<i style="background:${v.cor}"></i>`).join("")}</span>`;
+  pular.onclick = () => { if (podeVotar) votoHumano("pular"); };
+  $("#votantes").replaceChildren(...els, pular);
+}
+function votoHumano(alvo) {
+  registrarVoto(J.humano, alvo);
+  if (R.botsTerminaram) setTimeout(encerrarVotacao, 800);
+}
+function msgSistema(txt) { R.chat.push({ sistema: true, texto: txt }); adicionarMsg(null, txt); }
+function msgJogador(p, txt, pensa) { R.chat.push({ id: p.id, nome: p.nome, texto: txt }); adicionarMsg(p, txt, pensa); som("msg"); }
+function adicionarMsg(p, txt, pensa) {
+  const chat = $("#chat");
+  const d = document.createElement("div");
+  if (!p) { d.className = "msg sistema"; d.textContent = txt; }
+  else {
+    d.className = "msg";
+    d.innerHTML = `<span class="ponto" style="background:${p.cor};margin-top:3px"></span><div class="corpo"><div class="quem" style="color:${p.cor}">${esc(p.nome)}${J.verPapeis && p.papel === "infiltrado" ? ' <span class="tag-inf">INF</span>' : ""}</div><div class="texto"></div>${pensa ? `<div class="pensa" ${R.mostrarPensa ? "" : "hidden"}></div>` : ""}</div>`;
+    d.querySelector(".texto").textContent = txt;
+    if (pensa) d.querySelector(".pensa").textContent = `pensando: ${pensa}`;
+  }
+  chat.append(d);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+// ---------------- UTILIDADES ----------------
+function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+function esperar(ms) { return new Promise((r) => setTimeout(r, ms)); }
+let avisoT = 0;
+function aviso(html, ms, cor) {
+  const a = $("#aviso"); a.innerHTML = html; a.style.color = cor || "var(--texto)"; a.classList.add("visivel");
+  clearTimeout(avisoT); avisoT = setTimeout(() => a.classList.remove("visivel"), ms);
+}
+function toastJogo(txt) { aviso(`<span style="font:700 16px var(--f-mono)">${esc(txt)}</span>`, 1500); }
+
+// som (sintetizado, liga depois do primeiro toque)
+let audio = null;
+function som(tipo) {
+  if (!audio) return;
+  try {
+    const t = audio.currentTime;
+    const o = audio.createOscillator(), g = audio.createGain();
+    o.connect(g); g.connect(audio.destination);
+    const sons = {
+      matar: [110, 55, 0.35, "sawtooth", 0.25], tubo: [220, 120, 0.18, "square", 0.08], alarme: [660, 440, 0.6, "square", 0.08],
+      reuniao: [520, 780, 0.5, "triangle", 0.18], ejecao: [300, 60, 1.2, "sine", 0.2], ok: [700, 1000, 0.12, "sine", 0.1],
+      erro: [200, 150, 0.15, "square", 0.08], msg: [900, 900, 0.05, "sine", 0.04], porta: [160, 90, 0.25, "square", 0.1],
+    }[tipo];
+    if (!sons) return;
+    o.type = sons[3]; o.frequency.setValueAtTime(sons[0], t); o.frequency.exponentialRampToValueAtTime(sons[1], t + sons[2]);
+    g.gain.setValueAtTime(sons[4], t); g.gain.exponentialRampToValueAtTime(0.0001, t + sons[2]);
+    o.start(t); o.stop(t + sons[2] + 0.02);
+  } catch { /* sem som */ }
+}
+
+// ---------------- ENTRADA ----------------
+window.addEventListener("keydown", (e) => {
+  if (e.target.tagName === "INPUT") return;
+  const k = e.key.toLowerCase();
+  entrada.teclas.add(k);
+  if (!J || !J.humano || J.estado !== "jogando") { if (k === "m" && J) alternarMapa(); return; }
+  if (k === "e" || k === " ") { e.preventDefault(); if ($("#modal").hidden) acaoUsar(); }
+  if (k === "r") acaoReportar();
+  if (k === "q") acaoMatar();
+  if (k === "v") acaoTubo();
+  if (k === "x") acaoSabotar();
+  if (k === "m") alternarMapa();
+  if (k === "escape") fecharModal();
+});
+window.addEventListener("keyup", (e) => entrada.teclas.delete(e.key.toLowerCase()));
+window.addEventListener("blur", () => entrada.teclas.clear());
+(function joystick() {
+  const el = $("#joystick"), bola = el.querySelector("i");
+  let id = null;
+  const mover = (e) => {
+    const r = el.getBoundingClientRect();
+    let dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+    const max = r.width / 2 - 10, m = Math.hypot(dx, dy);
+    if (m > max) { dx = (dx / m) * max; dy = (dy / m) * max; }
+    bola.style.transform = `translate(${dx}px, ${dy}px)`;
+    entrada.x = dx / max; entrada.y = dy / max;
+  };
+  el.addEventListener("pointerdown", (e) => { id = e.pointerId; el.setPointerCapture(id); mover(e); });
+  el.addEventListener("pointermove", (e) => { if (e.pointerId === id) mover(e); });
+  const soltar = (e) => { if (e.pointerId !== id) return; id = null; entrada.x = entrada.y = 0; bola.style.transform = ""; };
+  el.addEventListener("pointerup", soltar); el.addEventListener("pointercancel", soltar);
+})();
+$("#a-usar").onclick = acaoUsar;
+$("#tarefas-toggle").onclick = () => { const el = $("#minhas-tarefas"); el.classList.toggle("aberta"); $("#tarefas-toggle").setAttribute("aria-expanded", String(el.classList.contains("aberta"))); };
+$("#a-reportar").onclick = acaoReportar;
+$("#a-matar").onclick = acaoMatar;
+$("#a-tubo").onclick = acaoTubo;
+$("#a-sabotar").onclick = acaoSabotar;
+function alternarMapa() {
+  if (cfg.modo === "assistir") { J.verMapa = !J.verMapa; $("#b-mapa").classList.toggle("ativa", J.verMapa); }
+  else if ($("#modal").hidden) abrirMapa(); else fecharModal();
+}
+$("#b-mapa").onclick = alternarMapa;
+$("#b-vel").onclick = () => { J.vel = J.vel === 1 ? 2 : J.vel === 2 ? 3 : 1; $("#b-vel").textContent = `${J.vel}×`; };
+$("#b-papeis").onclick = () => { J.verPapeis = !J.verPapeis; $("#b-papeis").classList.toggle("ativa", J.verPapeis); painelSujo = true; ultimoChips = ""; };
+$("#b-painel").onclick = () => { const l = $("#lateral"); l.hidden = !l.hidden; $("#b-painel").classList.toggle("ativa", !l.hidden); painelSujo = true; };
+$("#b-sair").onclick = () => voltarAoMenu();
+$("#r-pensamentos").onclick = () => {
+  R.mostrarPensa = !R.mostrarPensa;
+  $("#r-pensamentos").textContent = R.mostrarPensa ? "Esconder pensamentos" : "Mostrar pensamentos";
+  document.querySelectorAll("#chat .pensa").forEach((el) => (el.hidden = !R.mostrarPensa));
+};
+$("#r-encerrar").onclick = () => { if (R && !R.fim) { if (J.humano?.vivo && R.votos[J.humano.id] === undefined) registrarVoto(J.humano, "pular"); encerrarVotacao(); } };
+$("#r-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const txt = $("#r-msg").value.trim();
+  if (!txt || !R || R.fim || !J.humano?.vivo) return;
+  msgJogador(J.humano, txt.slice(0, 160));
+  $("#r-msg").value = "";
+});
+
+// ---------------- LOBBY ----------------
+function grupoOpcoes(sel, chave, aoMudar) {
+  document.querySelectorAll(`${sel} .opcao`).forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll(`${sel} .opcao`).forEach((x) => x.classList.toggle("ativa", x === b));
+    cfg[chave] = b.dataset.v; aoMudar?.();
+  }));
+}
+grupoOpcoes("#op-modo", "modo", () => { $("#campos-jogar").hidden = cfg.modo !== "jogar"; });
+grupoOpcoes("#op-papel", "papel");
+grupoOpcoes("#op-cerebro", "cerebro");
+for (const [id, out, chave, suf] of [["#c-jog", "#o-jog", "jogadores", ""], ["#c-inf", "#o-inf", "infiltrados", ""], ["#c-cd", "#o-cd", "killCd", "s"]]) {
+  const el = $(id);
+  el.addEventListener("input", () => { cfg[chave] = Number(el.value); $(out).textContent = el.value + suf; });
+}
+try { const salvo = JSON.parse(localStorage.getItem("abissal.cfg") || "null"); if (salvo) Object.assign(cfg, salvo); } catch { /* sem armazenamento */ }
+(function aplicarCfg() {
+  $("#c-jog").value = cfg.jogadores; $("#o-jog").textContent = cfg.jogadores;
+  $("#c-inf").value = cfg.infiltrados; $("#o-inf").textContent = cfg.infiltrados;
+  $("#c-cd").value = cfg.killCd; $("#o-cd").textContent = cfg.killCd + "s";
+  $("#c-nome").value = cfg.nome;
+  for (const [sel, chave] of [["#op-modo", "modo"], ["#op-papel", "papel"], ["#op-cerebro", "cerebro"]]) document.querySelectorAll(`${sel} .opcao`).forEach((b) => b.classList.toggle("ativa", b.dataset.v === cfg[chave]));
+  $("#campos-jogar").hidden = cfg.modo !== "jogar";
+})();
+
+function comecar() {
+  cfg.nome = $("#c-nome").value.trim() || "Jogador";
+  try { localStorage.setItem("abissal.cfg", JSON.stringify(cfg)); } catch { /* ignora */ }
+  if (!audio) { try { audio = new (window.AudioContext || window.webkitAudioContext)(); } catch { audio = null; } }
+  $("#lobby").hidden = true; $("#fim").hidden = true;
+  redimensionar();
+  novaPartida();
+}
+function voltarAoMenu() {
+  if (R) { R.fim = true; R.ctl.abort(); R = null; }
+  if (J) J.abort.abort();
+  J = null;
+  fecharModal();
+  for (const s of ["#topo", "#alerta", "#lateral", "#minhas-tarefas", "#seguir", "#joystick", "#acoes", "#tubos", "#reuniao", "#ejecao", "#fim"]) $(s).hidden = true;
+  $("#lobby").hidden = false;
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = "#04131b"; ctx.fillRect(0, 0, tela.width, tela.height);
+}
+$("#b-comecar").onclick = comecar;
+$("#f-denovo").onclick = () => { voltarAoMenu(); comecar(); };
+$("#f-menu").onclick = voltarAoMenu;
+
+redimensionar();
+requestAnimationFrame(laco);
+</script>
+</body></html>
