@@ -1,21 +1,21 @@
 # Status de produção: "Como funciona o fogão a gás?"
 
-**Fase atual:** Fase 1 concluída. **AGUARDANDO APROVAÇÃO.** A implementação e a renderização ainda não
-começaram.
+**Fase atual:** CONCLUÍDO (Fase 2). O MP4 final foi renderizado e medido.
 
 | Item | Valor |
 | --- | --- |
-| Versão do roteiro | v1.1 (31/10/2026) |
-| Voz | ElevenLabs "Marcos Alves" (`vg59CKS3V0y1IGGzYVgn`), `eleven_multilingual_v2` — preferência do usuário a partir de agora |
-| Pedido | "Outro vídeo" (tema escolhido pelo agente; sem dinheiro) |
-| Formato | 90 s, 1080 × 1920, 30 fps, pt-BR, para YouTube Shorts |
-| Publicação | Só como Short, e só quando o usuário pedir |
+| Roteiro aprovado | v1.1, "Pode gerar" (31/10/2026) |
+| Vídeo final | `out/fogao-a-gas.mp4` (fora do git) |
+| Formato medido | H.264 1080 × 1920, 30 fps, 2700 frames, 90,00 s; áudio AAC |
+| Loudness | −14,0 LUFS, pico −1,4 dBFS |
+| Estabilidade | diferença média entre frames seguidos: 1,58 (mediana 0,80); nenhuma faixa de 6 s acima de 2,9 |
+| Voz | Piper `pt_BR-faber-medium` — a ElevenLabs bloqueou a conta gratuita ("atividade incomum"); o usuário escolheu seguir com a Piper |
 
-## Verificações da Fase 1
+## Pendência sobre a voz
 
-- `scene-plan.ts` compila em modo estrito; 12 cenas somando 2700 frames; badges dentro das cenas;
-  chaves de câmera em ordem.
+- Para usar a ElevenLabs (preferência do usuário daqui em diante), a conta precisa de um plano pago.
+  Nenhum crédito foi cobrado nas duas tentativas recusadas.
 
-## Registro de aprovação
+## Publicação
 
-_(vazio)_
+- Não publicado. Quando o usuário pedir: somente como Short no canal "Explica Aí".
