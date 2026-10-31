@@ -1,0 +1,37 @@
+{
+  "formato": "catalogo-mistura/1",
+  "misturas": [
+    {
+      "id": "minecraft-souls",
+      "titulo": "Minecraft Souls",
+      "descricao": "Estamina, esquiva com invulnerabilidade, frasco de cura com cargas e fogueiras que viram ponto de renascimento.",
+      "jogo": "minecraft-bedrock",
+      "receita": "souls",
+      "tags": ["combate", "difícil"]
+    },
+    {
+      "id": "minecraft-sobrevivencia-dura",
+      "titulo": "Minecraft Sobrevivência Dura",
+      "descricao": "A mesma ideia do Souls, mas com menos estamina e só 2 frascos. Para quem gosta de sofrer.",
+      "jogo": "minecraft-bedrock",
+      "receita": "sobrevivencia",
+      "tags": ["combate", "muito difícil"]
+    },
+    {
+      "id": "luanti-souls",
+      "titulo": "Luanti Souls",
+      "descricao": "Combate soulslike no Luanti: corra com o botão Especial, esquive agachado + pulo e descanse em fogueiras.",
+      "jogo": "luanti",
+      "receita": "souls",
+      "tags": ["combate", "código aberto"]
+    },
+    {
+      "id": "luanti-sobrevivencia-dura",
+      "titulo": "Luanti Sobrevivência Dura",
+      "descricao": "Versão pesada da receita Souls para o Luanti.",
+      "jogo": "luanti",
+      "receita": "sobrevivencia",
+      "tags": ["combate", "muito difícil"]
+    }
+  ]
+}

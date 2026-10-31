@@ -1,0 +1,31 @@
+{
+  "id": "sobrevivencia",
+  "nome": "Sobrevivência dura",
+  "descricao": "Variante mais pesada da receita Souls: menos estamina, frasco fraco e só 2 cargas. Serve de exemplo de como uma receita muda só os números.",
+  "mecanicas": {
+    "estamina": {
+      "max": 70,
+      "corridaPorSegundo": 16,
+      "ataque": 22,
+      "regenPorSegundo": 15,
+      "atrasoRegenSegundos": 1.2
+    },
+    "esquiva": {
+      "custo": 35,
+      "forca": 1.3,
+      "altura": 0.2,
+      "invulneravelSegundos": 0.3
+    },
+    "frasco": {
+      "cargas": 2,
+      "cura": 6
+    },
+    "fogueira": {
+      "raio": 2
+    },
+    "morte": {
+      "titulo": "FIM DA LINHA",
+      "subtitulo": "A fogueira te espera"
+    }
+  }
+}

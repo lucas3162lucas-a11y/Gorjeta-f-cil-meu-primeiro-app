@@ -1,0 +1,25 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "__NOME__",
+    "description": "__DESCRICAO__",
+    "uuid": "__UUID_HEADER__",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 21, 0]
+  },
+  "modules": [
+    {
+      "type": "script",
+      "language": "javascript",
+      "uuid": "__UUID_SCRIPT__",
+      "entry": "scripts/main.js",
+      "version": [1, 0, 0]
+    }
+  ],
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": "1.11.0"
+    }
+  ]
+}

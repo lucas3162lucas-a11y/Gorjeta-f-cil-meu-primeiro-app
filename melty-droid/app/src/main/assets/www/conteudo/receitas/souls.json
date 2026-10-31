@@ -1,0 +1,31 @@
+{
+  "id": "souls",
+  "nome": "Souls",
+  "descricao": "Combate estilo soulslike: estamina para correr, bater e esquivar; frasco de cura com cargas; fogueira que recarrega tudo e vira ponto de renascimento.",
+  "mecanicas": {
+    "estamina": {
+      "max": 100,
+      "corridaPorSegundo": 12,
+      "ataque": 18,
+      "regenPorSegundo": 25,
+      "atrasoRegenSegundos": 0.8
+    },
+    "esquiva": {
+      "custo": 30,
+      "forca": 1.6,
+      "altura": 0.25,
+      "invulneravelSegundos": 0.4
+    },
+    "frasco": {
+      "cargas": 3,
+      "cura": 8
+    },
+    "fogueira": {
+      "raio": 2
+    },
+    "morte": {
+      "titulo": "VOCÊ CAIU",
+      "subtitulo": "Volte para a última fogueira"
+    }
+  }
+}

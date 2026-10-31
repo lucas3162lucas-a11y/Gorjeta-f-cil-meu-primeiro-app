@@ -1,0 +1,12 @@
+{
+  "name": "melty-droid",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "App Android que cria, instala e abre misturas de jogos usando os mods oficiais de cada jogo, sem root.",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "web": "node test/servidor.mjs"
+  },
+  "license": "MIT"
+}

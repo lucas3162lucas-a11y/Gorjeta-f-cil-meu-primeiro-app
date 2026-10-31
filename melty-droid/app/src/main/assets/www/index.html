@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#14111c">
+  <title>Melty Droid</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="marca"><span class="logo" aria-hidden="true"></span>Melty Droid</div>
+    <span class="selo">sem root</span>
+  </header>
+
+  <main>
+    <!-- INÍCIO -->
+    <section id="tela-inicio" class="tela ativa">
+      <h2>Seus jogos</h2>
+      <div id="lista-jogos" class="grade-jogos"></div>
+
+      <div class="titulo-linha">
+        <h2>Minhas misturas</h2>
+        <button class="botao fantasma pequeno" data-ir="criar">+ Nova</button>
+      </div>
+      <div id="lista-minhas" class="lista"></div>
+    </section>
+
+    <!-- CATÁLOGO -->
+    <section id="tela-catalogo" class="tela">
+      <div class="titulo-linha">
+        <h2>Catálogo</h2>
+        <button id="botao-atualizar-catalogo" class="botao fantasma pequeno">Atualizar</button>
+      </div>
+      <div class="filtros" id="filtros-catalogo"></div>
+      <div id="lista-catalogo" class="lista"></div>
+    </section>
+
+    <!-- CRIAR -->
+    <section id="tela-criar" class="tela">
+      <h2>Criar mistura</h2>
+      <p class="dica">Escolha o jogo e descreva o que você quer misturar. A IA escreve o mod e o app instala.</p>
+
+      <label class="rotulo">Jogo anfitrião</label>
+      <div id="escolha-jogo" class="segmentos"></div>
+
+      <label class="rotulo" for="pedido">O que você quer?</label>
+      <textarea id="pedido" rows="5" placeholder="Ex.: quero o combate de um soulslike no Minecraft: estamina, esquiva, chefes com barra de vida…"></textarea>
+      <div class="sugestoes" id="sugestoes"></div>
+
+      <button id="botao-criar-ia" class="botao principal largo">Criar com IA</button>
+      <p id="status-ia" class="status" role="status"></p>
+
+      <details class="caixa">
+        <summary>Sem IA: montar por receita</summary>
+        <p class="dica">Pegue uma receita pronta e ajuste os números.</p>
+        <label class="rotulo" for="receita-base">Receita</label>
+        <select id="receita-base"></select>
+        <div class="campos-numero" id="campos-receita"></div>
+        <label class="rotulo" for="nome-receita">Nome da mistura</label>
+        <input id="nome-receita" type="text" maxlength="60" placeholder="Minha mistura">
+        <button id="botao-criar-receita" class="botao largo">Montar mistura</button>
+      </details>
+    </section>
+
+    <!-- AJUSTES -->
+    <section id="tela-ajustes" class="tela">
+      <h2>Ajustes</h2>
+
+      <div class="caixa">
+        <h3>IA</h3>
+        <p class="dica">Funciona com a API grátis da NVIDIA ou qualquer API no formato da OpenAI.
+          <a href="#" data-link="https://build.nvidia.com">Pegar chave grátis</a></p>
+        <label class="rotulo" for="ia-chave">Chave da API</label>
+        <input id="ia-chave" type="password" autocomplete="off" placeholder="nvapi-...">
+        <label class="rotulo" for="ia-modelo">Modelo</label>
+        <input id="ia-modelo" type="text" autocomplete="off">
+        <label class="rotulo" for="ia-url">Endereço da API</label>
+        <input id="ia-url" type="url" autocomplete="off">
+      </div>
+
+      <div class="caixa">
+        <h3>Catálogo online</h3>
+        <p class="dica">Endereço de um arquivo JSON com mais misturas. Deixe vazio para usar só o catálogo do app.</p>
+        <input id="catalogo-url" type="url" autocomplete="off" placeholder="https://...">
+      </div>
+
+      <button id="botao-salvar-ajustes" class="botao principal largo">Salvar</button>
+
+      <div class="caixa">
+        <h3>Importar mistura</h3>
+        <p class="dica">Abra um arquivo <code>.mistura.json</code> que alguém compartilhou com você. Só importe de quem você confia.</p>
+        <input id="arquivo-importar" type="file" accept=".json,application/json">
+      </div>
+
+      <div class="caixa">
+        <h3>Como funciona sem root</h3>
+        <p class="dica">O Melty Droid não altera nenhum app. Ele cria o mod no formato oficial do jogo
+          (add-on do Minecraft, mod do Luanti) e entrega para o próprio jogo importar. Por isso só funcionam
+          jogos que aceitam mods oficialmente.</p>
+        <p class="dica">Melty Droid é um projeto independente, sem ligação com o Melty oficial nem com os jogos suportados.</p>
+      </div>
+    </section>
+  </main>
+
+  <nav class="abas" aria-label="Navegação">
+    <button data-ir="inicio" class="ativa"><span class="ico ico-casa"></span>Início</button>
+    <button data-ir="catalogo"><span class="ico ico-grade"></span>Catálogo</button>
+    <button data-ir="criar"><span class="ico ico-mais"></span>Criar</button>
+    <button data-ir="ajustes"><span class="ico ico-engrenagem"></span>Ajustes</button>
+  </nav>
+
+  <dialog id="janela">
+    <div class="janela-conteudo">
+      <div class="titulo-linha">
+        <h3 id="janela-titulo"></h3>
+        <button class="botao fantasma pequeno" id="janela-fechar" aria-label="Fechar">✕</button>
+      </div>
+      <div id="janela-corpo"></div>
+    </div>
+  </dialog>
+
+  <div id="aviso" class="aviso" role="status" aria-live="polite"></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

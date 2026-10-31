@@ -1,0 +1,63 @@
+name: Melty Droid - gerar APK
+
+on:
+  push:
+    paths:
+      - "melty-droid/**"
+      - ".github/workflows/melty-droid-apk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: melty-droid
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Testes do motor (misturas Minecraft e Luanti)
+        run: |
+          pip install lupa
+          TESTAR_LUA=1 npm test
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Compilar APK
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleRelease
+          cp app/build/outputs/apk/release/app-release.apk MeltyDroid.apk
+
+      - name: Guardar APK nos artefatos
+        uses: actions/upload-artifact@v4
+        with:
+          name: MeltyDroid-apk
+          path: melty-droid/MeltyDroid.apk
+
+      # Publica numa "Release" para dar para baixar direto no celular, sem login.
+      - name: Publicar versão de teste
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: melty-droid-teste
+          name: Melty Droid (versão de teste)
+          prerelease: true
+          make_latest: false
+          body: |
+            APK gerado automaticamente a partir do commit ${{ github.sha }}.
+            Baixe MeltyDroid.apk no celular e instale (permita "instalar apps desconhecidos" para o navegador).
+          files: melty-droid/MeltyDroid.apk
