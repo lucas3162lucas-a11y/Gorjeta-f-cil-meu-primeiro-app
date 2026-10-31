@@ -1,5 +1,7 @@
 # ZapVendas IA — Atendente de IA para WhatsApp (para vender por assinatura)
 
+> 🛍️ **Novo: Bot de Achadinhos** — posta produtos da Shein (com seus links de afiliado), Mercado Livre e Shopee no seu grupo, intercalando as lojas, e divulga o grupo. Veja [`achadinhos/LEIA-ME.md`](achadinhos/LEIA-ME.md). Para ligar: `npm run achadinhos`.
+
 Sistema pronto para você **vender** uma IA que atende e vende no WhatsApp dos seus clientes.
 
 - Site de vendas com os 3 planos (só mensal, sem anual)

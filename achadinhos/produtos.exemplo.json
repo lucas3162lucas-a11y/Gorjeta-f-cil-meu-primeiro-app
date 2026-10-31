@@ -1,0 +1,49 @@
+{
+  "shein": [
+    {
+      "titulo": "Vestido midi floral de alcinha",
+      "preco": "59,90",
+      "precoAntigo": "119,90",
+      "link": "https://onelink.shein.com/SEU-LINK-DE-AFILIADO-1",
+      "imagem": "",
+      "cupom": "",
+      "afiliado": true
+    },
+    {
+      "titulo": "Conjunto de colares dourados (6 peças)",
+      "preco": "19,90",
+      "precoAntigo": "39,90",
+      "link": "https://onelink.shein.com/SEU-LINK-DE-AFILIADO-2",
+      "imagem": "",
+      "afiliado": true
+    },
+    {
+      "titulo": "Organizador de maquiagem giratório",
+      "preco": "34,90",
+      "precoAntigo": "69,90",
+      "link": "https://br.shein.com/LINK-DO-PRODUTO",
+      "imagem": "",
+      "afiliado": false
+    }
+  ],
+  "mercadolivre": [
+    {
+      "titulo": "Fone de ouvido Bluetooth sem fio",
+      "preco": "79,90",
+      "precoAntigo": "149,90",
+      "link": "https://mercadolivre.com/sec/SEU-LINK",
+      "imagem": "",
+      "cupom": ""
+    }
+  ],
+  "shopee": [
+    {
+      "titulo": "Kit 10 potes herméticos para cozinha",
+      "preco": "39,90",
+      "precoAntigo": "89,90",
+      "link": "https://s.shopee.com.br/SEU-LINK",
+      "imagem": "",
+      "cupom": "Use o cupom da loja na página"
+    }
+  ]
+}

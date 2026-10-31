@@ -1,0 +1,42 @@
+{
+  "numeroWhatsApp": "5511999999999",
+
+  "grupoAchadinhos": "Achadinhos do Lucas",
+  "linkConviteGrupo": "https://chat.whatsapp.com/COLE-O-LINK-DO-SEU-GRUPO",
+
+  "intervaloMinutos": 30,
+  "horarioInicio": 8,
+  "horarioFim": 22,
+  "fusoHorario": "America/Sao_Paulo",
+
+  "ordemLojas": ["shein", "mercadolivre", "shopee"],
+
+  "shein": {
+    "porcentagemAfiliados": 50,
+    "linkVitrine": "https://onelink.shein.com/COLE-SEU-LINK-DE-AFILIADO",
+    "enviarVitrineACada": 6,
+    "mensagensVitrine": [
+      "💖 *Minha vitrine da SHEIN* 💖\n\nSeparei várias peças lindas com preço baixinho! Dá uma olhada:\n👉 {link}",
+      "🛍️ Já viu as *minhas indicações da SHEIN*? Roupas, acessórios e casa com desconto:\n👉 {link}"
+    ]
+  },
+
+  "convidarNoGrupoACada": 10,
+  "mensagensConvite": [
+    "📢 Conhece alguém que ama promoção? Compartilha nosso grupo de achadinhos! 💸\n👉 {link}",
+    "🔥 Chama os amigos pro grupo de achadinhos! Todo dia oferta nova da Shein, Shopee e Mercado Livre:\n👉 {link}"
+  ],
+
+  "divulgacao": {
+    "ativo": false,
+    "grupos": ["Nome do grupo de divulgação 1", "Nome do grupo de divulgação 2"],
+    "intervaloHoras": 6,
+    "esperaEntreGruposSegundos": 90,
+    "mensagens": [
+      "🛍️ *GRUPO DE ACHADINHOS* 🛍️\n\nOfertas todos os dias da *Shein, Shopee e Mercado Livre*, com cupons e preços baixos! 💸\n\nEntra aqui 👇\n{link}",
+      "💥 Quer economizar? Entra no meu grupo de *achadinhos*! Promoção da Shein, Shopee e Mercado Livre o dia todo 👇\n{link}"
+    ]
+  },
+
+  "donos": []
+}
