@@ -34,7 +34,7 @@ if (SIMULAR) {
 // ---------- WhatsApp ----------
 const pino = require('pino');
 const QRCode = require('qrcode');
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, Browsers } = require('@whiskeysockets/baileys');
 
 const PASTA_LOGIN = path.join(r.PASTA_DADOS, 'login-whatsapp');
 let sock = null;
@@ -43,27 +43,46 @@ const iniciadoEm = Math.floor(Date.now() / 1000);
 const NUMERO_EXEMPLO = '5511999999999';
 let proximoPostEm = 0;
 let enviando = false;
+let primeiraConexao = true;
+
+// Aceita o número com ou sem +, espaço, traço e o 55 do Brasil.
+function numeroParaCodigo() {
+  let n = String(r.lerConfig().numeroWhatsApp || '').replace(/\D/g, '');
+  if (!n || n === NUMERO_EXEMPLO) return null;
+  if (n.length === 10 || n.length === 11) n = '55' + n; // só DDD + número
+  return n;
+}
 
 async function conectar() {
   fs.mkdirSync(PASTA_LOGIN, { recursive: true });
-  const { state, saveCreds } = await useMultiFileAuthState(PASTA_LOGIN);
+  let { state, saveCreds } = await useMultiFileAuthState(PASTA_LOGIN);
+  // Tentativa anterior que não terminou de conectar deixa um login "pela metade": começa do zero.
+  if (primeiraConexao && !state.creds.registered) {
+    fs.rmSync(PASTA_LOGIN, { recursive: true, force: true });
+    fs.mkdirSync(PASTA_LOGIN, { recursive: true });
+    ({ state, saveCreds } = await useMultiFileAuthState(PASTA_LOGIN));
+  }
+  primeiraConexao = false;
   const { version } = await fetchLatestBaileysVersion().catch(() => ({ version: undefined }));
-  const s = makeWASocket({ auth: state, version, logger: pino({ level: 'silent' }), browser: ['Achadinhos Bot', 'Chrome', '1.0'], markOnlineOnConnect: false });
+  const s = makeWASocket({ auth: state, version, logger: pino({ level: 'silent' }), browser: Browsers.ubuntu('Chrome'), markOnlineOnConnect: false });
   sock = s;
   let pediuCodigo = false;
 
   s.ev.on('creds.update', saveCreds);
   s.ev.on('connection.update', async ({ connection, lastDisconnect, qr }) => {
     if (qr) {
-      const numero = String(r.lerConfig().numeroWhatsApp || '').replace(/\D/g, '');
-      const usarCodigo = numero && numero !== NUMERO_EXEMPLO;
-      if (usarCodigo && !pediuCodigo) {
+      const numero = numeroParaCodigo();
+      if (numero && !pediuCodigo) {
         pediuCodigo = true;
         try {
           const codigo = await s.requestPairingCode(numero);
-          log(`\n📱 CÓDIGO DE CONEXÃO: ${codigo}\nNo WhatsApp: Aparelhos conectados → Conectar aparelho → Conectar com número de telefone.\n`);
-        } catch (e) { log('Não consegui gerar o código:', e.message); }
-      } else if (!usarCodigo) {
+          const bonito = String(codigo).replace(/^(.{4})(.{4})$/, '$1-$2');
+          log(`\n\n📱 CÓDIGO DE CONEXÃO para o número +${numero}:\n\n        ${bonito}\n\n` +
+            'No celular desse número, abra o WhatsApp → ⋮ (três pontinhos) → Dispositivos conectados → Conectar dispositivo\n' +
+            '→ toque em "Conectar com número de telefone" (embaixo, em vez de ler o QR Code) → digite o código.\n' +
+            'O código vale por pouco tempo. Se aparecer um código novo aqui, use sempre o MAIS NOVO.\n');
+        } catch (e) { log('Não consegui gerar o código:', e.message, '— confira o numeroWhatsApp no config.json (ex.: 5511987654321).'); }
+      } else if (!numero) {
         log('Leia este QR Code no WhatsApp (Aparelhos conectados → Conectar aparelho):');
         console.log(await QRCode.toString(qr, { type: 'terminal', small: true }));
       }
