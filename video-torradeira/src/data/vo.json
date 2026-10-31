@@ -1,0 +1,1064 @@
+{
+  "s1": {
+    "text": "Você quer servir um pão torradinho no café da manhã. Parece que basta colocar numa frigideira bem quente.",
+    "seconds": 6.332,
+    "words": [
+      {
+        "text": "Você",
+        "start": 0,
+        "end": 0.159
+      },
+      {
+        "text": "quer",
+        "start": 0.159,
+        "end": 0.399
+      },
+      {
+        "text": "servir",
+        "start": 0.399,
+        "end": 0.699
+      },
+      {
+        "text": "um",
+        "start": 0.699,
+        "end": 0.939
+      },
+      {
+        "text": "pão",
+        "start": 0.939,
+        "end": 1.179
+      },
+      {
+        "text": "torradinho",
+        "start": 1.179,
+        "end": 1.679
+      },
+      {
+        "text": "no",
+        "start": 1.679,
+        "end": 1.779
+      },
+      {
+        "text": "café",
+        "start": 1.779,
+        "end": 2.099
+      },
+      {
+        "text": "da",
+        "start": 2.099,
+        "end": 2.279
+      },
+      {
+        "text": "manhã.",
+        "start": 2.279,
+        "end": 2.739
+      },
+      {
+        "text": "Parece",
+        "start": 3.079,
+        "end": 3.579
+      },
+      {
+        "text": "que",
+        "start": 3.579,
+        "end": 3.839
+      },
+      {
+        "text": "basta",
+        "start": 3.839,
+        "end": 4.099
+      },
+      {
+        "text": "colocar",
+        "start": 4.099,
+        "end": 4.559
+      },
+      {
+        "text": "numa",
+        "start": 4.559,
+        "end": 4.779
+      },
+      {
+        "text": "frigideira",
+        "start": 4.779,
+        "end": 5.419
+      },
+      {
+        "text": "bem",
+        "start": 5.419,
+        "end": 5.599
+      },
+      {
+        "text": "quente.",
+        "start": 5.599,
+        "end": 6.179
+      }
+    ]
+  },
+  "s2": {
+    "text": "Só que a frigideira esquenta um lado de cada vez. Um lado queima e o outro fica branco.",
+    "seconds": 6.105,
+    "words": [
+      {
+        "text": "Só",
+        "start": 0.0,
+        "end": 0.18
+      },
+      {
+        "text": "que",
+        "start": 0.18,
+        "end": 0.36
+      },
+      {
+        "text": "a",
+        "start": 0.36,
+        "end": 0.4
+      },
+      {
+        "text": "frigideira",
+        "start": 0.4,
+        "end": 0.94
+      },
+      {
+        "text": "esquenta",
+        "start": 0.94,
+        "end": 1.34
+      },
+      {
+        "text": "um",
+        "start": 1.34,
+        "end": 1.42
+      },
+      {
+        "text": "lado",
+        "start": 1.42,
+        "end": 1.72
+      },
+      {
+        "text": "de",
+        "start": 1.72,
+        "end": 1.92
+      },
+      {
+        "text": "cada",
+        "start": 1.92,
+        "end": 2.16
+      },
+      {
+        "text": "vez.",
+        "start": 2.16,
+        "end": 2.58
+      },
+      {
+        "text": "Um",
+        "start": 3.18,
+        "end": 3.62
+      },
+      {
+        "text": "lado",
+        "start": 3.62,
+        "end": 3.9
+      },
+      {
+        "text": "queima",
+        "start": 3.9,
+        "end": 4.44
+      },
+      {
+        "text": "e",
+        "start": 4.44,
+        "end": 4.64
+      },
+      {
+        "text": "o",
+        "start": 4.64,
+        "end": 4.78
+      },
+      {
+        "text": "outro",
+        "start": 4.78,
+        "end": 5.0
+      },
+      {
+        "text": "fica",
+        "start": 5.0,
+        "end": 5.32
+      },
+      {
+        "text": "branco.",
+        "start": 5.32,
+        "end": 5.92
+      }
+    ]
+  },
+  "s3": {
+    "text": "A torradeira resolve com fios que esquentam quando a eletricidade passa por eles. São as resistências.",
+    "seconds": 6.782,
+    "words": [
+      {
+        "text": "A",
+        "start": 0,
+        "end": 0.072
+      },
+      {
+        "text": "torradeira",
+        "start": 0.072,
+        "end": 0.652
+      },
+      {
+        "text": "resolve",
+        "start": 0.652,
+        "end": 1.012
+      },
+      {
+        "text": "com",
+        "start": 1.012,
+        "end": 1.352
+      },
+      {
+        "text": "fios",
+        "start": 1.352,
+        "end": 1.792
+      },
+      {
+        "text": "que",
+        "start": 1.792,
+        "end": 1.972
+      },
+      {
+        "text": "esquentam",
+        "start": 1.972,
+        "end": 2.472
+      },
+      {
+        "text": "quando",
+        "start": 2.472,
+        "end": 2.672
+      },
+      {
+        "text": "a",
+        "start": 2.672,
+        "end": 2.812
+      },
+      {
+        "text": "eletricidade",
+        "start": 2.812,
+        "end": 3.532
+      },
+      {
+        "text": "passa",
+        "start": 3.532,
+        "end": 3.972
+      },
+      {
+        "text": "por",
+        "start": 3.972,
+        "end": 4.252
+      },
+      {
+        "text": "eles.",
+        "start": 4.252,
+        "end": 4.572
+      },
+      {
+        "text": "São",
+        "start": 5.212,
+        "end": 5.552
+      },
+      {
+        "text": "as",
+        "start": 5.552,
+        "end": 5.692
+      },
+      {
+        "text": "resistências.",
+        "start": 5.692,
+        "end": 6.412
+      }
+    ]
+  },
+  "s4": {
+    "text": "Mas fio comum, nesse calor, ia derreter ou se desgastar rapidinho.",
+    "seconds": 5.147,
+    "words": [
+      {
+        "text": "Mas",
+        "start": 0,
+        "end": 0.2
+      },
+      {
+        "text": "fio",
+        "start": 0.2,
+        "end": 0.48
+      },
+      {
+        "text": "comum,",
+        "start": 0.48,
+        "end": 0.86
+      },
+      {
+        "text": "nesse",
+        "start": 1.32,
+        "end": 1.5
+      },
+      {
+        "text": "calor,",
+        "start": 1.5,
+        "end": 2.02
+      },
+      {
+        "text": "ia",
+        "start": 2.36,
+        "end": 2.62
+      },
+      {
+        "text": "derreter",
+        "start": 2.62,
+        "end": 3.22
+      },
+      {
+        "text": "ou",
+        "start": 3.22,
+        "end": 3.36
+      },
+      {
+        "text": "se",
+        "start": 3.36,
+        "end": 3.46
+      },
+      {
+        "text": "desgastar",
+        "start": 3.46,
+        "end": 4.16
+      },
+      {
+        "text": "rapidinho.",
+        "start": 4.16,
+        "end": 4.9
+      }
+    ]
+  },
+  "s5": {
+    "text": "Por isso elas são de uma liga especial de níquel e cromo, que aguenta ficar vermelha de quente sem estragar.",
+    "seconds": 6.385,
+    "words": [
+      {
+        "text": "Por",
+        "start": 0,
+        "end": 0.098
+      },
+      {
+        "text": "isso",
+        "start": 0.098,
+        "end": 0.298
+      },
+      {
+        "text": "elas",
+        "start": 0.298,
+        "end": 0.478
+      },
+      {
+        "text": "são",
+        "start": 0.478,
+        "end": 0.698
+      },
+      {
+        "text": "de",
+        "start": 0.698,
+        "end": 0.838
+      },
+      {
+        "text": "uma",
+        "start": 0.838,
+        "end": 0.938
+      },
+      {
+        "text": "liga",
+        "start": 0.938,
+        "end": 1.198
+      },
+      {
+        "text": "especial",
+        "start": 1.198,
+        "end": 1.698
+      },
+      {
+        "text": "de",
+        "start": 1.698,
+        "end": 1.998
+      },
+      {
+        "text": "níquel",
+        "start": 1.998,
+        "end": 2.458
+      },
+      {
+        "text": "e",
+        "start": 2.458,
+        "end": 2.698
+      },
+      {
+        "text": "cromo,",
+        "start": 2.698,
+        "end": 3.158
+      },
+      {
+        "text": "que",
+        "start": 3.478,
+        "end": 3.558
+      },
+      {
+        "text": "aguenta",
+        "start": 3.558,
+        "end": 3.978
+      },
+      {
+        "text": "ficar",
+        "start": 3.978,
+        "end": 4.258
+      },
+      {
+        "text": "vermelha",
+        "start": 4.258,
+        "end": 4.918
+      },
+      {
+        "text": "de",
+        "start": 4.918,
+        "end": 4.998
+      },
+      {
+        "text": "quente",
+        "start": 4.998,
+        "end": 5.318
+      },
+      {
+        "text": "sem",
+        "start": 5.318,
+        "end": 5.538
+      },
+      {
+        "text": "estragar.",
+        "start": 5.538,
+        "end": 6.098
+      }
+    ]
+  },
+  "s6": {
+    "text": "E tem fio dos dois lados do pão. Assim as duas faces torram juntas, por igual.",
+    "seconds": 5.88,
+    "words": [
+      {
+        "text": "E",
+        "start": 0,
+        "end": 0.109
+      },
+      {
+        "text": "tem",
+        "start": 0.109,
+        "end": 0.309
+      },
+      {
+        "text": "fio",
+        "start": 0.309,
+        "end": 0.669
+      },
+      {
+        "text": "dos",
+        "start": 0.669,
+        "end": 0.809
+      },
+      {
+        "text": "dois",
+        "start": 0.809,
+        "end": 1.029
+      },
+      {
+        "text": "lados",
+        "start": 1.029,
+        "end": 1.429
+      },
+      {
+        "text": "do",
+        "start": 1.429,
+        "end": 1.689
+      },
+      {
+        "text": "pão.",
+        "start": 1.689,
+        "end": 2.149
+      },
+      {
+        "text": "Assim",
+        "start": 2.549,
+        "end": 3.029
+      },
+      {
+        "text": "as",
+        "start": 3.029,
+        "end": 3.269
+      },
+      {
+        "text": "duas",
+        "start": 3.269,
+        "end": 3.489
+      },
+      {
+        "text": "faces",
+        "start": 3.489,
+        "end": 4.009
+      },
+      {
+        "text": "torram",
+        "start": 4.009,
+        "end": 4.449
+      },
+      {
+        "text": "juntas,",
+        "start": 4.449,
+        "end": 5.109
+      },
+      {
+        "text": "por",
+        "start": 5.149,
+        "end": 5.289
+      },
+      {
+        "text": "igual.",
+        "start": 5.289,
+        "end": 5.569
+      }
+    ]
+  },
+  "s7": {
+    "text": "Mas e o ponto? Como saber a hora de parar antes de virar carvão?",
+    "seconds": 4.347,
+    "words": [
+      {
+        "text": "Mas",
+        "start": 0,
+        "end": 0.204
+      },
+      {
+        "text": "e",
+        "start": 0.204,
+        "end": 0.284
+      },
+      {
+        "text": "o",
+        "start": 0.284,
+        "end": 0.384
+      },
+      {
+        "text": "ponto?",
+        "start": 0.384,
+        "end": 0.824
+      },
+      {
+        "text": "Como",
+        "start": 1.624,
+        "end": 1.824
+      },
+      {
+        "text": "saber",
+        "start": 1.824,
+        "end": 2.124
+      },
+      {
+        "text": "a",
+        "start": 2.124,
+        "end": 2.304
+      },
+      {
+        "text": "hora",
+        "start": 2.304,
+        "end": 2.464
+      },
+      {
+        "text": "de",
+        "start": 2.464,
+        "end": 2.584
+      },
+      {
+        "text": "parar",
+        "start": 2.584,
+        "end": 2.864
+      },
+      {
+        "text": "antes",
+        "start": 2.864,
+        "end": 3.204
+      },
+      {
+        "text": "de",
+        "start": 3.204,
+        "end": 3.364
+      },
+      {
+        "text": "virar",
+        "start": 3.364,
+        "end": 3.644
+      },
+      {
+        "text": "carvão?",
+        "start": 3.644,
+        "end": 4.144
+      }
+    ]
+  },
+  "s8": {
+    "text": "O botão regula um controle de tempo. Quanto mais alto, mais tempo a resistência fica ligada.",
+    "seconds": 6.267,
+    "words": [
+      {
+        "text": "O",
+        "start": 0,
+        "end": 0.085
+      },
+      {
+        "text": "botão",
+        "start": 0.085,
+        "end": 0.425
+      },
+      {
+        "text": "regula",
+        "start": 0.425,
+        "end": 0.805
+      },
+      {
+        "text": "um",
+        "start": 0.805,
+        "end": 0.885
+      },
+      {
+        "text": "controle",
+        "start": 0.885,
+        "end": 1.285
+      },
+      {
+        "text": "de",
+        "start": 1.285,
+        "end": 1.445
+      },
+      {
+        "text": "tempo.",
+        "start": 1.445,
+        "end": 1.905
+      },
+      {
+        "text": "Quanto",
+        "start": 2.385,
+        "end": 2.805
+      },
+      {
+        "text": "mais",
+        "start": 2.805,
+        "end": 3.065
+      },
+      {
+        "text": "alto,",
+        "start": 3.065,
+        "end": 3.505
+      },
+      {
+        "text": "mais",
+        "start": 3.785,
+        "end": 3.905
+      },
+      {
+        "text": "tempo",
+        "start": 3.905,
+        "end": 4.305
+      },
+      {
+        "text": "a",
+        "start": 4.305,
+        "end": 4.365
+      },
+      {
+        "text": "resistência",
+        "start": 4.365,
+        "end": 5.005
+      },
+      {
+        "text": "fica",
+        "start": 5.005,
+        "end": 5.425
+      },
+      {
+        "text": "ligada.",
+        "start": 5.425,
+        "end": 6.045
+      }
+    ]
+  },
+  "s9": {
+    "text": "Enquanto torra, um ímã elétrico segura a alavanca lá embaixo.",
+    "seconds": 3.7,
+    "words": [
+      {
+        "text": "Enquanto",
+        "start": 0,
+        "end": 0.314
+      },
+      {
+        "text": "torra,",
+        "start": 0.314,
+        "end": 0.814
+      },
+      {
+        "text": "um",
+        "start": 0.974,
+        "end": 1.074
+      },
+      {
+        "text": "ímã",
+        "start": 1.074,
+        "end": 1.274
+      },
+      {
+        "text": "elétrico",
+        "start": 1.274,
+        "end": 1.754
+      },
+      {
+        "text": "segura",
+        "start": 1.754,
+        "end": 2.254
+      },
+      {
+        "text": "a",
+        "start": 2.254,
+        "end": 2.374
+      },
+      {
+        "text": "alavanca",
+        "start": 2.374,
+        "end": 2.754
+      },
+      {
+        "text": "lá",
+        "start": 2.754,
+        "end": 2.894
+      },
+      {
+        "text": "embaixo.",
+        "start": 2.894,
+        "end": 3.194
+      }
+    ]
+  },
+  "s10": {
+    "text": "Quando o tempo acaba, a corrente desliga, o ímã solta e uma mola joga o pão pra cima.",
+    "seconds": 5.91,
+    "words": [
+      {
+        "text": "Quando",
+        "start": 0,
+        "end": 0.162
+      },
+      {
+        "text": "o",
+        "start": 0.162,
+        "end": 0.282
+      },
+      {
+        "text": "tempo",
+        "start": 0.282,
+        "end": 0.462
+      },
+      {
+        "text": "acaba,",
+        "start": 0.462,
+        "end": 0.942
+      },
+      {
+        "text": "a",
+        "start": 1.242,
+        "end": 1.302
+      },
+      {
+        "text": "corrente",
+        "start": 1.302,
+        "end": 1.742
+      },
+      {
+        "text": "desliga,",
+        "start": 1.742,
+        "end": 2.422
+      },
+      {
+        "text": "o",
+        "start": 2.682,
+        "end": 2.782
+      },
+      {
+        "text": "ímã",
+        "start": 2.782,
+        "end": 2.982
+      },
+      {
+        "text": "solta",
+        "start": 2.982,
+        "end": 3.502
+      },
+      {
+        "text": "e",
+        "start": 3.502,
+        "end": 3.802
+      },
+      {
+        "text": "uma",
+        "start": 3.802,
+        "end": 3.982
+      },
+      {
+        "text": "mola",
+        "start": 3.982,
+        "end": 4.302
+      },
+      {
+        "text": "joga",
+        "start": 4.302,
+        "end": 4.742
+      },
+      {
+        "text": "o",
+        "start": 4.742,
+        "end": 4.782
+      },
+      {
+        "text": "pão",
+        "start": 4.782,
+        "end": 5.042
+      },
+      {
+        "text": "pra",
+        "start": 5.042,
+        "end": 5.142
+      },
+      {
+        "text": "cima.",
+        "start": 5.142,
+        "end": 5.662
+      }
+    ]
+  },
+  "s11": {
+    "text": "E as migalhas que caem? Ficam numa bandejinha embaixo, que sai pra limpar, sempre com a torradeira desligada da tomada.",
+    "seconds": 7.956,
+    "words": [
+      {
+        "text": "E",
+        "start": 0,
+        "end": 0.09
+      },
+      {
+        "text": "as",
+        "start": 0.09,
+        "end": 0.25
+      },
+      {
+        "text": "migalhas",
+        "start": 0.25,
+        "end": 0.75
+      },
+      {
+        "text": "que",
+        "start": 0.75,
+        "end": 0.85
+      },
+      {
+        "text": "caem?",
+        "start": 0.85,
+        "end": 1.39
+      },
+      {
+        "text": "Ficam",
+        "start": 1.69,
+        "end": 2.21
+      },
+      {
+        "text": "numa",
+        "start": 2.21,
+        "end": 2.33
+      },
+      {
+        "text": "bandejinha",
+        "start": 2.33,
+        "end": 2.89
+      },
+      {
+        "text": "embaixo,",
+        "start": 2.89,
+        "end": 3.41
+      },
+      {
+        "text": "que",
+        "start": 3.71,
+        "end": 3.81
+      },
+      {
+        "text": "sai",
+        "start": 3.81,
+        "end": 4.09
+      },
+      {
+        "text": "pra",
+        "start": 4.09,
+        "end": 4.25
+      },
+      {
+        "text": "limpar,",
+        "start": 4.25,
+        "end": 4.81
+      },
+      {
+        "text": "sempre",
+        "start": 5.01,
+        "end": 5.33
+      },
+      {
+        "text": "com",
+        "start": 5.33,
+        "end": 5.55
+      },
+      {
+        "text": "a",
+        "start": 5.55,
+        "end": 5.65
+      },
+      {
+        "text": "torradeira",
+        "start": 5.65,
+        "end": 6.31
+      },
+      {
+        "text": "desligada",
+        "start": 6.31,
+        "end": 6.97
+      },
+      {
+        "text": "da",
+        "start": 6.97,
+        "end": 7.11
+      },
+      {
+        "text": "tomada.",
+        "start": 7.11,
+        "end": 7.73
+      }
+    ]
+  },
+  "s12": {
+    "text": "Pronto: eletricidade vira calor, o tempo controla o ponto e a mola faz o resto. E a torrada sai no ponto!",
+    "seconds": 7.923,
+    "words": [
+      {
+        "text": "Pronto:",
+        "start": 0,
+        "end": 0.392
+      },
+      {
+        "text": "eletricidade",
+        "start": 0.712,
+        "end": 1.412
+      },
+      {
+        "text": "vira",
+        "start": 1.412,
+        "end": 1.772
+      },
+      {
+        "text": "calor,",
+        "start": 1.772,
+        "end": 2.152
+      },
+      {
+        "text": "o",
+        "start": 2.552,
+        "end": 2.552
+      },
+      {
+        "text": "tempo",
+        "start": 2.552,
+        "end": 2.911
+      },
+      {
+        "text": "controla",
+        "start": 2.911,
+        "end": 3.271
+      },
+      {
+        "text": "o",
+        "start": 3.271,
+        "end": 3.351
+      },
+      {
+        "text": "ponto",
+        "start": 3.351,
+        "end": 3.672
+      },
+      {
+        "text": "e",
+        "start": 3.672,
+        "end": 3.851
+      },
+      {
+        "text": "a",
+        "start": 3.851,
+        "end": 3.932
+      },
+      {
+        "text": "mola",
+        "start": 3.932,
+        "end": 4.232
+      },
+      {
+        "text": "faz",
+        "start": 4.232,
+        "end": 4.532
+      },
+      {
+        "text": "o",
+        "start": 4.532,
+        "end": 4.652
+      },
+      {
+        "text": "resto.",
+        "start": 4.652,
+        "end": 5.132
+      },
+      {
+        "text": "E",
+        "start": 5.772,
+        "end": 6.012
+      },
+      {
+        "text": "a",
+        "start": 6.012,
+        "end": 6.112
+      },
+      {
+        "text": "torrada",
+        "start": 6.112,
+        "end": 6.672
+      },
+      {
+        "text": "sai",
+        "start": 6.672,
+        "end": 6.992
+      },
+      {
+        "text": "no",
+        "start": 6.992,
+        "end": 7.132
+      },
+      {
+        "text": "ponto!",
+        "start": 7.132,
+        "end": 7.592
+      }
+    ]
+  }
+}

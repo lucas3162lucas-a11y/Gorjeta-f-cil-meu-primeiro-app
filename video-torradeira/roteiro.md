@@ -2,7 +2,8 @@
 
 > **Versão:** v1 (Fase 1), 31/10/2026. **Origem:** roteiro escrito pelo agente, a pedido do usuário
 > ("faça outro vídeo"). O tema foi escolhido pelo agente, sem envolver dinheiro.
-> **Situação:** AGUARDANDO APROVAÇÃO. A implementação e a renderização ainda não começaram.
+> **Situação:** APROVADO ("Pode", 31/10/2026). Fase 2 executada; ajustes técnicos na seção 7. Texto e
+> ordem das cenas não mudaram.
 >
 > **Convenção:** MM:SS:FF a 30 fps; frames em [início, fim). Os tempos são estimativas: depois da voz
 > real, os cortes seguem a narração.
@@ -88,3 +89,12 @@ alavanca, clique de desligar, "boing" da mola e "ding". A trilha lo-fi do canal 
 - [x] 12 cenas e 7 colunas; soma de 2700 frames; plano compilado e validado.
 - [x] 198 palavras, compatível com 90 s; sem tranco de câmera.
 - [ ] **Ainda não feito:** TTS, render e validação visual. Isso fica para a Fase 2.
+
+## 7. Ajustes técnicos da Fase 2 (sem mudança de conteúdo)
+
+- **Voz:** Piper `pt_BR-faber-medium` (a ElevenLabs continua bloqueada na conta gratuita). Fala de
+  72,7 s, com as 198 palavras casadas com o áudio. Pausas de 1,4 s entre as falas.
+- **Resistências:** desenhadas como serpentina horizontal (fios correndo ao longo da fenda). O
+  zigue-zague vertical parecia uma grade de barras.
+- **Garçom:** fica à esquerda do fogão, para não tampar o close da frigideira na cena 2.
+- **Rótulos finais:** reposicionados para caber no quadro.
