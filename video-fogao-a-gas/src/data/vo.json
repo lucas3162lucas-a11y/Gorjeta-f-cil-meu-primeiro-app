@@ -1,0 +1,1074 @@
+{
+  "s1": {
+    "text": "Você quer acender a boca do fogão pra esquentar a sopa. Parece que basta abrir o gás.",
+    "seconds": 5.826,
+    "words": [
+      {
+        "text": "Você",
+        "start": 0,
+        "end": 0.166
+      },
+      {
+        "text": "quer",
+        "start": 0.166,
+        "end": 0.366
+      },
+      {
+        "text": "acender",
+        "start": 0.366,
+        "end": 0.806
+      },
+      {
+        "text": "a",
+        "start": 0.806,
+        "end": 0.946
+      },
+      {
+        "text": "boca",
+        "start": 0.946,
+        "end": 1.186
+      },
+      {
+        "text": "do",
+        "start": 1.186,
+        "end": 1.426
+      },
+      {
+        "text": "fogão",
+        "start": 1.426,
+        "end": 1.886
+      },
+      {
+        "text": "pra",
+        "start": 1.886,
+        "end": 2.066
+      },
+      {
+        "text": "esquentar",
+        "start": 2.066,
+        "end": 2.566
+      },
+      {
+        "text": "a",
+        "start": 2.566,
+        "end": 2.646
+      },
+      {
+        "text": "sopa.",
+        "start": 2.646,
+        "end": 3.186
+      },
+      {
+        "text": "Parece",
+        "start": 3.606,
+        "end": 4.086
+      },
+      {
+        "text": "que",
+        "start": 4.086,
+        "end": 4.366
+      },
+      {
+        "text": "basta",
+        "start": 4.366,
+        "end": 4.606
+      },
+      {
+        "text": "abrir",
+        "start": 4.606,
+        "end": 5.006
+      },
+      {
+        "text": "o",
+        "start": 5.006,
+        "end": 5.166
+      },
+      {
+        "text": "gás.",
+        "start": 5.166,
+        "end": 5.626
+      }
+    ]
+  },
+  "s2": {
+    "text": "Só que o gás sozinho não pega fogo. Ele precisa de uma faísca pra começar a queimar.",
+    "seconds": 5.727,
+    "words": [
+      {
+        "text": "Só",
+        "start": 0.0,
+        "end": 0.16
+      },
+      {
+        "text": "que",
+        "start": 0.16,
+        "end": 0.34
+      },
+      {
+        "text": "o",
+        "start": 0.34,
+        "end": 0.44
+      },
+      {
+        "text": "gás",
+        "start": 0.44,
+        "end": 0.72
+      },
+      {
+        "text": "sozinho",
+        "start": 0.72,
+        "end": 1.12
+      },
+      {
+        "text": "não",
+        "start": 1.12,
+        "end": 1.28
+      },
+      {
+        "text": "pega",
+        "start": 1.28,
+        "end": 1.62
+      },
+      {
+        "text": "fogo.",
+        "start": 1.62,
+        "end": 2.76
+      },
+      {
+        "text": "Ele",
+        "start": 2.76,
+        "end": 3.04
+      },
+      {
+        "text": "precisa",
+        "start": 3.04,
+        "end": 3.38
+      },
+      {
+        "text": "de",
+        "start": 3.38,
+        "end": 3.6
+      },
+      {
+        "text": "uma",
+        "start": 3.6,
+        "end": 3.72
+      },
+      {
+        "text": "faísca",
+        "start": 3.72,
+        "end": 4.26
+      },
+      {
+        "text": "pra",
+        "start": 4.26,
+        "end": 4.44
+      },
+      {
+        "text": "começar",
+        "start": 4.44,
+        "end": 4.88
+      },
+      {
+        "text": "a",
+        "start": 4.88,
+        "end": 5.12
+      },
+      {
+        "text": "queimar.",
+        "start": 5.12,
+        "end": 5.44
+      }
+    ]
+  },
+  "s3": {
+    "text": "Por isso o fogão tem um acendedor. Ao girar o botão, ele solta uma faísca bem do lado do queimador.",
+    "seconds": 6.547,
+    "words": [
+      {
+        "text": "Por",
+        "start": 0,
+        "end": 0.107
+      },
+      {
+        "text": "isso",
+        "start": 0.107,
+        "end": 0.307
+      },
+      {
+        "text": "o",
+        "start": 0.387,
+        "end": 0.427
+      },
+      {
+        "text": "fogão",
+        "start": 0.427,
+        "end": 0.707
+      },
+      {
+        "text": "tem",
+        "start": 0.707,
+        "end": 0.887
+      },
+      {
+        "text": "um",
+        "start": 0.887,
+        "end": 0.987
+      },
+      {
+        "text": "acendedor.",
+        "start": 0.987,
+        "end": 1.707
+      },
+      {
+        "text": "Ao",
+        "start": 2.247,
+        "end": 2.507
+      },
+      {
+        "text": "girar",
+        "start": 2.507,
+        "end": 2.827
+      },
+      {
+        "text": "o",
+        "start": 2.827,
+        "end": 2.887
+      },
+      {
+        "text": "botão,",
+        "start": 2.887,
+        "end": 3.447
+      },
+      {
+        "text": "ele",
+        "start": 3.607,
+        "end": 3.667
+      },
+      {
+        "text": "solta",
+        "start": 3.667,
+        "end": 4.067
+      },
+      {
+        "text": "uma",
+        "start": 4.067,
+        "end": 4.287
+      },
+      {
+        "text": "faísca",
+        "start": 4.287,
+        "end": 4.847
+      },
+      {
+        "text": "bem",
+        "start": 4.847,
+        "end": 5.087
+      },
+      {
+        "text": "do",
+        "start": 5.087,
+        "end": 5.207
+      },
+      {
+        "text": "lado",
+        "start": 5.207,
+        "end": 5.467
+      },
+      {
+        "text": "do",
+        "start": 5.467,
+        "end": 5.607
+      },
+      {
+        "text": "queimador.",
+        "start": 5.607,
+        "end": 6.615
+      }
+    ]
+  },
+  "s4": {
+    "text": "Mas, se o gás sair puro, a chama fica amarela, fraca e solta fuligem.",
+    "seconds": 5.17,
+    "words": [
+      {
+        "text": "Mas,",
+        "start": 0,
+        "end": 0.167
+      },
+      {
+        "text": "se",
+        "start": 0.407,
+        "end": 0.447
+      },
+      {
+        "text": "o",
+        "start": 0.447,
+        "end": 0.527
+      },
+      {
+        "text": "gás",
+        "start": 0.527,
+        "end": 0.847
+      },
+      {
+        "text": "sair",
+        "start": 0.847,
+        "end": 1.087
+      },
+      {
+        "text": "puro,",
+        "start": 1.087,
+        "end": 1.587
+      },
+      {
+        "text": "a",
+        "start": 1.767,
+        "end": 1.827
+      },
+      {
+        "text": "chama",
+        "start": 1.827,
+        "end": 2.047
+      },
+      {
+        "text": "fica",
+        "start": 2.047,
+        "end": 2.347
+      },
+      {
+        "text": "amarela,",
+        "start": 2.347,
+        "end": 2.987
+      },
+      {
+        "text": "fraca",
+        "start": 3.207,
+        "end": 3.587
+      },
+      {
+        "text": "e",
+        "start": 3.587,
+        "end": 3.907
+      },
+      {
+        "text": "solta",
+        "start": 3.907,
+        "end": 4.287
+      },
+      {
+        "text": "fuligem.",
+        "start": 4.287,
+        "end": 4.947
+      }
+    ]
+  },
+  "s5": {
+    "text": "Pra queimar direito, o gás precisa de ar. Então, antes de sair, ele passa por um tubinho que puxa o ar da cozinha.",
+    "seconds": 8.363,
+    "words": [
+      {
+        "text": "Pra",
+        "start": 0,
+        "end": 0.112
+      },
+      {
+        "text": "queimar",
+        "start": 0.112,
+        "end": 0.372
+      },
+      {
+        "text": "direito,",
+        "start": 0.372,
+        "end": 0.812
+      },
+      {
+        "text": "o",
+        "start": 1.192,
+        "end": 1.272
+      },
+      {
+        "text": "gás",
+        "start": 1.272,
+        "end": 1.572
+      },
+      {
+        "text": "precisa",
+        "start": 1.572,
+        "end": 1.912
+      },
+      {
+        "text": "de",
+        "start": 1.912,
+        "end": 2.212
+      },
+      {
+        "text": "ar.",
+        "start": 2.212,
+        "end": 2.512
+      },
+      {
+        "text": "Então,",
+        "start": 3.112,
+        "end": 3.472
+      },
+      {
+        "text": "antes",
+        "start": 3.972,
+        "end": 4.212
+      },
+      {
+        "text": "de",
+        "start": 4.212,
+        "end": 4.372
+      },
+      {
+        "text": "sair,",
+        "start": 4.372,
+        "end": 4.812
+      },
+      {
+        "text": "ele",
+        "start": 5.192,
+        "end": 5.292
+      },
+      {
+        "text": "passa",
+        "start": 5.292,
+        "end": 5.652
+      },
+      {
+        "text": "por",
+        "start": 5.652,
+        "end": 5.972
+      },
+      {
+        "text": "um",
+        "start": 5.972,
+        "end": 6.092
+      },
+      {
+        "text": "tubinho",
+        "start": 6.092,
+        "end": 6.512
+      },
+      {
+        "text": "que",
+        "start": 6.512,
+        "end": 6.672
+      },
+      {
+        "text": "puxa",
+        "start": 6.672,
+        "end": 7.052
+      },
+      {
+        "text": "o",
+        "start": 7.052,
+        "end": 7.192
+      },
+      {
+        "text": "ar",
+        "start": 7.192,
+        "end": 7.372
+      },
+      {
+        "text": "da",
+        "start": 7.372,
+        "end": 7.492
+      },
+      {
+        "text": "cozinha.",
+        "start": 7.492,
+        "end": 8.172
+      }
+    ]
+  },
+  "s6": {
+    "text": "Misturado na medida certa, ele sai pelos furinhos do queimador e vira uma chama azul e forte.",
+    "seconds": 6.091,
+    "words": [
+      {
+        "text": "Misturado",
+        "start": 0,
+        "end": 0.587
+      },
+      {
+        "text": "na",
+        "start": 0.587,
+        "end": 0.747
+      },
+      {
+        "text": "medida",
+        "start": 0.747,
+        "end": 1.027
+      },
+      {
+        "text": "certa,",
+        "start": 1.027,
+        "end": 1.607
+      },
+      {
+        "text": "ele",
+        "start": 1.847,
+        "end": 1.967
+      },
+      {
+        "text": "sai",
+        "start": 1.967,
+        "end": 2.227
+      },
+      {
+        "text": "pelos",
+        "start": 2.227,
+        "end": 2.487
+      },
+      {
+        "text": "furinhos",
+        "start": 2.487,
+        "end": 2.967
+      },
+      {
+        "text": "do",
+        "start": 2.967,
+        "end": 3.107
+      },
+      {
+        "text": "queimador",
+        "start": 3.107,
+        "end": 3.747
+      },
+      {
+        "text": "e",
+        "start": 3.747,
+        "end": 4.147
+      },
+      {
+        "text": "vira",
+        "start": 4.147,
+        "end": 4.447
+      },
+      {
+        "text": "uma",
+        "start": 4.447,
+        "end": 4.507
+      },
+      {
+        "text": "chama",
+        "start": 4.507,
+        "end": 4.747
+      },
+      {
+        "text": "azul",
+        "start": 4.747,
+        "end": 5.107
+      },
+      {
+        "text": "e",
+        "start": 5.107,
+        "end": 5.387
+      },
+      {
+        "text": "forte.",
+        "start": 5.387,
+        "end": 5.727
+      }
+    ]
+  },
+  "s7": {
+    "text": "E como deixar o fogo mais alto ou mais baixo?",
+    "seconds": 2.626,
+    "words": [
+      {
+        "text": "E",
+        "start": 0,
+        "end": 0.076
+      },
+      {
+        "text": "como",
+        "start": 0.076,
+        "end": 0.256
+      },
+      {
+        "text": "deixar",
+        "start": 0.256,
+        "end": 0.636
+      },
+      {
+        "text": "o",
+        "start": 0.636,
+        "end": 0.796
+      },
+      {
+        "text": "fogo",
+        "start": 0.796,
+        "end": 1.156
+      },
+      {
+        "text": "mais",
+        "start": 1.156,
+        "end": 1.296
+      },
+      {
+        "text": "alto",
+        "start": 1.296,
+        "end": 1.596
+      },
+      {
+        "text": "ou",
+        "start": 1.596,
+        "end": 1.736
+      },
+      {
+        "text": "mais",
+        "start": 1.736,
+        "end": 1.896
+      },
+      {
+        "text": "baixo?",
+        "start": 1.896,
+        "end": 2.176
+      }
+    ]
+  },
+  "s8": {
+    "text": "O botão abre e fecha uma válvula. Mais aberta, passa mais gás e a chama cresce.",
+    "seconds": 6.121,
+    "words": [
+      {
+        "text": "O",
+        "start": 0,
+        "end": 0.103
+      },
+      {
+        "text": "botão",
+        "start": 0.103,
+        "end": 0.503
+      },
+      {
+        "text": "abre",
+        "start": 0.503,
+        "end": 0.783
+      },
+      {
+        "text": "e",
+        "start": 0.783,
+        "end": 1.103
+      },
+      {
+        "text": "fecha",
+        "start": 1.103,
+        "end": 1.443
+      },
+      {
+        "text": "uma",
+        "start": 1.443,
+        "end": 1.583
+      },
+      {
+        "text": "válvula.",
+        "start": 1.583,
+        "end": 2.143
+      },
+      {
+        "text": "Mais",
+        "start": 2.743,
+        "end": 3.003
+      },
+      {
+        "text": "aberta,",
+        "start": 3.003,
+        "end": 3.543
+      },
+      {
+        "text": "passa",
+        "start": 3.763,
+        "end": 4.123
+      },
+      {
+        "text": "mais",
+        "start": 4.123,
+        "end": 4.423
+      },
+      {
+        "text": "gás",
+        "start": 4.423,
+        "end": 4.823
+      },
+      {
+        "text": "e",
+        "start": 4.823,
+        "end": 4.983
+      },
+      {
+        "text": "a",
+        "start": 4.983,
+        "end": 5.103
+      },
+      {
+        "text": "chama",
+        "start": 5.103,
+        "end": 5.263
+      },
+      {
+        "text": "cresce.",
+        "start": 5.263,
+        "end": 5.963
+      }
+    ]
+  },
+  "s9": {
+    "text": "Mas, e se um vento apagar a chama? O gás continuaria saindo.",
+    "seconds": 4.814,
+    "words": [
+      {
+        "text": "Mas,",
+        "start": 0,
+        "end": 0.338
+      },
+      {
+        "text": "e",
+        "start": 0.598,
+        "end": 0.718
+      },
+      {
+        "text": "se",
+        "start": 0.718,
+        "end": 0.818
+      },
+      {
+        "text": "um",
+        "start": 0.818,
+        "end": 0.938
+      },
+      {
+        "text": "vento",
+        "start": 0.938,
+        "end": 1.278
+      },
+      {
+        "text": "apagar",
+        "start": 1.278,
+        "end": 1.618
+      },
+      {
+        "text": "a",
+        "start": 1.618,
+        "end": 1.738
+      },
+      {
+        "text": "chama?",
+        "start": 1.738,
+        "end": 2.058
+      },
+      {
+        "text": "O",
+        "start": 2.578,
+        "end": 2.958
+      },
+      {
+        "text": "gás",
+        "start": 2.958,
+        "end": 3.238
+      },
+      {
+        "text": "continuaria",
+        "start": 3.238,
+        "end": 3.838
+      },
+      {
+        "text": "saindo.",
+        "start": 3.838,
+        "end": 4.538
+      }
+    ]
+  },
+  "s10": {
+    "text": "Muitos fogões têm um sensor de calor perto da chama. Se ela apaga, ele fecha o gás sozinho.",
+    "seconds": 6.668,
+    "words": [
+      {
+        "text": "Muitos",
+        "start": 0,
+        "end": 0.442
+      },
+      {
+        "text": "fogões",
+        "start": 0.442,
+        "end": 0.882
+      },
+      {
+        "text": "têm",
+        "start": 0.882,
+        "end": 1.102
+      },
+      {
+        "text": "um",
+        "start": 1.102,
+        "end": 1.222
+      },
+      {
+        "text": "sensor",
+        "start": 1.222,
+        "end": 1.462
+      },
+      {
+        "text": "de",
+        "start": 1.462,
+        "end": 1.842
+      },
+      {
+        "text": "calor",
+        "start": 1.842,
+        "end": 2.142
+      },
+      {
+        "text": "perto",
+        "start": 2.142,
+        "end": 2.442
+      },
+      {
+        "text": "da",
+        "start": 2.442,
+        "end": 2.702
+      },
+      {
+        "text": "chama.",
+        "start": 2.702,
+        "end": 3.182
+      },
+      {
+        "text": "Se",
+        "start": 3.842,
+        "end": 4.042
+      },
+      {
+        "text": "ela",
+        "start": 4.042,
+        "end": 4.242
+      },
+      {
+        "text": "apaga,",
+        "start": 4.242,
+        "end": 4.742
+      },
+      {
+        "text": "ele",
+        "start": 5.002,
+        "end": 5.102
+      },
+      {
+        "text": "fecha",
+        "start": 5.102,
+        "end": 5.522
+      },
+      {
+        "text": "o",
+        "start": 5.522,
+        "end": 5.622
+      },
+      {
+        "text": "gás",
+        "start": 5.622,
+        "end": 5.942
+      },
+      {
+        "text": "sozinho.",
+        "start": 5.942,
+        "end": 6.442
+      }
+    ]
+  },
+  "s11": {
+    "text": "E tem mais: o gás de cozinha não tem cheiro. Por isso colocam um cheiro forte nele, pra você perceber um vazamento.",
+    "seconds": 7.613,
+    "words": [
+      {
+        "text": "E",
+        "start": 0,
+        "end": 0.106
+      },
+      {
+        "text": "tem",
+        "start": 0.106,
+        "end": 0.246
+      },
+      {
+        "text": "mais:",
+        "start": 0.246,
+        "end": 0.566
+      },
+      {
+        "text": "o",
+        "start": 0.946,
+        "end": 1.046
+      },
+      {
+        "text": "gás",
+        "start": 1.046,
+        "end": 1.346
+      },
+      {
+        "text": "de",
+        "start": 1.346,
+        "end": 1.426
+      },
+      {
+        "text": "cozinha",
+        "start": 1.426,
+        "end": 1.926
+      },
+      {
+        "text": "não",
+        "start": 1.926,
+        "end": 2.066
+      },
+      {
+        "text": "tem",
+        "start": 2.066,
+        "end": 2.266
+      },
+      {
+        "text": "cheiro.",
+        "start": 2.266,
+        "end": 2.826
+      },
+      {
+        "text": "Por",
+        "start": 3.366,
+        "end": 3.606
+      },
+      {
+        "text": "isso",
+        "start": 3.606,
+        "end": 3.786
+      },
+      {
+        "text": "colocam",
+        "start": 3.786,
+        "end": 4.326
+      },
+      {
+        "text": "um",
+        "start": 4.326,
+        "end": 4.426
+      },
+      {
+        "text": "cheiro",
+        "start": 4.426,
+        "end": 4.726
+      },
+      {
+        "text": "forte",
+        "start": 4.726,
+        "end": 4.986
+      },
+      {
+        "text": "nele,",
+        "start": 4.986,
+        "end": 5.506
+      },
+      {
+        "text": "pra",
+        "start": 5.626,
+        "end": 5.766
+      },
+      {
+        "text": "você",
+        "start": 5.766,
+        "end": 6.066
+      },
+      {
+        "text": "perceber",
+        "start": 6.066,
+        "end": 6.526
+      },
+      {
+        "text": "um",
+        "start": 6.526,
+        "end": 6.726
+      },
+      {
+        "text": "vazamento.",
+        "start": 6.726,
+        "end": 7.366
+      }
+    ]
+  },
+  "s12": {
+    "text": "Pronto: gás, ar e faísca, na medida certa. E a sopa fica no ponto!",
+    "seconds": 5.97,
+    "words": [
+      {
+        "text": "Pronto:",
+        "start": 0,
+        "end": 0.443
+      },
+      {
+        "text": "gás,",
+        "start": 0.663,
+        "end": 1.163
+      },
+      {
+        "text": "ar",
+        "start": 1.303,
+        "end": 1.483
+      },
+      {
+        "text": "e",
+        "start": 1.483,
+        "end": 1.583
+      },
+      {
+        "text": "faísca,",
+        "start": 1.583,
+        "end": 2.163
+      },
+      {
+        "text": "na",
+        "start": 2.363,
+        "end": 2.443
+      },
+      {
+        "text": "medida",
+        "start": 2.443,
+        "end": 2.703
+      },
+      {
+        "text": "certa.",
+        "start": 2.703,
+        "end": 3.303
+      },
+      {
+        "text": "E",
+        "start": 4.003,
+        "end": 4.203
+      },
+      {
+        "text": "a",
+        "start": 4.203,
+        "end": 4.303
+      },
+      {
+        "text": "sopa",
+        "start": 4.303,
+        "end": 4.663
+      },
+      {
+        "text": "fica",
+        "start": 4.663,
+        "end": 4.923
+      },
+      {
+        "text": "no",
+        "start": 4.923,
+        "end": 5.143
+      },
+      {
+        "text": "ponto!",
+        "start": 5.143,
+        "end": 5.663
+      }
+    ]
+  }
+}

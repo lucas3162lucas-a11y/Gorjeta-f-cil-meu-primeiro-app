@@ -2,7 +2,8 @@
 
 > **Versão:** v1.1 (Fase 1), 31/10/2026 — v1 + troca da voz para ElevenLabs. **Origem:** roteiro escrito pelo agente, a pedido do usuário
 > ("outro vídeo"). O tema foi escolhido pelo agente, sem envolver dinheiro.
-> **Situação:** AGUARDANDO APROVAÇÃO. A implementação e a renderização ainda não começaram.
+> **Situação:** APROVADO ("Pode gerar", 31/10/2026). Fase 2 executada; ajustes técnicos na seção 7.
+> Texto e ordem das cenas não mudaram.
 >
 > **Convenção:** MM:SS:FF a 30 fps; frames em [início, fim). Os tempos são estimativas: depois da voz
 > real, os cortes seguem a narração.
@@ -91,3 +92,16 @@ timeline foi validada. Tudo é calculado a partir do frame. Não há tranco de c
 - [x] 12 cenas e 7 colunas; soma de 2700 frames; plano compilado e validado.
 - [x] 200 palavras, compatível com 90 s; sem tranco de câmera.
 - [ ] **Ainda não feito:** TTS, render e validação visual. Isso fica para a Fase 2.
+
+## 7. Ajustes técnicos da Fase 2 (sem mudança de conteúdo)
+
+- **Voz:** a ElevenLabs recusou a geração. A conta é do plano gratuito e ela bloqueou o uso gratuito por
+  "atividade incomum" (a mensagem cita proxy/VPN). Nenhum áudio foi entregue. O usuário escolheu seguir
+  com a voz anterior, Piper `pt_BR-faber-medium`: fala de 71,5 s (length-scale 1,4, ~168 palavras/min),
+  com as 200 palavras casadas. Pausas de 1,5 s entre as falas.
+- **"✖" de "não pega fogo":** some no começo da cena 3 (antes ele voltava depois da faísca).
+- **Panela:** fica translúcida durante a explicação (cenas 2–11), para não esconder a chama, o acendedor
+  e o sensor; volta ao normal no final.
+- **Close do acendedor e do sensor:** a câmera desceu para a altura do queimador (elevação de 6°).
+- **Faísca:** acesa de forma contínua enquanto dura, sem piscar quadro a quadro (evita efeito de
+  tremedeira).
