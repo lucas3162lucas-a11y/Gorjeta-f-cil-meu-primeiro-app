@@ -1,0 +1,106 @@
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', 'Noto Color Emoji', sans-serif; color: #2B2D42; font-size: 10.5pt; line-height: 1.45; -webkit-print-color-adjust: exact; }
+.page { width: 210mm; height: 297mm; padding: 16mm 15mm 18mm; position: relative; overflow: hidden; page-break-after: always; background: #FFFCF7; }
+.page:last-child { page-break-after: auto; }
+footer { position: absolute; left: 15mm; right: 15mm; bottom: 8mm; display: flex; justify-content: space-between; font-size: 8pt; color: #9A9AB0; border-top: 1px solid #EEE6DA; padding-top: 2.5mm; }
+
+/* Capa */
+.page-capa { background: #FFF4E3; padding: 0; }
+.capa { position: relative; height: 100%; padding: 40mm 20mm 0; text-align: center; }
+.blob { position: absolute; border-radius: 50%; opacity: .9; }
+.b1 { width: 90mm; height: 90mm; background: #E8487A; top: -30mm; left: -30mm; }
+.b2 { width: 70mm; height: 70mm; background: #3B7DD8; bottom: -20mm; right: -20mm; }
+.b3 { width: 40mm; height: 40mm; background: #2BA36B; bottom: 40mm; left: -12mm; }
+.b4 { width: 30mm; height: 30mm; background: #F28C28; top: 30mm; right: 12mm; }
+.capa > *:not(.blob) { position: relative; }
+.capa-emojis { font-size: 30pt; letter-spacing: 4mm; margin-bottom: 10mm; }
+.capa-kicker { text-transform: uppercase; letter-spacing: 2px; font-weight: 700; color: #E8487A; font-size: 11pt; }
+.capa h1 { font-family: 'Inter Display', 'Inter', sans-serif; font-weight: 900; font-size: 46pt; line-height: 1.02; margin: 6mm 0 4mm; color: #2B2D42; }
+.capa h1 .big { color: #F28C28; font-size: 80pt; display: block; line-height: 1; }
+.capa-sub { font-size: 18pt; font-weight: 600; color: #3B7DD8; }
+.capa-desc { max-width: 130mm; margin: 10mm auto; font-size: 12.5pt; color: #4A4C63; }
+.capa-tags { display: flex; flex-wrap: wrap; gap: 3mm; justify-content: center; max-width: 150mm; margin: 0 auto; }
+.capa-tags span { color: #fff; font-weight: 700; padding: 2.5mm 5mm; border-radius: 20mm; font-size: 10pt; }
+
+/* Títulos */
+.titulo { font-family: 'Inter Display', 'Inter', sans-serif; font-weight: 800; font-size: 22pt; color: #2B2D42; margin-bottom: 3mm; }
+.lead { font-size: 11.5pt; color: #4A4C63; margin-bottom: 7mm; }
+.lead.small { font-size: 10.5pt; margin-bottom: 5mm; }
+.sub { font-size: 13pt; font-weight: 800; margin: 7mm 0 3mm; }
+
+.legenda { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+.legenda > div { background: #fff; border: 1px solid #EEE6DA; border-radius: 3mm; padding: 3mm 4mm; font-size: 9.5pt; }
+.legenda .ico { font-size: 14pt; margin-right: 2mm; }
+.grupos { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+.grupo { display: flex; gap: 3mm; background: var(--clara); border-left: 2mm solid var(--cor); border-radius: 3mm; padding: 3mm 4mm; font-size: 9.5pt; }
+.grupo b { color: var(--cor); font-size: 10.5pt; }
+.grupo span { font-size: 8.5pt; color: #6B6D80; }
+.grupo p { margin-top: 1.5mm; font-size: 8.8pt; }
+.g-emoji { font-size: 18pt; }
+.rapida { width: 100%; border-collapse: collapse; font-size: 10pt; }
+.rapida td { padding: 2.2mm 3mm; border-bottom: 1px solid #EEE6DA; }
+.rapida td:last-child { font-weight: 700; }
+.aviso { margin-top: 7mm; background: #FFF1D6; border: 1px solid #F5CF85; border-radius: 3mm; padding: 4mm; font-size: 9.5pt; }
+
+/* Dicas */
+.dicas { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+.dica { display: flex; gap: 3mm; background: #fff; border: 1px solid #EEE6DA; border-radius: 3mm; padding: 4mm; }
+.dica b { font-size: 11pt; }
+.dica p { font-size: 9.8pt; color: #4A4C63; margin-top: 1mm; }
+.dn { flex: none; width: 8mm; height: 8mm; border-radius: 50%; background: #3B7DD8; color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.frase { margin-top: 12mm; text-align: center; font-size: 15pt; font-style: italic; color: #E8487A; padding: 0 12mm; }
+
+/* Categorias */
+.cat-head { display: flex; gap: 4mm; align-items: center; background: var(--clara); border-radius: 4mm; padding: 3mm 5mm; margin-bottom: 4mm; border-left: 3mm solid var(--cor); }
+.cat-head h2 { font-family: 'Inter Display', 'Inter', sans-serif; color: var(--cor); font-size: 19pt; font-weight: 800; line-height: 1.1; }
+.cat-head p { font-size: 9.5pt; color: #4A4C63; margin-top: 1mm; }
+.cat-head.mini { padding: 2.5mm 5mm; }
+.cat-head.mini h2 { font-size: 14pt; }
+.cat-head small { font-weight: 500; font-size: 10pt; color: #8A8CA0; }
+.cat-emoji { font-size: 24pt; }
+.cat-head.mini .cat-emoji { font-size: 16pt; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3.2mm; }
+.card { background: #fff; border: 1px solid #EEE6DA; border-top: 1.5mm solid var(--cor); border-radius: 3mm; padding: 3.2mm 4mm 3mm; display: flex; flex-direction: column; }
+.card-top { display: flex; gap: 2.5mm; align-items: center; }
+.num { flex: none; width: 8mm; height: 8mm; border-radius: 50%; background: var(--cor); color: #fff; font-weight: 800; font-size: 9.5pt; display: flex; align-items: center; justify-content: center; }
+.card h3 { font-size: 11.5pt; font-weight: 800; line-height: 1.2; }
+.chips { display: flex; gap: 2mm; margin: 2mm 0; flex-wrap: wrap; }
+.chips span { background: var(--clara, #F3EEE6); font-size: 8.3pt; font-weight: 600; padding: .8mm 2.5mm; border-radius: 10mm; }
+.mat { font-size: 8.8pt; color: #5A5C70; margin-bottom: 1.5mm; }
+.como { font-size: 9.2pt; flex: 1; line-height: 1.38; }
+.check { font-size: 8.5pt; color: #8A8CA0; margin-top: 2mm; text-align: right; }
+
+/* Receita */
+.receita { display: grid; grid-template-columns: 1fr 1.4fr; gap: 5mm; }
+.receita > div, .box, .exp { background: #fff; border: 1px solid #EEE6DA; border-radius: 3mm; padding: 3.8mm 5mm; }
+.receita h3, .exp h3 { font-size: 12.5pt; margin-bottom: 2.5mm; }
+.receita ul, .receita ol, .exp ol { padding-left: 5mm; }
+.receita li, .exp li { margin-bottom: 1.5mm; font-size: 10pt; }
+.caixas { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-top: 5mm; }
+.box p { font-size: 9.8pt; margin-top: 1.5mm; color: #4A4C63; }
+.exps { display: flex; flex-direction: column; gap: 3mm; }
+.exp .chips span { background: #EEF0FA; }
+.exp .porque { font-size: 9.5pt; background: #E7F0FC; border-radius: 2mm; padding: 2mm 3mm; margin-top: 2mm; }
+
+/* Imprimíveis */
+.imprimir { background: #fff; }
+.tiras { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px dashed #B8B8C8; border-left: 1px dashed #B8B8C8; }
+.tira { border-right: 1px dashed #B8B8C8; border-bottom: 1px dashed #B8B8C8; padding: 1.6mm 2.5mm; font-size: 8.4pt; height: 11.6mm; display: flex; align-items: center; gap: 1.5mm; line-height: 1.15; }
+.tira b { color: var(--cor); font-size: 10pt; min-width: 5mm; }
+.semana { font-size: 11pt; margin-bottom: 4mm; font-weight: 600; }
+.plano { width: 100%; border-collapse: collapse; }
+.plano th { background: #2B2D42; color: #fff; font-size: 10pt; padding: 3mm; text-align: left; }
+.plano td { border: 1px solid #D9D3C8; height: 23mm; padding: 3mm; font-size: 11pt; vertical-align: middle; }
+.plano td:first-child { width: 28mm; }
+.plano .c { text-align: center; width: 24mm; font-size: 16pt; }
+.plano .caras { width: 34mm; font-size: 13pt; }
+.notas { margin-top: 6mm; }
+.linha { border-bottom: 1px solid #D9D3C8; height: 9mm; }
+.kit { display: grid; grid-template-columns: 1fr 1fr; gap: 0 6mm; font-size: 11.5pt; }
+.kit div { padding: 3mm 0; border-bottom: 1px solid #EEE6DA; }
+.dica-kit { margin-top: 6mm; background: #E5F6EE; border-radius: 3mm; padding: 4mm; font-size: 10pt; }
+.fim { margin-top: 10mm; text-align: center; padding: 0 10mm; }
+.fim-t { font-family: 'Inter Display', 'Inter', sans-serif; font-size: 22pt; font-weight: 800; color: #E8487A; margin-bottom: 2mm; }
+.fim p { color: #4A4C63; }
+.legal { position: absolute; left: 15mm; right: 15mm; bottom: 16mm; font-size: 7.8pt; color: #8A8CA0; text-align: center; }
